@@ -108,6 +108,13 @@ Quick REST reference for KitchenLedger. Not a full Swagger spec — intended for
 | GET    | `/inventory/stock`     | Stock summary by branch/ingredient |
 | GET    | `/inventory/batches`   | Stock batches                      |
 | GET    | `/inventory/movements` | Stock movement history             |
+| POST   | `/inventory/adjustments` | Create stock adjustment (waste, return, manual) |
+
+**Adjustment body:** `branchId`, `ingredientId`, `type` (`WASTE` | `RETURN` | `MANUAL_ADJUSTMENT`), `quantity`, `reason`, optional `stockBatchId`, optional `unitCost`, optional `adjustmentDirection` (`INCREASE` | `DECREASE` for manual)
+
+**Roles:** OWNER, ADMIN, BRANCH_MANAGER, STAFF. VIEWER read-only.
+
+**Notes:** Decrease uses FIFO or specific batch; increase creates a new stock batch. `unitCost` required when no weighted average exists.
 
 ---
 

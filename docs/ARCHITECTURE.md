@@ -20,7 +20,7 @@ Shared config packages (`eslint-config`, `typescript-config`) keep lint and TS s
 | **Tenant / Authorization** | `TenantGuard`, `RolesGuard`, `BranchAccessGuard`, `x-organization-id` header |
 | **Reference Data**         | Branches, Ingredients, Suppliers — org-scoped CRUD                           |
 | **Purchases**              | Purchase creation with line items; triggers stock batch + movement creation  |
-| **Inventory**              | Stock summary, batches, movement audit trail                                 |
+| **Inventory**              | Stock summary, batches, movement audit trail, adjustments (waste/return/manual) |
 | **Products / Recipes**     | Product catalog, recipe definitions, branch-specific cost preview            |
 | **Productions**            | Production runs, FIFO consumption, immutable cost snapshots                  |
 | **Orders**                 | Customer orders with line items, status workflow; MVP creates customer per order (no stock/production side effects) |
@@ -73,6 +73,7 @@ Frontend mirrors backend permissions via `permissions.ts` so UI actions match AP
 2. **StockMovement** records every change (`PURCHASE`, `PRODUCTION_CONSUMPTION`, `MANUAL_ADJUSTMENT`, `WASTE`, `RETURN`) for audit
 3. **Stock summary** aggregates `remainingQuantity` per ingredient per branch
 4. Batch `remainingQuantity` decreases on production consumption; depleted batches remain for history
+5. **Stock adjustments** (`WASTE`, `RETURN`, `MANUAL_ADJUSTMENT`) create `StockMovement` records; decreases consume FIFO or a selected batch; increases create a new `StockBatch` (no purchase link)
 
 ## Recipe Costing vs Production Costing
 

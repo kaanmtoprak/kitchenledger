@@ -1,14 +1,27 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma, StockMovementType } from '@kitchenledger/db';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { BaseUnit, Prisma, StockMovementType } from '@kitchenledger/db';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   buildPaginatedResponse,
   parsePagination,
 } from '../common/pagination/pagination.util';
 import { BranchAccessService } from '../common/services/branch-access.service';
+import { IngredientCostService } from '../common/services/ingredient-cost.service';
+import { StockConsumptionService } from '../common/services/stock-consumption.service';
 import { TenantContext } from '../common/types/tenant-context.type';
 import { serializeDecimal, toDecimal } from '../common/utils/decimal.util';
 import { buildBranchWhere } from '../common/utils/stock-summary.util';
+import {
+  AdjustmentDirection,
+  CreateStockAdjustmentDto,
+  validateAdjustmentQuantity,
+  validateAdjustmentUnitCost,
+} from './dto/create-stock-adjustment.dto';
 import { ListStockBatchesQueryDto } from './dto/list-stock-batches-query.dto';
 import { ListStockMovementsQueryDto } from './dto/list-stock-movements-query.dto';
 import { ListStockQueryDto } from './dto/list-stock-query.dto';
@@ -32,7 +45,346 @@ export class InventoryService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly branchAccessService: BranchAccessService,
+    private readonly stockConsumptionService: StockConsumptionService,
+    private readonly ingredientCostService: IngredientCostService,
   ) {}
+
+  private async resolveUnitCost(
+    organizationId: string,
+    branchId: string,
+    ingredientId: string,
+    unitCostInput?: string,
+  ): Promise<Prisma.Decimal> {
+    if (unitCostInput?.trim()) {
+      try {
+        validateAdjustmentUnitCost(unitCostInput);
+      } catch {
+        throw new BadRequestException('Unit cost cannot be negative');
+      }
+      return toDecimal(unitCostInput);
+    }
+
+    const weightedAverage =
+      await this.ingredientCostService.getWeightedAverageUnitCost(
+        organizationId,
+        branchId,
+        ingredientId,
+      );
+
+    if (weightedAverage === null) {
+      throw new BadRequestException('Unit cost is required');
+    }
+
+    return weightedAverage;
+  }
+
+  private async consumeStockInTransaction(
+    tx: Prisma.TransactionClient,
+    tenant: TenantContext,
+    params: {
+      branchId: string;
+      ingredientId: string;
+      ingredientName: string;
+      unit: BaseUnit;
+      quantity: Prisma.Decimal;
+      stockBatchId?: string;
+      movementType: StockMovementType;
+      reason: string;
+    },
+  ) {
+    const movements: Array<{
+      id: string;
+      stockBatchId: string | null;
+      quantity: string;
+      type: StockMovementType;
+    }> = [];
+
+    if (params.stockBatchId) {
+      const batch = await tx.stockBatch.findFirst({
+        where: {
+          id: params.stockBatchId,
+          organizationId: tenant.organizationId,
+          branchId: params.branchId,
+          ingredientId: params.ingredientId,
+        },
+        select: { id: true, remainingQuantity: true },
+      });
+
+      if (!batch) {
+        throw new NotFoundException('Stock batch not found');
+      }
+
+      if (batch.remainingQuantity.lt(params.quantity)) {
+        throw new ConflictException(
+          this.stockConsumptionService.buildInsufficientStockMessage(
+            params.ingredientName,
+            params.unit,
+            params.quantity,
+            batch.remainingQuantity,
+          ),
+        );
+      }
+
+      await tx.stockBatch.update({
+        where: { id: batch.id },
+        data: {
+          remainingQuantity: batch.remainingQuantity.sub(params.quantity),
+        },
+      });
+
+      const movement = await tx.stockMovement.create({
+        data: {
+          organizationId: tenant.organizationId,
+          branchId: params.branchId,
+          ingredientId: params.ingredientId,
+          stockBatchId: batch.id,
+          type: params.movementType,
+          quantity: params.quantity,
+          unit: params.unit,
+          reason: params.reason,
+        },
+        select: { id: true, stockBatchId: true, quantity: true, type: true },
+      });
+
+      movements.push({
+        id: movement.id,
+        stockBatchId: movement.stockBatchId,
+        quantity: serializeDecimal(movement.quantity)!,
+        type: movement.type,
+      });
+
+      return movements;
+    }
+
+    const batches = await this.stockConsumptionService.getAvailableBatches(
+      tx,
+      tenant.organizationId,
+      params.branchId,
+      params.ingredientId,
+    );
+    const available = this.stockConsumptionService.sumAvailableQuantity(batches);
+
+    this.stockConsumptionService.assertSufficientStock(
+      params.ingredientName,
+      params.unit,
+      params.quantity,
+      available,
+    );
+
+    const plan = this.stockConsumptionService.planFifoConsumption(
+      batches,
+      params.quantity,
+    );
+
+    if (!plan) {
+      throw new ConflictException(
+        this.stockConsumptionService.buildInsufficientStockMessage(
+          params.ingredientName,
+          params.unit,
+          params.quantity,
+          available,
+        ),
+      );
+    }
+
+    for (const batchPlan of plan) {
+      const batch = await tx.stockBatch.findUnique({
+        where: { id: batchPlan.stockBatchId },
+        select: { id: true, remainingQuantity: true },
+      });
+
+      if (!batch || batch.remainingQuantity.lt(batchPlan.consumedQuantity)) {
+        throw new ConflictException(
+          `Insufficient stock for ${params.ingredientName} during adjustment`,
+        );
+      }
+
+      await tx.stockBatch.update({
+        where: { id: batch.id },
+        data: {
+          remainingQuantity: batch.remainingQuantity.sub(
+            batchPlan.consumedQuantity,
+          ),
+        },
+      });
+
+      const movement = await tx.stockMovement.create({
+        data: {
+          organizationId: tenant.organizationId,
+          branchId: params.branchId,
+          ingredientId: params.ingredientId,
+          stockBatchId: batchPlan.stockBatchId,
+          type: params.movementType,
+          quantity: batchPlan.consumedQuantity,
+          unit: params.unit,
+          reason: params.reason,
+        },
+        select: { id: true, stockBatchId: true, quantity: true, type: true },
+      });
+
+      movements.push({
+        id: movement.id,
+        stockBatchId: movement.stockBatchId,
+        quantity: serializeDecimal(movement.quantity)!,
+        type: movement.type,
+      });
+    }
+
+    return movements;
+  }
+
+  private async increaseStockInTransaction(
+    tx: Prisma.TransactionClient,
+    tenant: TenantContext,
+    params: {
+      branchId: string;
+      ingredientId: string;
+      unit: BaseUnit;
+      quantity: Prisma.Decimal;
+      unitCost: Prisma.Decimal;
+      movementType: StockMovementType;
+      reason: string;
+    },
+  ) {
+    const stockBatch = await tx.stockBatch.create({
+      data: {
+        organizationId: tenant.organizationId,
+        branchId: params.branchId,
+        ingredientId: params.ingredientId,
+        initialQuantity: params.quantity,
+        remainingQuantity: params.quantity,
+        unit: params.unit,
+        unitCost: params.unitCost,
+        receivedAt: new Date(),
+      },
+    });
+
+    const movement = await tx.stockMovement.create({
+      data: {
+        organizationId: tenant.organizationId,
+        branchId: params.branchId,
+        ingredientId: params.ingredientId,
+        stockBatchId: stockBatch.id,
+        type: params.movementType,
+        quantity: params.quantity,
+        unit: params.unit,
+        reason: params.reason,
+      },
+      select: { id: true, stockBatchId: true, quantity: true, type: true },
+    });
+
+    return {
+      stockBatchId: stockBatch.id,
+      movements: [
+        {
+          id: movement.id,
+          stockBatchId: movement.stockBatchId,
+          quantity: serializeDecimal(movement.quantity)!,
+          type: movement.type,
+        },
+      ],
+    };
+  }
+
+  async createAdjustment(tenant: TenantContext, dto: CreateStockAdjustmentDto) {
+    const reason = dto.reason.trim();
+    if (!reason) {
+      throw new BadRequestException('Reason is required');
+    }
+
+    try {
+      validateAdjustmentQuantity(dto.quantity);
+    } catch {
+      throw new BadRequestException('Invalid quantity');
+    }
+
+    const quantity = toDecimal(dto.quantity);
+
+    const ingredient = await this.prisma.ingredient.findFirst({
+      where: {
+        id: dto.ingredientId,
+        organizationId: tenant.organizationId,
+        isActive: true,
+      },
+      select: { id: true, name: true, baseUnit: true },
+    });
+
+    if (!ingredient) {
+      throw new NotFoundException('Ingredient not found');
+    }
+
+    await this.branchAccessService.ensureBranchAccess(tenant, dto.branchId);
+
+    const isIncrease =
+      dto.type === StockMovementType.RETURN ||
+      (dto.type === StockMovementType.MANUAL_ADJUSTMENT &&
+        dto.adjustmentDirection === AdjustmentDirection.INCREASE);
+
+    const isDecrease =
+      dto.type === StockMovementType.WASTE ||
+      (dto.type === StockMovementType.MANUAL_ADJUSTMENT &&
+        dto.adjustmentDirection === AdjustmentDirection.DECREASE);
+
+    if (dto.type === StockMovementType.MANUAL_ADJUSTMENT && !dto.adjustmentDirection) {
+      throw new BadRequestException('Adjustment direction is required');
+    }
+
+    if (!isIncrease && !isDecrease) {
+      throw new BadRequestException('Invalid adjustment type');
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      if (isDecrease) {
+        const movements = await this.consumeStockInTransaction(tx, tenant, {
+          branchId: dto.branchId,
+          ingredientId: ingredient.id,
+          ingredientName: ingredient.name,
+          unit: ingredient.baseUnit,
+          quantity,
+          stockBatchId: dto.stockBatchId?.trim() || undefined,
+          movementType: dto.type,
+          reason,
+        });
+
+        return {
+          type: dto.type,
+          branchId: dto.branchId,
+          ingredientId: ingredient.id,
+          quantity: serializeDecimal(quantity)!,
+          unit: ingredient.baseUnit,
+          movements,
+        };
+      }
+
+      const unitCost = await this.resolveUnitCost(
+        tenant.organizationId,
+        dto.branchId,
+        ingredient.id,
+        dto.unitCost,
+      );
+
+      const result = await this.increaseStockInTransaction(tx, tenant, {
+        branchId: dto.branchId,
+        ingredientId: ingredient.id,
+        unit: ingredient.baseUnit,
+        quantity,
+        unitCost,
+        movementType: dto.type,
+        reason,
+      });
+
+      return {
+        type: dto.type,
+        branchId: dto.branchId,
+        ingredientId: ingredient.id,
+        quantity: serializeDecimal(quantity)!,
+        unit: ingredient.baseUnit,
+        unitCost: serializeDecimal(unitCost)!,
+        stockBatchId: result.stockBatchId,
+        movements: result.movements,
+      };
+    });
+  }
 
   async listStockSummary(tenant: TenantContext, query: ListStockQueryDto) {
     const pagination = parsePagination(query);

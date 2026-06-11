@@ -27,7 +27,7 @@ KitchenLedger connects purchasing, inventory, recipe costing and production into
 - Role-based access control (OWNER, ADMIN, BRANCH_MANAGER, STAFF, VIEWER)
 - Ingredient and supplier management with minimum stock levels
 - Purchase-based stock batch creation
-- Inventory stock summary and movement history
+- Inventory stock summary, movement history and stock adjustments (waste, return, manual)
 - Product and recipe management
 - Branch-specific recipe cost calculation (weighted average)
 - FIFO production consumption

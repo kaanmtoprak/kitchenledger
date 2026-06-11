@@ -1,8 +1,10 @@
 import { apiClient } from '@/lib/api/api-client';
 import type {
+  CreateStockAdjustmentPayload,
   ListStockBatchesParams,
   ListStockMovementsParams,
   ListStockParams,
+  StockAdjustmentResponse,
   StockBatchesListResponse,
   StockListResponse,
   StockMovementsListResponse,
@@ -74,4 +76,7 @@ export const inventoryApi = {
 
   listMovements: (params?: ListStockMovementsParams) =>
     apiClient.get<StockMovementsListResponse>(`/inventory/movements${buildMovementsQuery(params)}`),
+
+  createAdjustment: (payload: CreateStockAdjustmentPayload) =>
+    apiClient.post<StockAdjustmentResponse>('/inventory/adjustments', payload),
 };

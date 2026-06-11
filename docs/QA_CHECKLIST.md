@@ -82,6 +82,7 @@ Tüm demo kullanıcılar için şifre: **`Password123!`**
 - [ ] Oluştur / Düzenle / Pasife Al butonları görünmüyor
 - [ ] Panel, Stok, Ürünler, Reçeteler, Satın Almalar, Siparişler, Üretimler okunabilir
 - [ ] Siparişler sayfasında Yeni Sipariş ve durum güncelleme görünmüyor
+- [ ] Stok sayfasında Stok Düzelt CTA görünmüyor
 - [ ] Sadece Main Kitchen siparişi görünür (ORD-2026-0001); Kadikoy siparişi görünmez
 - [ ] Mutation denemesi API tarafında engelleniyor (UI’da buton yok)
 
@@ -95,14 +96,16 @@ Owner veya Admin ile giriş yapın:
 2. [ ] **Tedarikçi oluştur** — `/suppliers`
 3. [ ] **Satın alma oluştur** — `/purchases` (kalem ekle, kaydet)
 4. [ ] **Stok özetinde artış** — `/inventory` → Stok Özeti / Stok Partileri
-5. [ ] **Sipariş oluştur** — `/orders` (müşteri + ürün kalemleri, toplam kontrol)
-6. [ ] **Sipariş durumu güncelle** — Liste veya detaydan
-7. [ ] **Ürün oluştur** — `/products`
-8. [ ] **Reçete oluştur** — `/recipes`
-9. [ ] **Reçete maliyetini görüntüle** — Maliyeti Gör + şube seç
-10. [ ] **Üretim oluştur** — `/productions`
-11. [ ] **FIFO tüketim** — Üretim detayında partiler ve maliyet kaydı
-12. [ ] **Panel ve Stok güncellendi** — `/dashboard` ve `/inventory`
+5. [ ] **Stok düzeltme** — Fire/Zayi, İade veya Manuel Düzeltme; hareket geçmişinde görünmeli
+6. [ ] **Yetersiz stok** — Fire/azaltma denemesinde Türkçe hata mesajı
+7. [ ] **Sipariş oluştur** — `/orders` (müşteri + ürün kalemleri, toplam kontrol)
+8. [ ] **Sipariş durumu güncelle** — Liste veya detaydan
+9. [ ] **Ürün oluştur** — `/products`
+10. [ ] **Reçete oluştur** — `/recipes`
+11. [ ] **Reçete maliyetini görüntüle** — Maliyeti Gör + şube seç
+12. [ ] **Üretim oluştur** — `/productions`
+13. [ ] **FIFO tüketim** — Üretim detayında partiler ve maliyet kaydı
+14. [ ] **Panel ve Stok güncellendi** — `/dashboard` ve `/inventory`
 
 ---
 

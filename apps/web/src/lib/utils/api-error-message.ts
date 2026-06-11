@@ -31,6 +31,13 @@ const exactMessages: Record<string, string> = {
   'Duplicate product in order items': 'Aynı ürün birden fazla kez eklenemez.',
   'Invalid quantity or unit price': 'Miktar veya birim fiyat geçersiz.',
   'One or more products not found': 'Bir veya daha fazla ürün bulunamadı.',
+  'Stock batch not found': 'Stok partisi bulunamadı.',
+  'Unit cost is required': 'Birim maliyet gereklidir.',
+  'Unit cost cannot be negative': 'Birim maliyet negatif olamaz.',
+  'Invalid quantity': 'Miktar geçersiz.',
+  'Reason is required': 'Açıklama zorunludur.',
+  'Adjustment direction is required': 'Manuel düzeltme için yön seçilmelidir.',
+  'Invalid adjustment type': 'Geçersiz işlem tipi.',
 };
 
 function translateInsufficientStock(message: string): string | null {

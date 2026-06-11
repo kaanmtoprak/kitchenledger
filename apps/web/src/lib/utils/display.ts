@@ -62,7 +62,7 @@ const movementTypeLabels: Record<string, string> = {
   PURCHASE: 'Satın Alma',
   PRODUCTION_CONSUMPTION: 'Üretim Tüketimi',
   MANUAL_ADJUSTMENT: 'Manuel Düzeltme',
-  WASTE: 'Fire',
+  WASTE: 'Fire / Zayi',
   RETURN: 'İade',
 };
 

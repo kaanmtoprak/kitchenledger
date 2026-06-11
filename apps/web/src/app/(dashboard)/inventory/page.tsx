@@ -1,10 +1,13 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Plus } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { PageHeader } from '@/components/common/page-header';
+import { SuccessAlert } from '@/components/common/success-alert';
 import { TablePagination } from '@/components/common/table-pagination';
 import { ingredientsApi } from '@/features/ingredients/api/ingredients.api';
 import { inventoryApi } from '@/features/inventory/api/inventory.api';
@@ -18,11 +21,17 @@ import { InventoryOverviewCards } from '@/features/inventory/components/inventor
 import { InventoryTabs } from '@/features/inventory/components/inventory-tabs';
 import { StockBatchesTable } from '@/features/inventory/components/stock-batches-table';
 import { StockMovementsTable } from '@/features/inventory/components/stock-movements-table';
+import { StockAdjustmentDialog } from '@/features/inventory/components/stock-adjustment-dialog';
 import { StockSummaryTable } from '@/features/inventory/components/stock-summary-table';
-import type { InventoryTab } from '@/features/inventory/types/inventory.types';
+import type {
+  CreateStockAdjustmentPayload,
+  InventoryTab,
+  StockMovementType,
+} from '@/features/inventory/types/inventory.types';
 import { useAccessibleBranches } from '@/lib/hooks/use-accessible-branches';
 import { useDebouncedValue } from '@/lib/hooks/use-debounced-value';
 import { useAuth } from '@/lib/auth/use-auth';
+import { usePermissions } from '@/lib/auth/use-permissions';
 import { getApiErrorMessage } from '@/lib/utils/api-error-message';
 
 const PAGE_LIMIT = 20;
@@ -36,11 +45,28 @@ function toEndOfDayIso(date: string) {
   return new Date(`${date}T23:59:59.999`).toISOString();
 }
 
+function getAdjustmentSuccessMessage(type: StockMovementType): string {
+  switch (type) {
+    case 'WASTE':
+      return 'Fire/Zayi kaydı oluşturuldu.';
+    case 'RETURN':
+      return 'İade stoğa işlendi.';
+    case 'MANUAL_ADJUSTMENT':
+      return 'Stok düzeltmesi kaydedildi.';
+    default:
+      return 'Stok düzeltmesi kaydedildi.';
+  }
+}
+
 export default function InventoryPage() {
+  const queryClient = useQueryClient();
   const { selectedOrganizationId } = useAuth();
+  const permissions = usePermissions();
 
   const [activeTab, setActiveTab] = useState<InventoryTab>('stock');
   const [branchId, setBranchId] = useState<string | undefined>();
+  const [adjustmentDialogOpen, setAdjustmentDialogOpen] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const [stockFilters, setStockFilters] = useState<StockFilterState>({
     search: '',
@@ -77,6 +103,24 @@ export default function InventoryPage() {
     movementsPagination.filterKey === movementsFilterKey ? movementsPagination.page : 1;
 
   const { branches, branchesQuery } = useAccessibleBranches({ queryKeySuffix: 'inventory' });
+
+  const adjustmentMutation = useMutation({
+    mutationFn: inventoryApi.createAdjustment,
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['inventory'] }),
+        queryClient.invalidateQueries({ queryKey: ['dashboard'] }),
+        queryClient.invalidateQueries({ queryKey: ['products'] }),
+        queryClient.invalidateQueries({ queryKey: ['recipes'] }),
+      ]);
+    },
+  });
+
+  const handleAdjustmentSubmit = async (payload: CreateStockAdjustmentPayload) => {
+    setSuccessMessage(null);
+    await adjustmentMutation.mutateAsync(payload);
+    setSuccessMessage(getAdjustmentSuccessMessage(payload.type));
+  };
 
   const ingredientsQuery = useQuery({
     queryKey: ['ingredients', selectedOrganizationId, 'inventory-filter'],
@@ -214,7 +258,19 @@ export default function InventoryPage() {
       <PageHeader
         title="Stok"
         description="Şube bazlı mevcut stokları, parti maliyetlerini ve hareket geçmişini takip edin."
+        action={
+          permissions.canCreateStockAdjustment ? (
+            <Button type="button" onClick={() => setAdjustmentDialogOpen(true)}>
+              <Plus className="h-4 w-4" />
+              Stok Düzelt
+            </Button>
+          ) : undefined
+        }
       />
+
+      {successMessage ? (
+        <SuccessAlert message={successMessage} onDismiss={() => setSuccessMessage(null)} />
+      ) : null}
 
       <InventoryOverviewCards
         totalStockValue={overviewMetrics.totalStockValue}
@@ -293,6 +349,16 @@ export default function InventoryPage() {
           ) : null}
         </CardContent>
       </Card>
+
+      {permissions.canCreateStockAdjustment ? (
+        <StockAdjustmentDialog
+          open={adjustmentDialogOpen}
+          onOpenChange={setAdjustmentDialogOpen}
+          branches={branches}
+          ingredients={ingredientsQuery.data?.data ?? []}
+          onSubmit={handleAdjustmentSubmit}
+        />
+      ) : null}
     </div>
   );
 }

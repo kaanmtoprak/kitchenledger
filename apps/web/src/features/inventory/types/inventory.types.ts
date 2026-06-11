@@ -102,3 +102,32 @@ export type StockBatchesListResponse = PaginatedResponse<StockBatchItem>;
 export type StockMovementsListResponse = PaginatedResponse<StockMovementItem>;
 
 export type InventoryTab = 'stock' | 'batches' | 'movements';
+
+export type AdjustmentDirection = 'INCREASE' | 'DECREASE';
+
+export type CreateStockAdjustmentPayload = {
+  branchId: string;
+  ingredientId: string;
+  type: Exclude<StockMovementType, 'PURCHASE' | 'PRODUCTION_CONSUMPTION'>;
+  quantity: string;
+  reason: string;
+  adjustmentDirection?: AdjustmentDirection;
+  unitCost?: string;
+  stockBatchId?: string;
+};
+
+export type StockAdjustmentResponse = {
+  type: StockMovementType;
+  branchId: string;
+  ingredientId: string;
+  quantity: string;
+  unit: string;
+  unitCost?: string;
+  stockBatchId?: string;
+  movements: Array<{
+    id: string;
+    stockBatchId: string | null;
+    quantity: string;
+    type: StockMovementType;
+  }>;
+};
