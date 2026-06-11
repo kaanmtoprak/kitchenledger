@@ -67,6 +67,10 @@ Guards applied per route:
 
 Frontend mirrors backend permissions via `permissions.ts` so UI actions match API enforcement. Branch filters and create-form selects use `accessibleBranchIds` from `/auth/me` (via `useAccessibleBranches`) so users only see branches they can access; backend guards remain authoritative.
 
+## Reports and CSV Export
+
+Reports are implemented entirely in `apps/web` — no dedicated `ReportsModule` on the API. The `/reports` page calls existing list endpoints (`/purchases`, `/productions`, `/inventory/movements`, `/orders`) with shared filters (branch, date range, tab-specific fields). Preview shows up to 50 rows; summaries and CSV export aggregate up to 1000 records via client-side pagination (`limit=100` per API page). CSV generation uses a small UTF-8 BOM utility (`lib/utils/csv.ts`) without extra dependencies.
+
 ## Inventory and Stock Movement Model
 
 1. **Purchase** creates one or more **StockBatch** records (per line item) with `unitCost` and `remainingQuantity`

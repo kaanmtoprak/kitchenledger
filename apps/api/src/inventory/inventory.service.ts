@@ -691,7 +691,9 @@ export class InventoryService {
           createdAt: true,
           branch: { select: { id: true, name: true, code: true } },
           ingredient: { select: { id: true, name: true, sku: true } },
-          stockBatch: { select: { id: true, receivedAt: true } },
+          stockBatch: {
+            select: { id: true, receivedAt: true, unitCost: true },
+          },
         },
         orderBy: { createdAt: 'desc' },
         skip: pagination.skip,
@@ -712,7 +714,13 @@ export class InventoryService {
       createdAt: row.createdAt,
       branch: row.branch,
       ingredient: row.ingredient,
-      stockBatch: row.stockBatch,
+      stockBatch: row.stockBatch
+        ? {
+            id: row.stockBatch.id,
+            receivedAt: row.stockBatch.receivedAt,
+            unitCost: serializeDecimal(row.stockBatch.unitCost),
+          }
+        : null,
     }));
 
     return buildPaginatedResponse(data, total, pagination);

@@ -5,6 +5,8 @@ Portfolyo, demo ve GitHub sunumu öncesi manuel kontrol listesi.
 
 **Son tarayıcı/API QA (Adım 30):** 2026-06 — Owner/Viewer/Manager/Staff akışları; tüm dashboard route’ları HTTP 200; branch scope ve permission kontrolleri API ile doğrulandı.
 
+**Reports QA (Adım 31):** `/reports` — 4 tab, filtreler, özet kartlar, CSV export (max 1000 kayıt), branch scope korunur; VIEWER export yapabilir.
+
 ---
 
 ## A. Kurulum Kontrolü

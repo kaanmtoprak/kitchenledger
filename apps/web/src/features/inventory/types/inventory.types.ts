@@ -67,6 +67,7 @@ export type StockMovementItem = {
   stockBatch: {
     id: string;
     receivedAt: string;
+    unitCost?: string;
   } | null;
 };
 

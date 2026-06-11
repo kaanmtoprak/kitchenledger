@@ -166,6 +166,21 @@ Quick REST reference for KitchenLedger. Not a full Swagger spec — intended for
 
 ---
 
+## Reports (frontend)
+
+There is no dedicated `/reports` API module. The web app aggregates existing filtered list endpoints client-side:
+
+| Report tab           | Source endpoint           |
+| -------------------- | ------------------------- |
+| Satın Almalar        | `GET /purchases`          |
+| Üretimler            | `GET /productions`        |
+| Stok Hareketleri     | `GET /inventory/movements`|
+| Siparişler           | `GET /orders`             |
+
+CSV export reuses the same filters with paginated fetches (`limit=100`, up to 1000 rows). Branch scope is enforced by existing list APIs and `useAccessibleBranches` on the UI.
+
+---
+
 ## Debug (development only)
 
 Registered when `NODE_ENV !== production`.

@@ -97,6 +97,16 @@ Branch filters and create forms show only branches the user can access:
 
 Backend guards remain the source of truth; unauthorized branch mutations still return 403.
 
+## Reports Demo Flow (Adım 31)
+
+1. Login as `owner@kitchenledger.app`
+2. Open **Raporlar** from the sidebar (Genel)
+3. Try each tab: **Satın Almalar**, **Üretimler**, **Stok Hareketleri**, **Siparişler**
+4. Apply branch and date filters; confirm summary cards and preview table update
+5. Click **CSV İndir** — verify Turkish column headers and UTF-8 characters in Excel
+6. Login as `viewer@kitchenledger.app` — reports show Main Kitchen scope only; CSV export allowed for visible data
+7. Login as `manager@kitchenledger.app` — branch filter shows Kadikoy only
+
 ## Browser QA (Adım 30)
 
 Full walkthrough validated via local dev (`localhost:3000` + `localhost:3001`):

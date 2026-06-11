@@ -34,6 +34,7 @@ KitchenLedger connects purchasing, inventory, recipe costing and production into
 - Production cost snapshots
 - Customer orders with branch-scoped tracking and status workflow
 - Dashboard analytics (purchases, production, low stock, recent activity)
+- Reports and CSV export (purchases, productions, stock movements, orders)
 - Demo role users for portfolio and QA scenarios
 
 ## Tech Stack

@@ -30,6 +30,10 @@ Review purchase totals, production trends, low-stock ingredients and recent acti
 
 Record branch-scoped customer orders with product line items and status tracking (`PENDING` → `DELIVERED` / `CANCELLED`). Each order creates a customer record; orders do not affect inventory or production.
 
+### Reports and CSV export
+
+Filter operational data (purchases, productions, stock movements, orders) on a single reports page and export to CSV with Turkish headers. Frontend aggregates existing list APIs; no separate analytics backend.
+
 ## Technical Highlights
 
 - Multi-tenant architecture with organization context on every API request
@@ -56,7 +60,7 @@ Built a multi-tenant SaaS platform for small food-production businesses to manag
 
 - Unit conversion (kg ↔ g, L ↔ ml)
 - Stock adjustment / reversal flow
-- Reports and export (CSV/PDF)
+- PDF export and scheduled reports
 - Subscription plans and billing
 - Advanced DB locking for concurrent stock consumption
 - Automated tests and CI/CD

@@ -7,6 +7,7 @@ import {
   ChefHat,
   ClipboardList,
   Factory,
+  FileSpreadsheet,
   LayoutDashboard,
   Package,
   ShoppingCart,
@@ -31,7 +32,10 @@ type NavGroup = {
 const navGroups: NavGroup[] = [
   {
     label: 'Genel',
-    items: [{ label: 'Panel', href: '/dashboard', icon: LayoutDashboard }],
+    items: [
+      { label: 'Panel', href: '/dashboard', icon: LayoutDashboard },
+      { label: 'Raporlar', href: '/reports', icon: FileSpreadsheet },
+    ],
   },
   {
     label: 'Operasyon',
