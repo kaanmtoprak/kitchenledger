@@ -97,6 +97,16 @@ Branch filters and create forms show only branches the user can access:
 
 Backend guards remain the source of truth; unauthorized branch mutations still return 403.
 
+## Browser QA (Adım 30)
+
+Full walkthrough validated via local dev (`localhost:3000` + `localhost:3001`):
+
+- All dashboard routes load (Panel, Şubeler, Malzemeler, Satın Almalar, Stok, Siparişler, Ürünler, Reçeteler, Üretimler)
+- Owner end-to-end: purchase → stock → order → adjustment
+- Viewer: no create/adjust/status CTAs; Main Kitchen scope only
+- Manager: Kadikoy scope only in branch selects and lists
+- Staff: Main Kitchen scope; operational mutations allowed
+
 ## Known MVP Limitations
 
 - Orders create a new customer per order; no customer management screen

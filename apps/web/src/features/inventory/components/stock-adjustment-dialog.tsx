@@ -363,11 +363,11 @@ export function StockAdjustmentDialog({
                     <Select value={field.value ?? FIFO_VALUE} onValueChange={field.onChange}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="FIFO kullan" />
+                          <SelectValue placeholder="Otomatik (FIFO)" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value={FIFO_VALUE}>FIFO kullan</SelectItem>
+                        <SelectItem value={FIFO_VALUE}>Otomatik (FIFO)</SelectItem>
                         {batchOptions.map((batch) => (
                           <SelectItem key={batch.id} value={batch.id}>
                             Parti {batch.id.slice(-6)} — Kalan:{' '}

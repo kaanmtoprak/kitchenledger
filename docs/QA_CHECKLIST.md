@@ -3,6 +3,8 @@
 Portfolyo, demo ve GitHub sunumu öncesi manuel kontrol listesi.  
 İlgili dokümanlar: [DEMO.md](DEMO.md) · [DEPLOYMENT.md](DEPLOYMENT.md) · [README](../README.md)
 
+**Son tarayıcı/API QA (Adım 30):** 2026-06 — Owner/Viewer/Manager/Staff akışları; tüm dashboard route’ları HTTP 200; branch scope ve permission kontrolleri API ile doğrulandı.
+
 ---
 
 ## A. Kurulum Kontrolü

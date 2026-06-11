@@ -45,33 +45,41 @@ export function StockMovementsTable({ items, isLoading }: StockMovementsTablePro
   }
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Tür</TableHead>
-          <TableHead>Malzeme</TableHead>
-          <TableHead>Şube</TableHead>
-          <TableHead>Miktar</TableHead>
-          <TableHead>Birim</TableHead>
-          <TableHead>Neden</TableHead>
-          <TableHead>Oluşturulma</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {items.map((item) => (
-          <TableRow key={item.id}>
-            <TableCell>
-              <Badge variant="outline">{formatMovementType(item.type)}</Badge>
-            </TableCell>
-            <TableCell className="font-medium">{item.ingredient.name}</TableCell>
-            <TableCell>{item.branch.name}</TableCell>
-            <TableCell>{formatQuantityDisplay(item.quantity)}</TableCell>
-            <TableCell>{formatUnit(item.unit)}</TableCell>
-            <TableCell>{item.reason?.trim() ? item.reason : '—'}</TableCell>
-            <TableCell>{formatDateTime(item.createdAt)}</TableCell>
+    <div className="overflow-x-auto">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Tür</TableHead>
+            <TableHead>Malzeme</TableHead>
+            <TableHead>Şube</TableHead>
+            <TableHead className="whitespace-nowrap">Miktar</TableHead>
+            <TableHead>Birim</TableHead>
+            <TableHead className="min-w-[140px]">Neden</TableHead>
+            <TableHead className="whitespace-nowrap">Oluşturulma</TableHead>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {items.map((item) => (
+            <TableRow key={item.id}>
+              <TableCell className="whitespace-nowrap">
+                <Badge variant="outline">{formatMovementType(item.type)}</Badge>
+              </TableCell>
+              <TableCell className="max-w-[140px] truncate font-medium">
+                {item.ingredient.name}
+              </TableCell>
+              <TableCell className="max-w-[120px] truncate">{item.branch.name}</TableCell>
+              <TableCell className="whitespace-nowrap">
+                {formatQuantityDisplay(item.quantity)}
+              </TableCell>
+              <TableCell className="whitespace-nowrap">{formatUnit(item.unit)}</TableCell>
+              <TableCell className="max-w-[200px] truncate">
+                {item.reason?.trim() ? item.reason : '—'}
+              </TableCell>
+              <TableCell className="whitespace-nowrap">{formatDateTime(item.createdAt)}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }
