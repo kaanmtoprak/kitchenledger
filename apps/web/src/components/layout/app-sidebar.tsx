@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import {
   Boxes,
   ChefHat,
+  ClipboardList,
   Factory,
   LayoutDashboard,
   Package,
@@ -36,6 +37,7 @@ const navGroups: NavGroup[] = [
     label: 'Operasyon',
     items: [
       { label: 'Satın Almalar', href: '/purchases', icon: ShoppingCart },
+      { label: 'Siparişler', href: '/orders', icon: ClipboardList },
       { label: 'Stok', href: '/inventory', icon: Boxes },
       { label: 'Üretimler', href: '/productions', icon: Factory },
     ],

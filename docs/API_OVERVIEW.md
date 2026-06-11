@@ -28,7 +28,7 @@ Quick REST reference for KitchenLedger. Not a full Swagger spec — intended for
 | POST   | `/auth/login`    | Login; sets refresh cookie     |
 | POST   | `/auth/refresh`  | Refresh access token (cookie)  |
 | POST   | `/auth/logout`   | Clear refresh token            |
-| GET    | `/auth/me`       | Current user and memberships   |
+| GET    | `/auth/me`       | Current user and memberships (includes `accessibleBranchIds` per org: `null` = all branches for OWNER/ADMIN) |
 
 ---
 
@@ -75,6 +75,29 @@ Quick REST reference for KitchenLedger. Not a full Swagger spec — intended for
 | POST   | `/purchases`     | Create purchase (creates stock batches) |
 | GET    | `/purchases`     | List purchases                          |
 | GET    | `/purchases/:id` | Get purchase detail                     |
+
+---
+
+## Orders
+
+| Method | Endpoint               | Description                                      |
+| ------ | ---------------------- | ------------------------------------------------ |
+| POST   | `/orders`              | Create customer order with line items            |
+| GET    | `/orders`              | List orders (branch-scoped, filterable)          |
+| GET    | `/orders/:id`          | Get order detail                                 |
+| PATCH  | `/orders/:id/status`   | Update order status                              |
+
+**List query params:** `page`, `limit`, `q`, `branchId`, `status`, `from`, `to`, `includeItems`
+
+**Roles:** Create/status — OWNER, ADMIN, BRANCH_MANAGER, STAFF. VIEWER read-only.
+
+**Order status enum:** `PENDING`, `CONFIRMED`, `IN_PRODUCTION`, `READY`, `DELIVERED`, `CANCELLED`
+
+**MVP notes:**
+
+- Each order creates a new customer record (no separate customer management module).
+- Orders do not deduct inventory or create production runs.
+- No payment, invoice or shipping integration.
 
 ---
 

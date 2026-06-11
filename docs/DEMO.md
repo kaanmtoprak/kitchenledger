@@ -31,21 +31,24 @@ All demo users share the password **`Password123!`**.
 4. Open **Products** and **Recipes**, then use **View Cost** with a branch selected
 5. Create a **Purchase** for Main Kitchen
 6. Confirm inventory stock/batches/movements updated
-7. Create a **Production** for a product with a recipe
-8. Confirm FIFO consumption in production detail and inventory movements
-9. Return to **Dashboard** and verify updated metrics
+7. Open **Orders** and review seeded demo orders (Ayşe Yılmaz / Mert Demir)
+8. Create a new **Order** with product line items and verify total amount
+9. Update order **status** from the list or detail dialog
+10. Create a **Production** for a product with a recipe
+11. Confirm FIFO consumption in production detail and inventory movements
+12. Return to **Dashboard** and verify updated metrics
 
 ## Role Testing Checklist
 
 ### Viewer (`viewer@kitchenledger.app`)
 
 - Create / Edit / Deactivate buttons should **not** appear
-- Dashboard, Inventory, Products, Recipes, Purchases, Productions remain readable
+- Dashboard, Inventory, Products, Recipes, Purchases, Orders, Productions remain readable
 - Backend still enforces authorization if a mutation is attempted manually
 
 ### Staff (`staff@kitchenledger.app`)
 
-- Can create **Purchases** and **Productions**
+- Can create **Purchases**, **Orders**, and **Productions**
 - Can create/edit **Ingredients**, **Suppliers**, **Products**, **Recipes**
 - Cannot create/edit/deactivate **Branches**
 - Cannot deactivate records (ingredients, suppliers, products)
@@ -76,8 +79,27 @@ Seeded purchases:
 
 Use these to validate branch filtering in Purchases, Inventory, Dashboard, and Productions.
 
+Seeded orders:
+
+| Order No       | Branch         | Customer     | Product              |
+| -------------- | -------------- | ------------ | -------------------- |
+| ORD-2026-0001  | Main Kitchen   | Ayşe Yılmaz  | San Sebastian (×2)   |
+| ORD-2026-0002  | Kadikoy Branch | Mert Demir   | Chocolate Cake (×1)  |
+
+## Branch select scope
+
+Branch filters and create forms show only branches the user can access:
+
+- **OWNER / ADMIN** — all organization branches
+- **BRANCH_MANAGER / STAFF / VIEWER** — only `BranchMember` branches (e.g. manager → Kadikoy only, staff/viewer → Main Kitchen only)
+
+Backend guards remain the source of truth; unauthorized branch mutations still return 403.
+
 ## Known MVP Limitations
 
+- Orders create a new customer per order; no customer management screen
+- Orders do not reduce stock or trigger production
+- No payment, invoice or delivery integration for orders
 - No unit conversion; recipe/purchase units must match ingredient `baseUnit`
 - No production update/delete; reversals would require future stock adjustment flows
 - No purchase update/delete; corrections would require stock adjustment/reversal

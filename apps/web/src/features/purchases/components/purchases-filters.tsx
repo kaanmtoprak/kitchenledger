@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { BranchFilterSelect } from '@/components/common/branch-filter-select';
 import type { Branch } from '@/features/branches/types/branch.types';
 import type { Supplier } from '@/features/suppliers/types/supplier.types';
 
@@ -25,6 +26,7 @@ type PurchasesFiltersProps = {
   filters: PurchasesFilterState;
   branches: Branch[];
   suppliers: Supplier[];
+  isBranchesLoading?: boolean;
   onChange: (filters: PurchasesFilterState) => void;
 };
 
@@ -32,6 +34,7 @@ export function PurchasesFilters({
   filters,
   branches,
   suppliers,
+  isBranchesLoading,
   onChange,
 }: PurchasesFiltersProps) {
   return (
@@ -47,27 +50,12 @@ export function PurchasesFilters({
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <div>
-          <Label className="mb-2 block text-xs text-muted-foreground">Şube</Label>
-          <Select
-            value={filters.branchId ?? 'all'}
-            onValueChange={(value) =>
-              onChange({ ...filters, branchId: value === 'all' ? undefined : value })
-            }
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Tüm Şubeler" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tüm Şubeler</SelectItem>
-              {branches.map((branch) => (
-                <SelectItem key={branch.id} value={branch.id}>
-                  {branch.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <BranchFilterSelect
+          value={filters.branchId}
+          branches={branches}
+          isLoading={isBranchesLoading}
+          onChange={(branchId) => onChange({ ...filters, branchId })}
+        />
 
         <div>
           <Label className="mb-2 block text-xs text-muted-foreground">Tedarikçi</Label>

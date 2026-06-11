@@ -9,7 +9,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { PageHeader } from '@/components/common/page-header';
 import { SuccessAlert } from '@/components/common/success-alert';
 import { TablePagination } from '@/components/common/table-pagination';
-import { branchesApi } from '@/features/branches/api/branches.api';
 import { productsApi } from '@/features/products/api/products.api';
 import { productionsApi } from '@/features/productions/api/productions.api';
 import { ProductionDetailDialog } from '@/features/productions/components/production-detail-dialog';
@@ -21,6 +20,7 @@ import {
 import { ProductionsTable } from '@/features/productions/components/productions-table';
 import type { ProductionFormValues } from '@/features/productions/schemas/production.schemas';
 import type { ProductionListItem } from '@/features/productions/types/production.types';
+import { useAccessibleBranches } from '@/lib/hooks/use-accessible-branches';
 import { useDebouncedValue } from '@/lib/hooks/use-debounced-value';
 import { useAuth } from '@/lib/auth/use-auth';
 import { usePermissions } from '@/lib/auth/use-permissions';
@@ -85,11 +85,7 @@ export default function ProductionsPage() {
     enabled: Boolean(selectedOrganizationId),
   });
 
-  const branchesQuery = useQuery({
-    queryKey: ['branches', selectedOrganizationId, 'productions-form'],
-    queryFn: () => branchesApi.list({ page: 1, limit: 100 }),
-    enabled: Boolean(selectedOrganizationId),
-  });
+  const { branches, branchesQuery } = useAccessibleBranches({ queryKeySuffix: 'productions' });
 
   const productsQuery = useQuery({
     queryKey: ['products', selectedOrganizationId, 'productions-form'],
@@ -152,7 +148,8 @@ export default function ProductionsPage() {
         <CardContent className="space-y-6 pt-6">
           <ProductionsFilters
             filters={filters}
-            branches={branchesQuery.data?.data ?? []}
+            branches={branches}
+            isBranchesLoading={branchesQuery.isLoading}
             products={productsQuery.data?.data ?? []}
             onChange={setFilters}
           />
@@ -181,7 +178,7 @@ export default function ProductionsPage() {
         <ProductionFormDialog
           open={createDialogOpen}
           onOpenChange={setCreateDialogOpen}
-          branches={branchesQuery.data?.data ?? []}
+          branches={branches}
           products={productsQuery.data?.data ?? []}
           onSubmit={handleCreateSubmit}
         />

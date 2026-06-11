@@ -1,4 +1,5 @@
 import type { BaseUnit } from '@/features/ingredients/types/ingredient.types';
+import type { OrderStatus } from '@/features/orders/types/order.types';
 
 const baseUnitLabels: Record<BaseUnit, string> = {
   GRAM: 'Gram',
@@ -78,6 +79,28 @@ export function formatDate(value: string | Date): string {
   return new Intl.DateTimeFormat('tr-TR', {
     dateStyle: 'medium',
   }).format(parsed);
+}
+
+const orderStatusLabels: Record<OrderStatus, string> = {
+  PENDING: 'Beklemede',
+  CONFIRMED: 'Onaylandı',
+  IN_PRODUCTION: 'Hazırlanıyor',
+  READY: 'Hazır',
+  DELIVERED: 'Tamamlandı',
+  CANCELLED: 'İptal Edildi',
+};
+
+export const ORDER_STATUS_OPTIONS: OrderStatus[] = [
+  'PENDING',
+  'CONFIRMED',
+  'IN_PRODUCTION',
+  'READY',
+  'DELIVERED',
+  'CANCELLED',
+];
+
+export function formatOrderStatus(status: OrderStatus | string): string {
+  return orderStatusLabels[status as OrderStatus] ?? status;
 }
 
 export function formatQuantityDisplay(value: string | null | undefined): string {

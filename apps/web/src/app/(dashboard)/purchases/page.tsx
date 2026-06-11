@@ -9,7 +9,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { PageHeader } from '@/components/common/page-header';
 import { SuccessAlert } from '@/components/common/success-alert';
 import { TablePagination } from '@/components/common/table-pagination';
-import { branchesApi } from '@/features/branches/api/branches.api';
 import { ingredientsApi } from '@/features/ingredients/api/ingredients.api';
 import { purchasesApi } from '@/features/purchases/api/purchases.api';
 import { PurchaseDetailDialog } from '@/features/purchases/components/purchase-detail-dialog';
@@ -22,6 +21,7 @@ import { PurchasesTable } from '@/features/purchases/components/purchases-table'
 import type { PurchaseFormValues } from '@/features/purchases/schemas/purchase.schemas';
 import type { PurchaseListItem } from '@/features/purchases/types/purchase.types';
 import { suppliersApi } from '@/features/suppliers/api/suppliers.api';
+import { useAccessibleBranches } from '@/lib/hooks/use-accessible-branches';
 import { useDebouncedValue } from '@/lib/hooks/use-debounced-value';
 import { useAuth } from '@/lib/auth/use-auth';
 import { usePermissions } from '@/lib/auth/use-permissions';
@@ -87,11 +87,7 @@ export default function PurchasesPage() {
     enabled: Boolean(selectedOrganizationId),
   });
 
-  const branchesQuery = useQuery({
-    queryKey: ['branches', selectedOrganizationId, 'purchases-form'],
-    queryFn: () => branchesApi.list({ page: 1, limit: 100 }),
-    enabled: Boolean(selectedOrganizationId),
-  });
+  const { branches, branchesQuery } = useAccessibleBranches({ queryKeySuffix: 'purchases' });
 
   const suppliersQuery = useQuery({
     queryKey: ['suppliers', selectedOrganizationId, 'purchases-form'],
@@ -118,11 +114,11 @@ export default function PurchasesPage() {
 
   const branchNameById = useMemo(() => {
     const map: Record<string, string> = {};
-    for (const branch of branchesQuery.data?.data ?? []) {
+    for (const branch of branches) {
       map[branch.id] = branch.name;
     }
     return map;
-  }, [branchesQuery.data]);
+  }, [branches]);
 
   const supplierNameById = useMemo(() => {
     const map: Record<string, string> = {};
@@ -178,7 +174,8 @@ export default function PurchasesPage() {
         <CardContent className="space-y-6 pt-6">
           <PurchasesFilters
             filters={filters}
-            branches={branchesQuery.data?.data ?? []}
+            branches={branches}
+            isBranchesLoading={branchesQuery.isLoading}
             suppliers={suppliersQuery.data?.data ?? []}
             onChange={setFilters}
           />
@@ -209,7 +206,7 @@ export default function PurchasesPage() {
         <PurchaseFormDialog
           open={createDialogOpen}
           onOpenChange={setCreateDialogOpen}
-          branches={branchesQuery.data?.data ?? []}
+          branches={branches}
           suppliers={suppliersQuery.data?.data ?? []}
           ingredients={ingredientsQuery.data?.data ?? []}
           onSubmit={handleCreateSubmit}

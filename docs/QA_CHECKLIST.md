@@ -63,22 +63,26 @@ Tüm demo kullanıcılar için şifre: **`Password123!`**
 
 - [ ] Şube yönetimi (Yeni Şube) görünmüyor
 - [ ] Pasife Al aksiyonları görünmüyor
-- [ ] Satın alma ve üretim oluşturabiliyor
+- [ ] Satın alma, sipariş ve üretim oluşturabiliyor
 - [ ] Kadikoy şube kapsamındaki veriler görünüyor
-- [ ] Main Kitchen satın alma/üretim kayıtları branch filtreli listelerde görünmüyor
+- [ ] Main Kitchen satın alma/üretim/sipariş kayıtları branch filtreli listelerde görünmüyor
+- [ ] Şube filtre/create select’lerinde sadece Kadikoy görünür
 
 ### STAFF (`staff@kitchenledger.app`)
 
-- [ ] Satın alma ve üretim oluşturabiliyor
+- [ ] Satın alma, sipariş ve üretim oluşturabiliyor
 - [ ] Malzeme/tedarikçi/ürün/reçete oluşturma/düzenleme erişilebilir
 - [ ] Şube yönetimi görünmüyor
 - [ ] Pasife Al aksiyonları görünmüyor
 - [ ] Main Kitchen kapsamındaki veriler görünüyor
+- [ ] Şube filtre/create select’lerinde sadece Main Kitchen görünür
 
 ### VIEWER (`viewer@kitchenledger.app`)
 
 - [ ] Oluştur / Düzenle / Pasife Al butonları görünmüyor
-- [ ] Panel, Stok, Ürünler, Reçeteler, Satın Almalar, Üretimler okunabilir
+- [ ] Panel, Stok, Ürünler, Reçeteler, Satın Almalar, Siparişler, Üretimler okunabilir
+- [ ] Siparişler sayfasında Yeni Sipariş ve durum güncelleme görünmüyor
+- [ ] Sadece Main Kitchen siparişi görünür (ORD-2026-0001); Kadikoy siparişi görünmez
 - [ ] Mutation denemesi API tarafında engelleniyor (UI’da buton yok)
 
 ---
@@ -91,12 +95,14 @@ Owner veya Admin ile giriş yapın:
 2. [ ] **Tedarikçi oluştur** — `/suppliers`
 3. [ ] **Satın alma oluştur** — `/purchases` (kalem ekle, kaydet)
 4. [ ] **Stok özetinde artış** — `/inventory` → Stok Özeti / Stok Partileri
-5. [ ] **Ürün oluştur** — `/products`
-6. [ ] **Reçete oluştur** — `/recipes`
-7. [ ] **Reçete maliyetini görüntüle** — Maliyeti Gör + şube seç
-8. [ ] **Üretim oluştur** — `/productions`
-9. [ ] **FIFO tüketim** — Üretim detayında partiler ve maliyet kaydı
-10. [ ] **Panel ve Stok güncellendi** — `/dashboard` ve `/inventory`
+5. [ ] **Sipariş oluştur** — `/orders` (müşteri + ürün kalemleri, toplam kontrol)
+6. [ ] **Sipariş durumu güncelle** — Liste veya detaydan
+7. [ ] **Ürün oluştur** — `/products`
+8. [ ] **Reçete oluştur** — `/recipes`
+9. [ ] **Reçete maliyetini görüntüle** — Maliyeti Gör + şube seç
+10. [ ] **Üretim oluştur** — `/productions`
+11. [ ] **FIFO tüketim** — Üretim detayında partiler ve maliyet kaydı
+12. [ ] **Panel ve Stok güncellendi** — `/dashboard` ve `/inventory`
 
 ---
 

@@ -10,6 +10,7 @@ import {
 import { Button } from '@/components/ui/button';
 import type { Branch } from '@/features/branches/types/branch.types';
 import type { DashboardDateRangePreset, DashboardFilters } from '../types/dashboard.types';
+import { NO_ACCESSIBLE_BRANCHES_MESSAGE } from '@/lib/branches/accessible-branches';
 import { cn } from '@/lib/utils';
 
 const presetOptions: { value: DashboardDateRangePreset; label: string }[] = [
@@ -56,13 +57,17 @@ export function DashboardFiltersBar({
               branchId: value === 'all' ? undefined : value,
             })
           }
-          disabled={isBranchesLoading}
+          disabled={isBranchesLoading || branches.length === 0}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Tüm Şubeler" />
+            <SelectValue
+              placeholder={
+                branches.length === 0 ? NO_ACCESSIBLE_BRANCHES_MESSAGE : 'Tüm Şubeler'
+              }
+            />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Tüm Şubeler</SelectItem>
+            {branches.length > 0 ? <SelectItem value="all">Tüm Şubeler</SelectItem> : null}
             {branches.map((branch) => (
               <SelectItem key={branch.id} value={branch.id}>
                 {branch.name}

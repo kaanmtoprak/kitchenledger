@@ -8,6 +8,7 @@ import { DebugModule } from './debug/debug.module';
 import { HealthModule } from './health/health.module';
 import { IngredientsModule } from './ingredients/ingredients.module';
 import { InventoryModule } from './inventory/inventory.module';
+import { OrdersModule } from './orders/orders.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ProductionsModule } from './productions/productions.module';
 import { ProductsModule } from './products/products.module';
@@ -28,6 +29,7 @@ const devOnlyModules = env.isProduction ? [] : [DebugModule];
     SuppliersModule,
     IngredientsModule,
     PurchasesModule,
+    OrdersModule,
     InventoryModule,
     ProductsModule,
     RecipesModule,

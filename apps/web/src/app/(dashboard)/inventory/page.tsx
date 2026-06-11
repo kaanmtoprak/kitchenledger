@@ -6,7 +6,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
 import { PageHeader } from '@/components/common/page-header';
 import { TablePagination } from '@/components/common/table-pagination';
-import { branchesApi } from '@/features/branches/api/branches.api';
 import { ingredientsApi } from '@/features/ingredients/api/ingredients.api';
 import { inventoryApi } from '@/features/inventory/api/inventory.api';
 import {
@@ -21,6 +20,7 @@ import { StockBatchesTable } from '@/features/inventory/components/stock-batches
 import { StockMovementsTable } from '@/features/inventory/components/stock-movements-table';
 import { StockSummaryTable } from '@/features/inventory/components/stock-summary-table';
 import type { InventoryTab } from '@/features/inventory/types/inventory.types';
+import { useAccessibleBranches } from '@/lib/hooks/use-accessible-branches';
 import { useDebouncedValue } from '@/lib/hooks/use-debounced-value';
 import { useAuth } from '@/lib/auth/use-auth';
 import { getApiErrorMessage } from '@/lib/utils/api-error-message';
@@ -76,11 +76,7 @@ export default function InventoryPage() {
   const movementsPage =
     movementsPagination.filterKey === movementsFilterKey ? movementsPagination.page : 1;
 
-  const branchesQuery = useQuery({
-    queryKey: ['branches', selectedOrganizationId, 'inventory-filter'],
-    queryFn: () => branchesApi.list({ page: 1, limit: 100 }),
-    enabled: Boolean(selectedOrganizationId),
-  });
+  const { branches, branchesQuery } = useAccessibleBranches({ queryKeySuffix: 'inventory' });
 
   const ingredientsQuery = useQuery({
     queryKey: ['ingredients', selectedOrganizationId, 'inventory-filter'],
@@ -235,7 +231,8 @@ export default function InventoryPage() {
           <InventoryFilters
             activeTab={activeTab}
             branchId={branchId}
-            branches={branchesQuery.data?.data ?? []}
+            branches={branches}
+            isBranchesLoading={branchesQuery.isLoading}
             ingredients={ingredientsQuery.data?.data ?? []}
             stockFilters={stockFilters}
             batchesFilters={batchesFilters}

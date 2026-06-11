@@ -12,31 +12,30 @@ import {
 } from '@/components/ui/select';
 import { BranchFilterSelect } from '@/components/common/branch-filter-select';
 import type { Branch } from '@/features/branches/types/branch.types';
-import type { Product } from '@/features/products/types/product.types';
+import { ORDER_STATUS_OPTIONS, formatOrderStatus } from '@/lib/utils/display';
+import type { OrderStatus } from '../types/order.types';
 
-export type ProductionsFilterState = {
+export type OrdersFilterState = {
   search: string;
   branchId?: string;
-  productId?: string;
+  status?: OrderStatus;
   from: string;
   to: string;
 };
 
-type ProductionsFiltersProps = {
-  filters: ProductionsFilterState;
+type OrdersFiltersProps = {
+  filters: OrdersFilterState;
   branches: Branch[];
-  products: Product[];
   isBranchesLoading?: boolean;
-  onChange: (filters: ProductionsFilterState) => void;
+  onChange: (filters: OrdersFilterState) => void;
 };
 
-export function ProductionsFilters({
+export function OrdersFilters({
   filters,
   branches,
-  products,
   isBranchesLoading,
   onChange,
-}: ProductionsFiltersProps) {
+}: OrdersFiltersProps) {
   return (
     <div className="space-y-4">
       <div className="relative w-full lg:max-w-sm">
@@ -44,7 +43,7 @@ export function ProductionsFilters({
         <Input
           value={filters.search}
           onChange={(event) => onChange({ ...filters, search: event.target.value })}
-          placeholder="Ürün adı veya ürün koduna göre ara..."
+          placeholder="Müşteri, telefon veya sipariş no ara"
           className="pl-9"
         />
       </div>
@@ -58,21 +57,24 @@ export function ProductionsFilters({
         />
 
         <div>
-          <Label className="mb-2 block text-xs text-muted-foreground">Ürün</Label>
+          <Label className="mb-2 block text-xs text-muted-foreground">Durum</Label>
           <Select
-            value={filters.productId ?? 'all'}
+            value={filters.status ?? 'all'}
             onValueChange={(value) =>
-              onChange({ ...filters, productId: value === 'all' ? undefined : value })
+              onChange({
+                ...filters,
+                status: value === 'all' ? undefined : (value as OrderStatus),
+              })
             }
           >
             <SelectTrigger>
-              <SelectValue placeholder="Tüm ürünler" />
+              <SelectValue placeholder="Tüm durumlar" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Tüm ürünler</SelectItem>
-              {products.map((product) => (
-                <SelectItem key={product.id} value={product.id}>
-                  {product.name} ({product.sku})
+              <SelectItem value="all">Tüm durumlar</SelectItem>
+              {ORDER_STATUS_OPTIONS.map((status) => (
+                <SelectItem key={status} value={status}>
+                  {formatOrderStatus(status)}
                 </SelectItem>
               ))}
             </SelectContent>

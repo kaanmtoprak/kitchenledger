@@ -26,6 +26,10 @@ Run production for a branch → oldest stock batches are consumed first → cons
 
 Review purchase totals, production trends, low-stock ingredients and recent activity across branches.
 
+### Customer orders (MVP)
+
+Record branch-scoped customer orders with product line items and status tracking (`PENDING` → `DELIVERED` / `CANCELLED`). Each order creates a customer record; orders do not affect inventory or production.
+
 ## Technical Highlights
 
 - Multi-tenant architecture with organization context on every API request
@@ -42,7 +46,7 @@ Review purchase totals, production trends, low-stock ingredients and recent acti
 
 ## Portfolio Summary
 
-Built a multi-tenant SaaS platform for small food-production businesses to manage ingredient inventory, supplier-based purchase costs, recipe costing and FIFO production consumption. The system supports branch-level stock tracking, role-based access control, production cost snapshots and dashboard analytics.
+Built a multi-tenant SaaS platform for small food-production businesses to manage ingredient inventory, supplier-based purchase costs, recipe costing, customer orders and FIFO production consumption. The system supports branch-level stock tracking, role-based access control, production cost snapshots and dashboard analytics.
 
 **One-liner:** Multi-tenant inventory and costing SaaS for bakeries and cafes — purchases, FIFO production, recipe costing and branch analytics.
 
@@ -50,7 +54,6 @@ Built a multi-tenant SaaS platform for small food-production businesses to manag
 
 ## Future Improvements
 
-- Orders module
 - Unit conversion (kg ↔ g, L ↔ ml)
 - Stock adjustment / reversal flow
 - Reports and export (CSV/PDF)

@@ -32,6 +32,7 @@ KitchenLedger connects purchasing, inventory, recipe costing and production into
 - Branch-specific recipe cost calculation (weighted average)
 - FIFO production consumption
 - Production cost snapshots
+- Customer orders with branch-scoped tracking and status workflow
 - Dashboard analytics (purchases, production, low stock, recent activity)
 - Demo role users for portfolio and QA scenarios
 

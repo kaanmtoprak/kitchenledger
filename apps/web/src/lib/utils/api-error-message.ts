@@ -27,6 +27,10 @@ const exactMessages: Record<string, string> = {
   'No access to this branch': 'Bu şubeye erişim yetkiniz yok.',
   'No access to this organization': 'Bu işletmeye erişim yetkiniz yok.',
   'One or more ingredients not found': 'Bir veya daha fazla malzeme bulunamadı.',
+  'Order not found': 'Sipariş bulunamadı.',
+  'Duplicate product in order items': 'Aynı ürün birden fazla kez eklenemez.',
+  'Invalid quantity or unit price': 'Miktar veya birim fiyat geçersiz.',
+  'One or more products not found': 'Bir veya daha fazla ürün bulunamadı.',
 };
 
 function translateInsufficientStock(message: string): string | null {

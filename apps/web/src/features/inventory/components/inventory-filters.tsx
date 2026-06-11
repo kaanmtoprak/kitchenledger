@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { BranchFilterSelect } from '@/components/common/branch-filter-select';
 import type { Branch } from '@/features/branches/types/branch.types';
 import type { Ingredient } from '@/features/ingredients/types/ingredient.types';
 import type { InventoryTab, StockMovementType } from '../types/inventory.types';
@@ -44,6 +45,7 @@ type InventoryFiltersProps = {
   activeTab: InventoryTab;
   branchId?: string;
   branches: Branch[];
+  isBranchesLoading?: boolean;
   ingredients: Ingredient[];
   stockFilters: StockFilterState;
   batchesFilters: BatchesFilterState;
@@ -58,6 +60,7 @@ export function InventoryFilters({
   activeTab,
   branchId,
   branches,
+  isBranchesLoading,
   ingredients,
   stockFilters,
   batchesFilters,
@@ -70,25 +73,12 @@ export function InventoryFilters({
   return (
     <div className="space-y-4">
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <div>
-          <Label className="mb-2 block text-xs text-muted-foreground">Şube</Label>
-          <Select
-            value={branchId ?? 'all'}
-            onValueChange={(value) => onBranchChange(value === 'all' ? undefined : value)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Tüm Şubeler" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tüm Şubeler</SelectItem>
-              {branches.map((branch) => (
-                <SelectItem key={branch.id} value={branch.id}>
-                  {branch.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <BranchFilterSelect
+          value={branchId}
+          branches={branches}
+          isLoading={isBranchesLoading}
+          onChange={onBranchChange}
+        />
       </div>
 
       {activeTab === 'stock' ? (

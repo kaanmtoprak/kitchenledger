@@ -23,6 +23,7 @@ Shared config packages (`eslint-config`, `typescript-config`) keep lint and TS s
 | **Inventory**              | Stock summary, batches, movement audit trail                                 |
 | **Products / Recipes**     | Product catalog, recipe definitions, branch-specific cost preview            |
 | **Productions**            | Production runs, FIFO consumption, immutable cost snapshots                  |
+| **Orders**                 | Customer orders with line items, status workflow; MVP creates customer per order (no stock/production side effects) |
 | **Dashboard**              | Aggregated analytics — summary, low stock, trends, recent activity           |
 | **Health**                 | `/health` (DB readiness), `/health/live` (liveness)                          |
 
@@ -44,6 +45,7 @@ User ── OrganizationMember ── Organization
                                   ├── Branch ── BranchMember
                                   ├── Ingredient, Supplier, Product, Recipe
                                   ├── Purchase ── StockBatch ── StockMovement
+                                  ├── Order ── Customer, OrderItem (no stock link in MVP)
                                   └── Production ── ProductionConsumption
 ```
 
@@ -63,7 +65,7 @@ Guards applied per route:
 - **RolesGuard** — enforces `@Roles(...)` decorator when present
 - **BranchAccessGuard** — ensures the user can access the requested branch
 
-Frontend mirrors backend permissions via `permissions.ts` so UI actions match API enforcement.
+Frontend mirrors backend permissions via `permissions.ts` so UI actions match API enforcement. Branch filters and create-form selects use `accessibleBranchIds` from `/auth/me` (via `useAccessibleBranches`) so users only see branches they can access; backend guards remain authoritative.
 
 ## Inventory and Stock Movement Model
 

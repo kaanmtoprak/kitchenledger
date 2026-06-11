@@ -15,6 +15,8 @@ export type Membership = {
   organizationId: string;
   role: string;
   organization: Organization;
+  /** null = OWNER/ADMIN, all organization branches */
+  accessibleBranchIds: string[] | null;
 };
 
 export type LoginResponse = {

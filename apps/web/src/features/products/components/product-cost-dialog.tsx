@@ -4,18 +4,11 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { branchesApi } from '@/features/branches/api/branches.api';
-import type { Branch } from '@/features/branches/types/branch.types';
+import { BranchFormSelect } from '@/components/common/branch-form-select';
 import { CostBreakdown } from '@/features/recipes/components/cost-breakdown';
 import { useAuth } from '@/lib/auth/use-auth';
+import { useAccessibleBranches } from '@/lib/hooks/use-accessible-branches';
 import { ApiError } from '@/lib/api/api-error';
 import { getApiErrorMessage } from '@/lib/utils/api-error-message';
 import { productsApi } from '../api/products.api';
@@ -31,13 +24,7 @@ export function ProductCostDialog({ product, open, onOpenChange }: ProductCostDi
   const { selectedOrganizationId } = useAuth();
   const [branchId, setBranchId] = useState('');
 
-  const branchesQuery = useQuery({
-    queryKey: ['branches', selectedOrganizationId, 'product-cost'],
-    queryFn: () => branchesApi.list({ page: 1, limit: 100 }),
-    enabled: Boolean(open && selectedOrganizationId),
-  });
-
-  const branches = branchesQuery.data?.data ?? [];
+  const { branches, branchesQuery } = useAccessibleBranches({ queryKeySuffix: 'product-cost' });
 
   const costQuery = useQuery({
     queryKey: ['products', 'cost', selectedOrganizationId, product?.id, branchId],
@@ -71,18 +58,12 @@ export function ProductCostDialog({ product, open, onOpenChange }: ProductCostDi
         <div className="space-y-4">
           <div>
             <p className="mb-2 text-sm font-medium">Şube</p>
-            <Select value={branchId} onValueChange={setBranchId}>
-              <SelectTrigger>
-                <SelectValue placeholder="Şube seçin" />
-              </SelectTrigger>
-              <SelectContent>
-                {branches.map((branch: Branch) => (
-                  <SelectItem key={branch.id} value={branch.id}>
-                    {branch.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <BranchFormSelect
+              value={branchId}
+              branches={branches}
+              isLoading={branchesQuery.isLoading}
+              onChange={setBranchId}
+            />
           </div>
 
           {!branchId ? (

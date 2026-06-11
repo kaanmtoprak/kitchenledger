@@ -24,57 +24,47 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { BranchFormSelect } from '@/components/common/branch-form-select';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import type { Branch } from '@/features/branches/types/branch.types';
-import type { Ingredient } from '@/features/ingredients/types/ingredient.types';
-import type { Supplier } from '@/features/suppliers/types/supplier.types';
+import type { Product } from '@/features/products/types/product.types';
 import { getApiErrorMessage } from '@/lib/utils/api-error-message';
 import { formatCurrency } from '@/lib/utils/display';
-import { PurchaseItemsFieldArray } from './purchase-items-field-array';
+import { OrderItemsFieldArray } from './order-items-field-array';
 import {
-  defaultPurchaseFormValues,
-  purchaseFormSchema,
-  type PurchaseFormValues,
-} from '../schemas/purchase.schemas';
-import { calculateItemsTotal } from '../types/purchase.types';
+  defaultOrderFormValues,
+  orderFormSchema,
+  type OrderFormValues,
+} from '../schemas/order.schemas';
+import { calculateOrderItemsTotal } from '../types/order.types';
 
-type PurchaseFormDialogProps = {
+type OrderFormDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   branches: Branch[];
-  suppliers: Supplier[];
-  ingredients: Ingredient[];
-  onSubmit: (values: PurchaseFormValues) => Promise<void>;
+  products: Product[];
+  onSubmit: (values: OrderFormValues) => Promise<void>;
 };
 
-export function PurchaseFormDialog({
+export function OrderFormDialog({
   open,
   onOpenChange,
   branches,
-  suppliers,
-  ingredients,
+  products,
   onSubmit,
-}: PurchaseFormDialogProps) {
+}: OrderFormDialogProps) {
   const [error, setError] = useState<string | null>(null);
 
-  const form = useForm<PurchaseFormValues>({
-    resolver: zodResolver(purchaseFormSchema),
-    defaultValues: defaultPurchaseFormValues,
+  const form = useForm<OrderFormValues>({
+    resolver: zodResolver(orderFormSchema),
+    defaultValues: defaultOrderFormValues,
   });
 
   const watchedItems = form.watch('items');
 
   const summary = useMemo(
     () => ({
-      itemCount: watchedItems.filter((item) => item.ingredientId).length,
-      totalCost: calculateItemsTotal(
-        watchedItems.filter((item) => item.ingredientId && item.totalPrice),
+      itemCount: watchedItems.filter((item) => item.productId).length,
+      total: calculateOrderItemsTotal(
+        watchedItems.filter((item) => item.productId && item.quantity && item.unitPrice),
       ),
     }),
     [watchedItems],
@@ -82,21 +72,21 @@ export function PurchaseFormDialog({
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (nextOpen) {
-      form.reset(defaultPurchaseFormValues);
+      form.reset(defaultOrderFormValues);
     } else {
       setError(null);
-      form.reset(defaultPurchaseFormValues);
+      form.reset(defaultOrderFormValues);
     }
     onOpenChange(nextOpen);
   };
 
-  const handleSubmit = async (values: PurchaseFormValues) => {
+  const handleSubmit = async (values: OrderFormValues) => {
     setError(null);
     try {
       await onSubmit(values);
       handleOpenChange(false);
     } catch (err) {
-      setError(getApiErrorMessage(err, 'Satın alma oluşturulamadı.'));
+      setError(getApiErrorMessage(err, 'Sipariş oluşturulamadı.'));
     }
   };
 
@@ -104,7 +94,7 @@ export function PurchaseFormDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
         <DialogHeader>
-          <DialogTitle>Satın Alma Oluştur</DialogTitle>
+          <DialogTitle>Yeni Sipariş</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
@@ -129,7 +119,7 @@ export function PurchaseFormDialog({
                         onChange={field.onChange}
                       />
                     </FormControl>
-                    <FormDescription>Stok bu şube altında takip edilir.</FormDescription>
+                    <FormDescription>Sipariş bu şube altında takip edilir.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -137,29 +127,13 @@ export function PurchaseFormDialog({
 
               <FormField
                 control={form.control}
-                name="supplierId"
+                name="customerName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Tedarikçi</FormLabel>
-                    <Select
-                      value={field.value || 'none'}
-                      onValueChange={(value) => field.onChange(value === 'none' ? '' : value)}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Tedarikçi Yok" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="none">Tedarikçi Yok</SelectItem>
-                        {suppliers.map((supplier) => (
-                          <SelectItem key={supplier.id} value={supplier.id}>
-                            {supplier.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormDescription>Tedarikçi seçimi maliyet analizi için kullanılır.</FormDescription>
+                    <FormLabel>Müşteri adı</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Ayşe Yılmaz" />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -167,10 +141,38 @@ export function PurchaseFormDialog({
 
               <FormField
                 control={form.control}
-                name="purchasedAt"
+                name="customerPhone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Satın Alma Tarihi</FormLabel>
+                    <FormLabel>Telefon</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="+90 5xx xxx xx xx" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="customerEmail"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>E-posta</FormLabel>
+                    <FormControl>
+                      <Input {...field} type="email" placeholder="musteri@example.com" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="orderedAt"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Sipariş tarihi</FormLabel>
                     <FormControl>
                       <Input type="datetime-local" {...field} />
                     </FormControl>
@@ -181,13 +183,16 @@ export function PurchaseFormDialog({
 
               <FormField
                 control={form.control}
-                name="invoiceNumber"
+                name="dueAt"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Fatura Numarası</FormLabel>
+                    <FormLabel>Teslim tarihi</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="INV-1001" />
+                      <Input type="datetime-local" {...field} />
                     </FormControl>
+                    <FormDescription>
+                      Opsiyoneldir; sipariş takibi için kullanılabilir.
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -210,16 +215,16 @@ export function PurchaseFormDialog({
 
             <div className="space-y-2">
               <p className="text-sm text-muted-foreground">
-                Her malzeme için satın alınan miktar ve toplam tutarı girin.
+                Her ürün için miktar ve satış fiyatını girin.
               </p>
-              <PurchaseItemsFieldArray form={form} ingredients={ingredients} />
+              <OrderItemsFieldArray form={form} products={products} />
             </div>
 
             <div className="rounded-lg border bg-muted/30 p-4">
               <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
                 <span>{summary.itemCount} kalem</span>
                 <span className="font-medium">
-                  Toplam satın alma maliyeti: {formatCurrency(summary.totalCost)}
+                  Genel toplam: {formatCurrency(summary.total)}
                 </span>
               </div>
             </div>
@@ -229,7 +234,7 @@ export function PurchaseFormDialog({
                 Vazgeç
               </Button>
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? 'Oluşturuluyor...' : 'Satın alma oluştur'}
+                {form.formState.isSubmitting ? 'Oluşturuluyor...' : 'Sipariş oluştur'}
               </Button>
             </DialogFooter>
           </form>

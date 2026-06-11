@@ -1,4 +1,10 @@
-import { BaseUnit, PrismaClient, Role, StockMovementType } from '@prisma/client';
+import {
+  BaseUnit,
+  OrderStatus,
+  PrismaClient,
+  Role,
+  StockMovementType,
+} from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime/library';
 
 const prisma = new PrismaClient();
@@ -142,6 +148,58 @@ async function createPurchaseWithStock(params: {
   }
 
   return purchase;
+}
+
+async function createDemoOrder(params: {
+  organizationId: string;
+  branchId: string;
+  orderNumber: string;
+  status: OrderStatus;
+  customer: { name: string; phone?: string; email?: string };
+  orderedAt: Date;
+  dueDate?: Date;
+  notes?: string;
+  items: Array<{
+    productId: string;
+    quantity: Decimal;
+    unitPrice: Decimal;
+  }>;
+}) {
+  const itemRows = params.items.map((item) => ({
+    productId: item.productId,
+    quantity: item.quantity,
+    unitPrice: item.unitPrice,
+    totalPrice: item.quantity.mul(item.unitPrice),
+  }));
+
+  const totalAmount = itemRows.reduce(
+    (sum, item) => sum.add(item.totalPrice),
+    new Decimal(0),
+  );
+
+  const customer = await prisma.customer.create({
+    data: {
+      organizationId: params.organizationId,
+      name: params.customer.name,
+      phone: params.customer.phone ?? null,
+      email: params.customer.email ?? null,
+    },
+  });
+
+  return prisma.order.create({
+    data: {
+      organizationId: params.organizationId,
+      branchId: params.branchId,
+      customerId: customer.id,
+      orderNumber: params.orderNumber,
+      status: params.status,
+      totalAmount,
+      orderedAt: params.orderedAt,
+      dueDate: params.dueDate ?? null,
+      notes: params.notes ?? null,
+      items: { create: itemRows },
+    },
+  });
 }
 
 async function main() {
@@ -413,6 +471,48 @@ async function main() {
     ],
   });
 
+  const mainKitchenOrder = await createDemoOrder({
+    organizationId: organization.id,
+    branchId: mainKitchen.id,
+    orderNumber: 'ORD-2026-0001',
+    status: OrderStatus.CONFIRMED,
+    customer: {
+      name: 'Ayşe Yılmaz',
+      phone: '+90 532 111 2233',
+      email: 'ayse.yilmaz@example.com',
+    },
+    orderedAt: new Date('2026-06-04T11:00:00.000Z'),
+    dueDate: new Date('2026-06-05T14:00:00.000Z'),
+    notes: 'Doğum günü siparişi',
+    items: [
+      {
+        productId: sanSebastian.id,
+        quantity: new Decimal(2),
+        unitPrice: new Decimal(450),
+      },
+    ],
+  });
+
+  const kadikoyOrder = await createDemoOrder({
+    organizationId: organization.id,
+    branchId: kadikoyBranch.id,
+    orderNumber: 'ORD-2026-0002',
+    status: OrderStatus.IN_PRODUCTION,
+    customer: {
+      name: 'Mert Demir',
+      phone: '+90 533 444 5566',
+    },
+    orderedAt: new Date('2026-06-05T09:30:00.000Z'),
+    dueDate: new Date('2026-06-06T12:00:00.000Z'),
+    items: [
+      {
+        productId: chocolateCake.id,
+        quantity: new Decimal(1),
+        unitPrice: new Decimal(380),
+      },
+    ],
+  });
+
   console.log('Seed completed:', {
     organization: organization.name,
     password: DEMO_PASSWORD,
@@ -426,6 +526,7 @@ async function main() {
     products: [sanSebastian.sku, chocolateCake.sku],
     recipes: [sanSebastianRecipe.id, chocolateCakeRecipe.id],
     purchases: [mainPurchase.id, dairyPurchase.id, kadikoyPurchase.id],
+    orders: [mainKitchenOrder.id, kadikoyOrder.id],
   });
 }
 

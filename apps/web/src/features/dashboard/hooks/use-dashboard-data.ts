@@ -2,11 +2,11 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import { branchesApi } from '@/features/branches/api/branches.api';
 import { dashboardApi } from '@/features/dashboard/api/dashboard.api';
 import type { DashboardFilters } from '@/features/dashboard/types/dashboard.types';
 import { getDateRangeFromPreset } from '@/features/dashboard/utils/dashboard-formatters';
 import { useAuth } from '@/lib/auth/use-auth';
+import { useAccessibleBranches } from '@/lib/hooks/use-accessible-branches';
 
 export function useDashboardData(filters: DashboardFilters) {
   const { selectedOrganizationId } = useAuth();
@@ -24,10 +24,8 @@ export function useDashboardData(filters: DashboardFilters) {
 
   const enabled = Boolean(selectedOrganizationId);
 
-  const branchesQuery = useQuery({
-    queryKey: ['branches', selectedOrganizationId],
-    queryFn: () => branchesApi.list({ page: 1, limit: 100 }),
-    enabled,
+  const { branches, branchesQuery, hasAccessibleBranches } = useAccessibleBranches({
+    queryKeySuffix: 'dashboard',
   });
 
   const summaryQuery = useQuery({
@@ -71,8 +69,9 @@ export function useDashboardData(filters: DashboardFilters) {
   });
 
   return {
-    branches: branchesQuery.data?.data ?? [],
+    branches,
     branchesQuery,
+    hasAccessibleBranches,
     summaryQuery,
     productionTrendQuery,
     lowStockQuery,

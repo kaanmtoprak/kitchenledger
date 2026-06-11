@@ -239,12 +239,28 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
+    const branchMembers = await this.prisma.branchMember.findMany({
+      where: { userId: user.id },
+      select: { organizationId: true, branchId: true },
+    });
+
+    const branchIdsByOrganization = new Map<string, string[]>();
+    for (const branchMember of branchMembers) {
+      const existing = branchIdsByOrganization.get(branchMember.organizationId) ?? [];
+      existing.push(branchMember.branchId);
+      branchIdsByOrganization.set(branchMember.organizationId, existing);
+    }
+
     return {
       user: toSafeUser(user),
       memberships: user.memberships.map((membership) => ({
         organizationId: membership.organizationId,
         role: membership.role,
         organization: toSafeOrganization(membership.organization),
+        accessibleBranchIds:
+          membership.role === Role.OWNER || membership.role === Role.ADMIN
+            ? null
+            : (branchIdsByOrganization.get(membership.organizationId) ?? []),
       })),
     };
   }

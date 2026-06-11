@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { BranchFormSelect } from '@/components/common/branch-form-select';
 import {
   Select,
   SelectContent,
@@ -109,20 +110,13 @@ export function ProductionFormDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Şube</FormLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Şube seçin" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {branches.map((branch) => (
-                        <SelectItem key={branch.id} value={branch.id}>
-                          {branch.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <BranchFormSelect
+                      value={field.value}
+                      branches={branches}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
                   <FormDescription>Stok tüketimi bu şubedeki partilerden yapılır.</FormDescription>
                   <FormMessage />
                 </FormItem>
