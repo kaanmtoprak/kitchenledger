@@ -80,8 +80,8 @@ export function ProductionCostPreview({
       <div>
         <p className="text-sm font-medium">Tahmini maliyet önizlemesi</p>
         <p className="text-xs text-muted-foreground">
-          Güncel ortalama stok maliyetine göre tahmin edilmiştir. Gerçek üretim FIFO parti
-          maliyetlerini kullanır.
+          Tahmini maliyet ortalama stok maliyetine, gerçek üretim maliyeti FIFO&apos;ya göre
+          hesaplanır.
         </p>
       </div>
 

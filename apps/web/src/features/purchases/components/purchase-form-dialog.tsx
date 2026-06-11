@@ -15,6 +15,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -134,6 +135,7 @@ export function PurchaseFormDialog({
                         ))}
                       </SelectContent>
                     </Select>
+                    <FormDescription>Stok bu şube altında takip edilir.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -163,6 +165,7 @@ export function PurchaseFormDialog({
                         ))}
                       </SelectContent>
                     </Select>
+                    <FormDescription>Tedarikçi seçimi maliyet analizi için kullanılır.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -211,7 +214,12 @@ export function PurchaseFormDialog({
               />
             </div>
 
-            <PurchaseItemsFieldArray form={form} ingredients={ingredients} />
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground">
+                Her malzeme için satın alınan miktar ve toplam tutarı girin.
+              </p>
+              <PurchaseItemsFieldArray form={form} ingredients={ingredients} />
+            </div>
 
             <div className="rounded-lg border bg-muted/30 p-4">
               <div className="flex flex-wrap items-center justify-between gap-2 text-sm">

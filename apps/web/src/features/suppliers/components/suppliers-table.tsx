@@ -19,6 +19,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { EmptyState } from '@/components/common/empty-state';
+import { emptyListTitle, READ_ONLY_EMPTY_HINT } from '@/lib/utils/empty-state-messages';
 import { formatDateTime } from '@/lib/utils/display';
 import type { Supplier } from '../types/supplier.types';
 
@@ -58,8 +59,12 @@ export function SuppliersTable({
   if (suppliers.length === 0) {
     return (
       <EmptyState
-        title="Henüz tedarikçi yok"
-        description="Satın alma kaynaklarını ve maliyet farklarını takip etmek için tedarikçi ekleyin."
+        title={emptyListTitle(canEdit, 'Henüz tedarikçi yok')}
+        description={
+          canEdit
+            ? 'Tedarikçi bilgilerini ekleyerek satın alma kaynaklarınızı düzenleyin.'
+            : READ_ONLY_EMPTY_HINT
+        }
         action={
           onCreate && canEdit ? (
             <Button type="button" onClick={onCreate}>

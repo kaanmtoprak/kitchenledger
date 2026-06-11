@@ -7,6 +7,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ConfirmDialog } from '@/components/common/confirm-dialog';
+import { PageHeader } from '@/components/common/page-header';
+import { SuccessAlert } from '@/components/common/success-alert';
 import { TablePagination } from '@/components/common/table-pagination';
 import { suppliersApi } from '@/features/suppliers/api/suppliers.api';
 import { SupplierFormDialog } from '@/features/suppliers/components/supplier-form-dialog';
@@ -46,6 +48,7 @@ export default function SuppliersPage() {
     search: '',
     includeInactive: false,
   });
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null);
   const [deactivatingSupplier, setDeactivatingSupplier] = useState<Supplier | null>(null);
@@ -122,34 +125,39 @@ export default function SuppliersPage() {
   });
 
   const handleSubmit = async (values: SupplierFormValues) => {
+    setSuccessMessage(null);
     const payload = buildPayload(values);
 
     if (editingSupplier) {
       await updateMutation.mutateAsync({ id: editingSupplier.id, payload });
+      setSuccessMessage('Tedarikçi güncellendi.');
       return;
     }
 
     await createMutation.mutateAsync(payload);
+    setSuccessMessage('Tedarikçi oluşturuldu.');
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Tedarikçiler</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Tedarikçi iletişimlerini ve satın alma kaynaklarını yönetin.
-          </p>
-        </div>
-        {permissions.canMutateReferenceData ? (
-          <Button type="button" onClick={openCreateDialog}>
-            <Plus className="h-4 w-4" />
-            Tedarikçi Oluştur
-          </Button>
-        ) : null}
-      </div>
+      <PageHeader
+        title="Tedarikçiler"
+        description="Tedarikçi bilgilerini ve satın alma kaynaklarınızı düzenleyin."
+        action={
+          permissions.canMutateReferenceData ? (
+            <Button type="button" onClick={openCreateDialog}>
+              <Plus className="h-4 w-4" />
+              Tedarikçi Oluştur
+            </Button>
+          ) : undefined
+        }
+      />
 
-      <Card>
+      {successMessage ? (
+        <SuccessAlert message={successMessage} onDismiss={() => setSuccessMessage(null)} />
+      ) : null}
+
+      <Card className="shadow-sm">
         <CardContent className="space-y-6 pt-6">
           <SuppliersFilters filters={filters} onChange={setFilters} />
 
@@ -212,6 +220,7 @@ export default function SuppliersPage() {
               return;
             }
             deactivateMutation.mutate(deactivatingSupplier.id, {
+              onSuccess: () => setSuccessMessage('Tedarikçi pasife alındı.'),
               onError: (error) => {
                 setDeactivateError(getApiErrorMessage(error, 'Tedarikçi pasife alınamadı.'));
               },

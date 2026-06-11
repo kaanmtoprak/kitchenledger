@@ -15,6 +15,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -124,6 +125,9 @@ export function ProductFormDialog({
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
+                  <FormDescription>
+                    Ürünü sistem içinde ayırt etmek için kullanılan kısa kod.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

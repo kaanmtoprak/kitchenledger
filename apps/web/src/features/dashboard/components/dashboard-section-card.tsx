@@ -51,7 +51,9 @@ export function DashboardSectionCard({
             <AlertDescription>{errorMessage}</AlertDescription>
           </Alert>
         ) : isEmpty ? (
-          <p className="text-sm text-muted-foreground">{emptyMessage}</p>
+          <div className="rounded-md border border-dashed bg-muted/20 px-4 py-8 text-center">
+            <p className="text-sm text-muted-foreground">{emptyMessage}</p>
+          </div>
         ) : (
           children
         )}

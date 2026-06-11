@@ -20,7 +20,7 @@ export function TopProductsCard({ data, isLoading, isError }: TopProductsCardPro
       isLoading={isLoading}
       isError={isError}
       isEmpty={!isLoading && !isError && items.length === 0}
-      emptyMessage="Seçili aralık için üretim verisi yok."
+      emptyMessage="Seçili tarih aralığında üretim verisi yok."
     >
       <div className="space-y-3">
         {items.map((item) => (

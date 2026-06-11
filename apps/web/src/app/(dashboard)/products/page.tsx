@@ -7,6 +7,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ConfirmDialog } from '@/components/common/confirm-dialog';
+import { PageHeader } from '@/components/common/page-header';
+import { SuccessAlert } from '@/components/common/success-alert';
 import { TablePagination } from '@/components/common/table-pagination';
 import { productsApi } from '@/features/products/api/products.api';
 import { ProductCostDialog } from '@/features/products/components/product-cost-dialog';
@@ -47,6 +49,7 @@ export default function ProductsPage() {
     search: '',
     includeInactive: false,
   });
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [costProduct, setCostProduct] = useState<Product | null>(null);
@@ -141,34 +144,39 @@ export default function ProductsPage() {
   };
 
   const handleSubmit = async (values: ProductFormValues) => {
+    setSuccessMessage(null);
     const payload = buildPayload(values);
 
     if (editingProduct) {
       await updateMutation.mutateAsync({ id: editingProduct.id, payload });
+      setSuccessMessage('Ürün güncellendi.');
       return;
     }
 
     await createMutation.mutateAsync(payload);
+    setSuccessMessage('Ürün oluşturuldu.');
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Ürünler</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Satılabilir ürünleri ve porsiyon ayarlarını yönetin.
-          </p>
-        </div>
-        {permissions.canManageProductsAndRecipes ? (
-          <Button type="button" onClick={openCreateDialog}>
-            <Plus className="h-4 w-4" />
-            Ürün Oluştur
-          </Button>
-        ) : null}
-      </div>
+      <PageHeader
+        title="Ürünler"
+        description="Satılabilir ürünlerinizi tanımlayın ve reçetelerle maliyetlerini takip edin."
+        action={
+          permissions.canManageProductsAndRecipes ? (
+            <Button type="button" onClick={openCreateDialog}>
+              <Plus className="h-4 w-4" />
+              Ürün Oluştur
+            </Button>
+          ) : undefined
+        }
+      />
 
-      <Card>
+      {successMessage ? (
+        <SuccessAlert message={successMessage} onDismiss={() => setSuccessMessage(null)} />
+      ) : null}
+
+      <Card className="shadow-sm">
         <CardContent className="space-y-6 pt-6">
           <ProductsFilters filters={filters} onChange={setFilters} />
 
@@ -243,6 +251,7 @@ export default function ProductsPage() {
               return;
             }
             deactivateMutation.mutate(deactivatingProduct.id, {
+              onSuccess: () => setSuccessMessage('Ürün pasife alındı.'),
               onError: (error) => {
                 setDeactivateError(getApiErrorMessage(error, 'Ürün pasife alınamadı.'));
               },

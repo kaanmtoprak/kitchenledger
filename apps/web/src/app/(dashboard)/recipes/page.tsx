@@ -6,6 +6,8 @@ import { Plus } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { PageHeader } from '@/components/common/page-header';
+import { SuccessAlert } from '@/components/common/success-alert';
 import { TablePagination } from '@/components/common/table-pagination';
 import { ingredientsApi } from '@/features/ingredients/api/ingredients.api';
 import { productsApi } from '@/features/products/api/products.api';
@@ -32,6 +34,7 @@ export default function RecipesPage() {
   const { selectedOrganizationId } = useAuth();
   const permissions = usePermissions();
 
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [filters, setFilters] = useState<RecipesFilterState>({
     search: '',
   });
@@ -132,6 +135,7 @@ export default function RecipesPage() {
     }));
 
   const handleSubmit = async (values: RecipeFormValues, isEdit: boolean) => {
+    setSuccessMessage(null);
     if (isEdit && editingRecipeId) {
       await updateMutation.mutateAsync({
         id: editingRecipeId,
@@ -142,6 +146,7 @@ export default function RecipesPage() {
           items: buildItemsPayload(values),
         },
       });
+      setSuccessMessage('Reçete güncellendi.');
       return;
     }
 
@@ -152,26 +157,29 @@ export default function RecipesPage() {
       yieldUnit: values.yieldUnit,
       items: buildItemsPayload(values),
     });
+    setSuccessMessage('Reçete oluşturuldu.');
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Reçeteler</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Malzeme formüllerini tanımlayın ve şubeye özel reçete maliyetlerini hesaplayın.
-          </p>
-        </div>
-        {permissions.canManageProductsAndRecipes ? (
-          <Button type="button" onClick={openCreateDialog}>
-            <Plus className="h-4 w-4" />
-            Reçete Oluştur
-          </Button>
-        ) : null}
-      </div>
+      <PageHeader
+        title="Reçeteler"
+        description="Ürün reçetelerini oluşturun, malzeme kullanımını ve maliyetleri hesaplayın."
+        action={
+          permissions.canManageProductsAndRecipes ? (
+            <Button type="button" onClick={openCreateDialog}>
+              <Plus className="h-4 w-4" />
+              Reçete Oluştur
+            </Button>
+          ) : undefined
+        }
+      />
 
-      <Card>
+      {successMessage ? (
+        <SuccessAlert message={successMessage} onDismiss={() => setSuccessMessage(null)} />
+      ) : null}
+
+      <Card className="shadow-sm">
         <CardContent className="space-y-6 pt-6">
           <RecipesFilters
             filters={filters}

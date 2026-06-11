@@ -15,6 +15,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -174,6 +175,7 @@ export function IngredientFormDialog({
                   <FormControl>
                     <Input {...field} placeholder="İsteğe bağlı" inputMode="decimal" />
                   </FormControl>
+                  <FormDescription>Kritik stok uyarıları için kullanılır.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

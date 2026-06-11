@@ -7,6 +7,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ConfirmDialog } from '@/components/common/confirm-dialog';
+import { PageHeader } from '@/components/common/page-header';
+import { SuccessAlert } from '@/components/common/success-alert';
 import { TablePagination } from '@/components/common/table-pagination';
 import { ingredientsApi } from '@/features/ingredients/api/ingredients.api';
 import { IngredientFormDialog } from '@/features/ingredients/components/ingredient-form-dialog';
@@ -44,6 +46,7 @@ export default function IngredientsPage() {
     includeInactive: false,
     baseUnit: 'all',
   });
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingIngredient, setEditingIngredient] = useState<Ingredient | null>(null);
   const [deactivatingIngredient, setDeactivatingIngredient] = useState<Ingredient | null>(null);
@@ -127,34 +130,39 @@ export default function IngredientsPage() {
   };
 
   const handleSubmit = async (values: IngredientFormValues) => {
+    setSuccessMessage(null);
     const payload = buildPayload(values);
 
     if (editingIngredient) {
       await updateMutation.mutateAsync({ id: editingIngredient.id, payload });
+      setSuccessMessage('Malzeme güncellendi.');
       return;
     }
 
     await createMutation.mutateAsync(payload);
+    setSuccessMessage('Malzeme oluşturuldu.');
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Malzemeler</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Reçete, stok ve üretim maliyetinde kullanılan hammaddeleri yönetin.
-          </p>
-        </div>
-        {permissions.canMutateReferenceData ? (
-          <Button type="button" onClick={openCreateDialog}>
-            <Plus className="h-4 w-4" />
-            Malzeme Oluştur
-          </Button>
-        ) : null}
-      </div>
+      <PageHeader
+        title="Malzemeler"
+        description="Reçete maliyeti ve stok takibi için kullanılan ham maddeleri yönetin."
+        action={
+          permissions.canMutateReferenceData ? (
+            <Button type="button" onClick={openCreateDialog}>
+              <Plus className="h-4 w-4" />
+              Malzeme Oluştur
+            </Button>
+          ) : undefined
+        }
+      />
 
-      <Card>
+      {successMessage ? (
+        <SuccessAlert message={successMessage} onDismiss={() => setSuccessMessage(null)} />
+      ) : null}
+
+      <Card className="shadow-sm">
         <CardContent className="space-y-6 pt-6">
           <IngredientsFilters filters={filters} onChange={setFilters} />
 
@@ -217,6 +225,7 @@ export default function IngredientsPage() {
               return;
             }
             deactivateMutation.mutate(deactivatingIngredient.id, {
+              onSuccess: () => setSuccessMessage('Malzeme pasife alındı.'),
               onError: (error) => {
                 setDeactivateError(getApiErrorMessage(error, 'Malzeme pasife alınamadı.'));
               },

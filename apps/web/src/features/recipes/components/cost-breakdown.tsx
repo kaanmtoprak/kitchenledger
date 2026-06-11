@@ -1,5 +1,6 @@
 'use client';
 
+import { CostExplanation } from '@/components/common/cost-explanation';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -22,6 +23,8 @@ export function CostBreakdown({ cost }: CostBreakdownProps) {
 
   return (
     <div className="space-y-6">
+      <CostExplanation variant="recipe" />
+
       {summary.hasMissingCosts ? (
         <Alert>
           <AlertDescription>
@@ -74,23 +77,26 @@ export function CostBreakdown({ cost }: CostBreakdownProps) {
 
       <div>
         <h3 className="mb-3 text-sm font-medium">Maliyet dökümü</h3>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Malzeme</TableHead>
-              <TableHead>Malzeme Kodu</TableHead>
-              <TableHead>Miktar</TableHead>
-              <TableHead>Birim</TableHead>
-              <TableHead>Ort. birim maliyet</TableHead>
-              <TableHead>Maliyet</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {items.map((item) => (
-              <TableRow key={item.ingredientId}>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">{item.ingredientName}</span>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Malzeme</TableHead>
+                <TableHead>Malzeme Kodu</TableHead>
+                <TableHead className="text-right">Miktar</TableHead>
+                <TableHead>Birim</TableHead>
+                <TableHead className="text-right">Ort. birim maliyet</TableHead>
+                <TableHead className="text-right">Maliyet</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {items.map((item) => (
+                <TableRow key={item.ingredientId}>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <span className="max-w-[180px] truncate font-medium">
+                        {item.ingredientName}
+                      </span>
                     {item.isMissingCost ? (
                       <Badge variant="outline" className="text-xs">
                         Maliyet yok
@@ -98,15 +104,20 @@ export function CostBreakdown({ cost }: CostBreakdownProps) {
                     ) : null}
                   </div>
                 </TableCell>
-                <TableCell>{item.sku}</TableCell>
-                <TableCell>{formatQuantityDisplay(item.quantity)}</TableCell>
-                <TableCell>{formatBaseUnit(item.unit)}</TableCell>
-                <TableCell>{formatCurrency(item.weightedAverageUnitCost)}</TableCell>
-                <TableCell>{formatCurrency(item.cost)}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                  <TableCell>{item.sku}</TableCell>
+                  <TableCell className="text-right">
+                    {formatQuantityDisplay(item.quantity)}
+                  </TableCell>
+                  <TableCell>{formatBaseUnit(item.unit)}</TableCell>
+                  <TableCell className="text-right">
+                    {formatCurrency(item.weightedAverageUnitCost)}
+                  </TableCell>
+                  <TableCell className="text-right">{formatCurrency(item.cost)}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   );

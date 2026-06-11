@@ -15,6 +15,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -122,6 +123,7 @@ export function ProductionFormDialog({
                       ))}
                     </SelectContent>
                   </Select>
+                  <FormDescription>Stok tüketimi bu şubedeki partilerden yapılır.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -147,6 +149,7 @@ export function ProductionFormDialog({
                       ))}
                     </SelectContent>
                   </Select>
+                  <FormDescription>Üretim için reçetesi olan bir ürün seçin.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -161,6 +164,9 @@ export function ProductionFormDialog({
                   <FormControl>
                     <Input {...field} inputMode="decimal" placeholder="1" />
                   </FormControl>
+                  <FormDescription>
+                    Üretilen miktara göre reçete malzemeleri ölçeklenir.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

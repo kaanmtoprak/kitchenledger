@@ -44,47 +44,57 @@ export function StockSummaryTable({ items, isLoading }: StockSummaryTableProps) 
   if (items.length === 0) {
     return (
       <EmptyState
-        title="Stok bulunamadı"
-        description="Stok takibine başlamak için bir satın alma oluşturun."
+        title="Bu alanda henüz kayıt yok"
+        description="Stok verileri satın alma kaydı oluşturulduğunda otomatik olarak görünür."
       />
     );
   }
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Malzeme</TableHead>
-          <TableHead>Malzeme Kodu</TableHead>
-          <TableHead>Şube</TableHead>
-          <TableHead>Kalan</TableHead>
-          <TableHead>Birim</TableHead>
-          <TableHead>Ort. Birim Maliyet</TableHead>
-          <TableHead>Toplam Değer</TableHead>
-          <TableHead>Minimum Stok</TableHead>
-          <TableHead>Durum</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {items.map((item) => {
-          const status = getStockStatus(item);
-          return (
-            <TableRow key={`${item.branchId}-${item.ingredientId}`}>
-              <TableCell className="font-medium">{item.ingredientName}</TableCell>
-              <TableCell>{item.sku}</TableCell>
-              <TableCell>{item.branchName}</TableCell>
-              <TableCell>{formatQuantityDisplay(item.totalRemaining)}</TableCell>
-              <TableCell>{formatUnit(item.unit)}</TableCell>
-              <TableCell>{formatCurrency(item.weightedAverageUnitCost)}</TableCell>
-              <TableCell>{formatCurrency(item.totalValue)}</TableCell>
-              <TableCell>{formatQuantityDisplay(item.minimumStockLevel)}</TableCell>
-              <TableCell>
-                <Badge variant={status.variant}>{status.label}</Badge>
-              </TableCell>
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
+    <div className="overflow-x-auto">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Malzeme</TableHead>
+            <TableHead>Malzeme Kodu</TableHead>
+            <TableHead>Şube</TableHead>
+            <TableHead className="text-right">Kalan</TableHead>
+            <TableHead>Birim</TableHead>
+            <TableHead className="text-right">Ort. Birim Maliyet</TableHead>
+            <TableHead className="text-right">Toplam Değer</TableHead>
+            <TableHead className="text-right">Minimum Stok</TableHead>
+            <TableHead>Durum</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {items.map((item) => {
+            const status = getStockStatus(item);
+            return (
+              <TableRow key={`${item.branchId}-${item.ingredientId}`}>
+                <TableCell className="max-w-[160px] truncate font-medium">
+                  {item.ingredientName}
+                </TableCell>
+                <TableCell>{item.sku}</TableCell>
+                <TableCell className="max-w-[140px] truncate">{item.branchName}</TableCell>
+                <TableCell className="text-right">
+                  {formatQuantityDisplay(item.totalRemaining)}
+                </TableCell>
+                <TableCell>{formatUnit(item.unit)}</TableCell>
+                <TableCell className="text-right">
+                  {formatCurrency(item.weightedAverageUnitCost)}
+                </TableCell>
+                <TableCell className="text-right">{formatCurrency(item.totalValue)}</TableCell>
+                <TableCell className="text-right">
+                  {formatQuantityDisplay(item.minimumStockLevel)}
+                </TableCell>
+                <TableCell>
+                  <Badge variant={status.variant}>{status.label}</Badge>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
   );
 }

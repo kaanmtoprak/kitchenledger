@@ -22,7 +22,7 @@ export function LowStockCard({ data, isLoading, isError }: LowStockCardProps) {
       isLoading={isLoading}
       isError={isError}
       isEmpty={!isLoading && !isError && items.length === 0}
-      emptyMessage="Kritik stokta malzeme yok."
+      emptyMessage="Şu an kritik seviyede malzeme bulunmuyor. Bu iyi bir haber."
     >
       <div className="space-y-3">
         {items.map((item) => (

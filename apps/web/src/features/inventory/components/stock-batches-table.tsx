@@ -53,38 +53,48 @@ export function StockBatchesTable({ items, isLoading }: StockBatchesTableProps) 
   }
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Malzeme</TableHead>
-          <TableHead>Şube</TableHead>
-          <TableHead>Başlangıç Miktarı</TableHead>
-          <TableHead>Kalan</TableHead>
-          <TableHead>Birim</TableHead>
-          <TableHead>Birim Maliyet</TableHead>
-          <TableHead>Alınma Tarihi</TableHead>
-          <TableHead>Durum</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {items.map((item) => {
-          const status = getBatchStatus(item.remainingQuantity);
-          return (
-            <TableRow key={item.id}>
-              <TableCell className="font-medium">{item.ingredient.name}</TableCell>
-              <TableCell>{item.branch.name}</TableCell>
-              <TableCell>{formatQuantityDisplay(item.initialQuantity)}</TableCell>
-              <TableCell>{formatQuantityDisplay(item.remainingQuantity)}</TableCell>
-              <TableCell>{formatUnit(item.unit)}</TableCell>
-              <TableCell>{formatCurrency(item.unitCost)}</TableCell>
-              <TableCell>{formatDateTime(item.receivedAt)}</TableCell>
-              <TableCell>
-                <Badge variant={status.variant}>{status.label}</Badge>
-              </TableCell>
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
+    <div className="overflow-x-auto">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Malzeme</TableHead>
+            <TableHead>Şube</TableHead>
+            <TableHead className="text-right">Başlangıç Miktarı</TableHead>
+            <TableHead className="text-right">Kalan</TableHead>
+            <TableHead>Birim</TableHead>
+            <TableHead className="text-right">Birim Maliyet</TableHead>
+            <TableHead>Alınma Tarihi</TableHead>
+            <TableHead>Durum</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {items.map((item) => {
+            const status = getBatchStatus(item.remainingQuantity);
+            return (
+              <TableRow key={item.id}>
+                <TableCell className="max-w-[160px] truncate font-medium">
+                  {item.ingredient.name}
+                </TableCell>
+                <TableCell className="max-w-[140px] truncate">{item.branch.name}</TableCell>
+                <TableCell className="text-right">
+                  {formatQuantityDisplay(item.initialQuantity)}
+                </TableCell>
+                <TableCell className="text-right">
+                  {formatQuantityDisplay(item.remainingQuantity)}
+                </TableCell>
+                <TableCell>{formatUnit(item.unit)}</TableCell>
+                <TableCell className="text-right">{formatCurrency(item.unitCost)}</TableCell>
+                <TableCell className="whitespace-nowrap">
+                  {formatDateTime(item.receivedAt)}
+                </TableCell>
+                <TableCell>
+                  <Badge variant={status.variant}>{status.label}</Badge>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
   );
 }

@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
+import { PageHeader } from '@/components/common/page-header';
 import { TablePagination } from '@/components/common/table-pagination';
 import { branchesApi } from '@/features/branches/api/branches.api';
 import { ingredientsApi } from '@/features/ingredients/api/ingredients.api';
@@ -214,12 +215,10 @@ export default function InventoryPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Stok</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Stok seviyelerini, parti maliyetlerini ve stok hareket geçmişini takip edin.
-        </p>
-      </div>
+      <PageHeader
+        title="Stok"
+        description="Şube bazlı mevcut stokları, parti maliyetlerini ve hareket geçmişini takip edin."
+      />
 
       <InventoryOverviewCards
         totalStockValue={overviewMetrics.totalStockValue}
@@ -229,7 +228,7 @@ export default function InventoryPage() {
         isLoading={overviewLoading}
       />
 
-      <Card>
+      <Card className="shadow-sm">
         <CardContent className="space-y-6 pt-6">
           <InventoryTabs activeTab={activeTab} onChange={handleTabChange} />
 

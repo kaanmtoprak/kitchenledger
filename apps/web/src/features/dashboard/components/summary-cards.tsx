@@ -24,7 +24,7 @@ const metrics: {
   {
     key: 'stock-value',
     title: 'Toplam Stok Değeri',
-    description: 'Güncel stok değeri',
+    description: 'Seçili şubelerdeki güncel stok değeri',
     icon: Boxes,
     getValue: (summary) => formatCurrency(summary.inventory.totalStockValue),
     getSubtitle: (summary) =>
@@ -33,7 +33,7 @@ const metrics: {
   {
     key: 'low-stock',
     title: 'Kritik Stoklar',
-    description: 'Minimum seviyede veya altında',
+    description: 'Minimum seviyenin altında veya eşiğinde',
     icon: AlertTriangle,
     getValue: (summary) => formatCount(summary.inventory.lowStockIngredientCount),
     getSubtitle: () => 'Seçili şubeler genelinde',
@@ -41,7 +41,7 @@ const metrics: {
   {
     key: 'purchase-cost',
     title: 'Satın Alma Maliyeti',
-    description: 'Seçili aralıkta toplam',
+    description: 'Seçili tarih aralığındaki toplam harcama',
     icon: ShoppingCart,
     getValue: (summary) => formatCurrency(summary.purchases.totalPurchaseCost),
     getSubtitle: (summary) => `${formatCount(summary.purchases.purchaseCount)} satın alma`,
@@ -49,7 +49,7 @@ const metrics: {
   {
     key: 'production-cost',
     title: 'Üretim Maliyeti',
-    description: 'Seçili aralıkta toplam',
+    description: 'FIFO ile kaydedilen üretim maliyeti toplamı',
     icon: Factory,
     getValue: (summary) => formatCurrency(summary.production.totalProductionCost),
     getSubtitle: (summary) => `${formatCount(summary.production.productionCount)} üretim`,
@@ -57,7 +57,7 @@ const metrics: {
   {
     key: 'active-products',
     title: 'Aktif Ürünler',
-    description: 'Organizasyondaki ürünler',
+    description: 'Üretime açık tanımlı ürün sayısı',
     icon: Package,
     getValue: (summary) => formatCount(summary.products.activeProductCount),
     getSubtitle: (summary) => `Kapsamda ${formatCount(summary.branches.count)} şube`,
@@ -71,7 +71,7 @@ export function SummaryCards({ summary, isLoading, isError }: SummaryCardsProps)
         const Icon = metric.icon;
 
         return (
-          <Card key={metric.key}>
+          <Card key={metric.key} className="shadow-sm">
             <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
               <div className="space-y-1">
                 <CardTitle className="text-sm font-medium">{metric.title}</CardTitle>

@@ -8,6 +8,8 @@ import { PurchaseSummaryCard } from '@/features/dashboard/components/purchase-su
 import { RecentActivityCard } from '@/features/dashboard/components/recent-activity-card';
 import { SummaryCards } from '@/features/dashboard/components/summary-cards';
 import { TopProductsCard } from '@/features/dashboard/components/top-products-card';
+import { PageHeader } from '@/components/common/page-header';
+import { DashboardWelcomeBanner } from '@/features/dashboard/components/dashboard-welcome-banner';
 import { useDashboardData } from '@/features/dashboard/hooks/use-dashboard-data';
 import type { DashboardFilters } from '@/features/dashboard/types/dashboard.types';
 
@@ -30,12 +32,10 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Panel</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Stok, satın alma ve üretim performansınızı tek ekrandan takip edin.
-          </p>
-        </div>
+        <PageHeader
+          title="Panel"
+          description="Stok, satın alma ve üretim performansınızı tek ekrandan takip edin."
+        />
 
         <DashboardFiltersBar
           filters={filters}
@@ -44,6 +44,8 @@ export default function DashboardPage() {
           onChange={setFilters}
         />
       </div>
+
+      <DashboardWelcomeBanner />
 
       <SummaryCards
         summary={summaryQuery.data}

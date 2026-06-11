@@ -12,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { CostExplanation } from '@/components/common/cost-explanation';
 import { useAuth } from '@/lib/auth/use-auth';
 import { getApiErrorMessage } from '@/lib/utils/api-error-message';
 import {
@@ -69,6 +70,8 @@ export function ProductionDetailDialog({
 
         {production ? (
           <div className="space-y-6">
+            <CostExplanation variant="production" />
+
             <div className="grid gap-3 text-sm md:grid-cols-2">
               <div>
                 <p className="text-muted-foreground">Ürün</p>
@@ -132,30 +135,36 @@ export function ProductionDetailDialog({
                       </div>
 
                       {consumption.batches.length > 0 ? (
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>Parti</TableHead>
-                              <TableHead>Tüketilen Miktar</TableHead>
-                              <TableHead>Birim Maliyet</TableHead>
-                              <TableHead>Maliyet</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {consumption.batches.map((batch, index) => (
-                              <TableRow
-                                key={`${consumption.ingredientId}-${batch.movementId ?? index}`}
-                              >
-                                <TableCell>{formatShortId(batch.stockBatchId)}</TableCell>
-                                <TableCell>
-                                  {formatQuantityDisplay(batch.consumedQuantity)}
-                                </TableCell>
-                                <TableCell>{formatCurrency(batch.unitCost)}</TableCell>
-                                <TableCell>{formatCurrency(batch.cost)}</TableCell>
+                        <div className="overflow-x-auto">
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>Parti</TableHead>
+                                <TableHead className="text-right">Tüketilen Miktar</TableHead>
+                                <TableHead className="text-right">Birim Maliyet</TableHead>
+                                <TableHead className="text-right">Maliyet</TableHead>
                               </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
+                            </TableHeader>
+                            <TableBody>
+                              {consumption.batches.map((batch, index) => (
+                                <TableRow
+                                  key={`${consumption.ingredientId}-${batch.movementId ?? index}`}
+                                >
+                                  <TableCell>{formatShortId(batch.stockBatchId)}</TableCell>
+                                  <TableCell className="text-right">
+                                    {formatQuantityDisplay(batch.consumedQuantity)}
+                                  </TableCell>
+                                  <TableCell className="text-right">
+                                    {formatCurrency(batch.unitCost)}
+                                  </TableCell>
+                                  <TableCell className="text-right">
+                                    {formatCurrency(batch.cost)}
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </div>
                       ) : null}
                     </div>
                   ))}

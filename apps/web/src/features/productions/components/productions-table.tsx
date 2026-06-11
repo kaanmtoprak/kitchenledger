@@ -1,13 +1,7 @@
 'use client';
 
-import { Eye, MoreHorizontal } from 'lucide-react';
+import { Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
@@ -18,6 +12,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { EmptyState } from '@/components/common/empty-state';
+import { emptyListTitle, READ_ONLY_EMPTY_HINT } from '@/lib/utils/empty-state-messages';
 import { formatCurrency, formatDate, formatQuantityDisplay } from '@/lib/utils/display';
 import type { ProductionListItem } from '../types/production.types';
 
@@ -49,8 +44,12 @@ export function ProductionsTable({
   if (productions.length === 0) {
     return (
       <EmptyState
-        title="Henüz üretim kaydı yok"
-        description="Stok tüketmek ve FIFO maliyet anlık görüntüsü almak için ilk üretiminizi kaydedin."
+        title={emptyListTitle(canCreate, 'Henüz üretim kaydı yok')}
+        description={
+          canCreate
+            ? 'Üretim kaydı oluşturduğunuzda FIFO ile stok tüketilir ve maliyet anlık görüntüsü saklanır.'
+            : READ_ONLY_EMPTY_HINT
+        }
         action={
           onCreate && canCreate ? (
             <Button type="button" onClick={onCreate}>
@@ -63,52 +62,59 @@ export function ProductionsTable({
   }
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Üretim Tarihi</TableHead>
-          <TableHead>Ürün</TableHead>
-          <TableHead>Ürün Kodu</TableHead>
-          <TableHead>Şube</TableHead>
-          <TableHead>Üretilen Miktar</TableHead>
-          <TableHead>Toplam Maliyet</TableHead>
-          <TableHead>Birim Maliyet</TableHead>
-          <TableHead>Notlar</TableHead>
-          <TableHead className="w-[70px] text-right">İşlemler</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {productions.map((production) => (
-          <TableRow key={production.id}>
-            <TableCell>{formatDate(production.producedAt)}</TableCell>
-            <TableCell className="font-medium">{production.productName}</TableCell>
-            <TableCell>{production.productSku}</TableCell>
-            <TableCell>{production.branchName}</TableCell>
-            <TableCell>{formatQuantityDisplay(production.quantityProduced)}</TableCell>
-            <TableCell>{formatCurrency(production.totalCostSnapshot)}</TableCell>
-            <TableCell>{formatCurrency(production.unitCostSnapshot)}</TableCell>
-            <TableCell className="max-w-[200px] truncate">
-              {production.notes?.trim() ? production.notes : '—'}
-            </TableCell>
-            <TableCell className="text-right">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button type="button" variant="ghost" size="icon">
-                    <MoreHorizontal className="h-4 w-4" />
-                    <span className="sr-only">Menüyü aç</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => onView(production)}>
-                    <Eye className="mr-2 h-4 w-4" />
-                    Detayı Gör
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </TableCell>
+    <div className="overflow-x-auto">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Üretim Tarihi</TableHead>
+            <TableHead>Ürün</TableHead>
+            <TableHead>Ürün Kodu</TableHead>
+            <TableHead>Şube</TableHead>
+            <TableHead className="text-right">Üretilen Miktar</TableHead>
+            <TableHead className="text-right">Toplam Maliyet</TableHead>
+            <TableHead className="text-right">Birim Maliyet</TableHead>
+            <TableHead>Notlar</TableHead>
+            <TableHead className="w-12 text-right">İşlem</TableHead>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {productions.map((production) => (
+            <TableRow key={production.id}>
+              <TableCell className="whitespace-nowrap">
+                {formatDate(production.producedAt)}
+              </TableCell>
+              <TableCell className="max-w-[160px] truncate font-medium">
+                {production.productName}
+              </TableCell>
+              <TableCell>{production.productSku}</TableCell>
+              <TableCell className="max-w-[140px] truncate">{production.branchName}</TableCell>
+              <TableCell className="text-right">
+                {formatQuantityDisplay(production.quantityProduced)}
+              </TableCell>
+              <TableCell className="text-right whitespace-nowrap">
+                {formatCurrency(production.totalCostSnapshot)}
+              </TableCell>
+              <TableCell className="text-right whitespace-nowrap">
+                {formatCurrency(production.unitCostSnapshot)}
+              </TableCell>
+              <TableCell className="max-w-[160px] truncate">
+                {production.notes?.trim() ? production.notes : '—'}
+              </TableCell>
+              <TableCell className="text-right">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onView(production)}
+                  aria-label="Üretim detayını görüntüle"
+                >
+                  <Eye className="h-4 w-4" />
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }

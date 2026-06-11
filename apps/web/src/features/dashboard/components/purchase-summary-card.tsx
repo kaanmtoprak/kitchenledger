@@ -20,7 +20,7 @@ export function PurchaseSummaryCard({ data, isLoading, isError }: PurchaseSummar
       isLoading={isLoading}
       isError={isError}
       isEmpty={!isLoading && !isError && items.length === 0}
-      emptyMessage="Seçili aralık için satın alma verisi yok."
+      emptyMessage="Seçili tarih aralığında satın alma kaydı yok."
     >
       <div className="space-y-3">
         {items.map((item) => (

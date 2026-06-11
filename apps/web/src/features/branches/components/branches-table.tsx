@@ -19,6 +19,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { EmptyState } from '@/components/common/empty-state';
+import { emptyListTitle, READ_ONLY_EMPTY_HINT } from '@/lib/utils/empty-state-messages';
 import { formatDateTime } from '@/lib/utils/display';
 import type { Branch } from '../types/branch.types';
 
@@ -52,8 +53,12 @@ export function BranchesTable({
   if (branches.length === 0) {
     return (
       <EmptyState
-        title="Henüz şube yok"
-        description="Stok ve operasyonları lokasyona göre düzenlemek için ilk şubenizi oluşturun."
+        title={emptyListTitle(canManage, 'Henüz şube yok')}
+        description={
+          canManage
+            ? 'Şube tanımlayarak stok ve operasyonları lokasyon bazında yönetmeye başlayın.'
+            : READ_ONLY_EMPTY_HINT
+        }
         action={
           onCreate && canManage ? (
             <Button type="button" onClick={onCreate}>

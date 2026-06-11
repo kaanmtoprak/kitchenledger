@@ -97,7 +97,9 @@ export function RecipeCostDialog({ recipe, open, onOpenChange }: RecipeCostDialo
             </Alert>
           ) : null}
 
-          {costQuery.data ? <CostBreakdown cost={costQuery.data} /> : null}
+          {costQuery.data ? (
+            <CostBreakdown cost={costQuery.data} />
+          ) : null}
         </div>
       </DialogContent>
     </Dialog>

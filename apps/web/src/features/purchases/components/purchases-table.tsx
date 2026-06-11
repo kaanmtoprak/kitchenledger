@@ -12,6 +12,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { EmptyState } from '@/components/common/empty-state';
+import { emptyListTitle, READ_ONLY_EMPTY_HINT } from '@/lib/utils/empty-state-messages';
 import { formatCurrency, formatDateTime } from '@/lib/utils/display';
 import { calculateItemsTotal, type PurchaseListItem } from '../types/purchase.types';
 
@@ -54,12 +55,16 @@ export function PurchasesTable({
   if (purchases.length === 0) {
     return (
       <EmptyState
-        title="Henüz satın alma yok"
-        description="Stoka parti eklemek için ilk satın almanızı oluşturun."
+        title={emptyListTitle(canCreate, 'Henüz satın alma kaydı yok')}
+        description={
+          canCreate
+            ? 'Malzeme satın alması eklediğinizde stok partileri ve stok hareketleri otomatik oluşur.'
+            : READ_ONLY_EMPTY_HINT
+        }
         action={
           onCreate && canCreate ? (
             <Button type="button" onClick={onCreate}>
-              Satın Alma Oluştur
+              Yeni Satın Alma
             </Button>
           ) : undefined
         }
@@ -68,50 +73,63 @@ export function PurchasesTable({
   }
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Satın Alma Tarihi</TableHead>
-          <TableHead>Fatura No</TableHead>
-          <TableHead>Şube</TableHead>
-          <TableHead>Tedarikçi</TableHead>
-          <TableHead>Kalemler</TableHead>
-          <TableHead>Toplam Maliyet</TableHead>
-          <TableHead>Notlar</TableHead>
-          <TableHead>Oluşturulma</TableHead>
-          <TableHead className="w-[90px] text-right">İşlemler</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {purchases.map((purchase) => {
-          const total = purchase.items ? calculateItemsTotal(purchase.items) : null;
+    <div className="overflow-x-auto">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Satın Alma Tarihi</TableHead>
+            <TableHead>Fatura No</TableHead>
+            <TableHead>Şube</TableHead>
+            <TableHead>Tedarikçi</TableHead>
+            <TableHead className="text-right">Kalemler</TableHead>
+            <TableHead className="text-right">Toplam Maliyet</TableHead>
+            <TableHead>Notlar</TableHead>
+            <TableHead>Oluşturulma</TableHead>
+            <TableHead className="w-12 text-right">İşlem</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {purchases.map((purchase) => {
+            const total = purchase.items ? calculateItemsTotal(purchase.items) : null;
 
-          return (
-            <TableRow key={purchase.id}>
-              <TableCell>{formatDateTime(purchase.purchasedAt)}</TableCell>
-              <TableCell>{purchase.invoiceNumber?.trim() ? purchase.invoiceNumber : '—'}</TableCell>
-              <TableCell>{branchNameById[purchase.branchId] ?? purchase.branchId}</TableCell>
-              <TableCell>
-                {purchase.supplierId
-                  ? (supplierNameById[purchase.supplierId] ?? purchase.supplierId)
-                  : 'Tedarikçi Yok'}
-              </TableCell>
-              <TableCell>{purchase.items?.length ?? '—'}</TableCell>
-              <TableCell>
-                {total !== null && purchase.items ? formatCurrency(total) : '—'}
-              </TableCell>
-              <TableCell>{displayNotes(purchase.notes)}</TableCell>
-              <TableCell>{formatDateTime(purchase.createdAt)}</TableCell>
-              <TableCell className="text-right">
-                <Button type="button" variant="outline" size="sm" onClick={() => onView(purchase)}>
-                  <Eye className="mr-1 h-4 w-4" />
-                  Detayı Gör
-                </Button>
-              </TableCell>
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
+            return (
+              <TableRow key={purchase.id}>
+                <TableCell className="whitespace-nowrap">
+                  {formatDateTime(purchase.purchasedAt)}
+                </TableCell>
+                <TableCell>{purchase.invoiceNumber?.trim() ? purchase.invoiceNumber : '—'}</TableCell>
+                <TableCell className="max-w-[140px] truncate">
+                  {branchNameById[purchase.branchId] ?? purchase.branchId}
+                </TableCell>
+                <TableCell className="max-w-[160px] truncate">
+                  {purchase.supplierId
+                    ? (supplierNameById[purchase.supplierId] ?? purchase.supplierId)
+                    : 'Tedarikçi Yok'}
+                </TableCell>
+                <TableCell className="text-right">{purchase.items?.length ?? '—'}</TableCell>
+                <TableCell className="text-right whitespace-nowrap">
+                  {total !== null && purchase.items ? formatCurrency(total) : '—'}
+                </TableCell>
+                <TableCell className="max-w-[160px]">{displayNotes(purchase.notes)}</TableCell>
+                <TableCell className="whitespace-nowrap">
+                  {formatDateTime(purchase.createdAt)}
+                </TableCell>
+                <TableCell className="text-right">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onView(purchase)}
+                    aria-label="Satın alma detayını görüntüle"
+                  >
+                    <Eye className="h-4 w-4" />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
   );
 }

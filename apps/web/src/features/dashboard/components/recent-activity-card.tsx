@@ -29,7 +29,7 @@ export function RecentActivityCard({ data, isLoading, isError }: RecentActivityC
       isLoading={isLoading}
       isError={isError}
       isEmpty={!isLoading && !isError && items.length === 0}
-      emptyMessage="Henüz hareket yok."
+      emptyMessage="Henüz kayıtlı hareket yok. Satın alma veya üretim oluşturduğunuzda burada görünür."
     >
       <div className="space-y-4">
         {items.map((item) => {

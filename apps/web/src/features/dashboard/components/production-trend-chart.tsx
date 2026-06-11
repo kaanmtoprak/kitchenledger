@@ -64,7 +64,7 @@ export function ProductionTrendChart({ data, isLoading, isError }: ProductionTre
       isLoading={isLoading}
       isError={isError}
       isEmpty={!isLoading && !isError && chartData.length === 0}
-      emptyMessage="Seçili aralık için üretim verisi yok."
+      emptyMessage="Seçili tarih aralığında üretim kaydı yok. Filtreyi genişletmeyi deneyin."
       contentClassName="pt-2"
     >
       <div className="h-[280px] w-full">

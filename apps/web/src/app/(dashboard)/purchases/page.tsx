@@ -6,6 +6,8 @@ import { Plus } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { PageHeader } from '@/components/common/page-header';
+import { SuccessAlert } from '@/components/common/success-alert';
 import { TablePagination } from '@/components/common/table-pagination';
 import { branchesApi } from '@/features/branches/api/branches.api';
 import { ingredientsApi } from '@/features/ingredients/api/ingredients.api';
@@ -50,6 +52,7 @@ export default function PurchasesPage() {
     from: '',
     to: '',
   });
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [detailPurchaseId, setDetailPurchaseId] = useState<string | null>(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
@@ -130,6 +133,7 @@ export default function PurchasesPage() {
   }, [suppliersQuery.data]);
 
   const handleCreateSubmit = async (values: PurchaseFormValues) => {
+    setSuccessMessage(null);
     await createMutation.mutateAsync({
       branchId: values.branchId,
       supplierId: optionalField(values.supplierId),
@@ -143,6 +147,7 @@ export default function PurchasesPage() {
         totalPrice: item.totalPrice.trim(),
       })),
     });
+    setSuccessMessage('Satın alma kaydedildi. Stok partileri güncellendi.');
   };
 
   const handleViewPurchase = (purchase: PurchaseListItem) => {
@@ -152,22 +157,24 @@ export default function PurchasesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Satın Almalar</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Malzeme satın almalarını kaydedin ve otomatik stok partileri oluşturun.
-          </p>
-        </div>
-        {permissions.canCreatePurchase ? (
-          <Button type="button" onClick={() => setCreateDialogOpen(true)}>
-            <Plus className="h-4 w-4" />
-            Satın Alma Oluştur
-          </Button>
-        ) : null}
-      </div>
+      <PageHeader
+        title="Satın Almalar"
+        description="Malzeme girişlerini kaydedin; stok partileri ve maliyetler otomatik oluşsun."
+        action={
+          permissions.canCreatePurchase ? (
+            <Button type="button" onClick={() => setCreateDialogOpen(true)}>
+              <Plus className="h-4 w-4" />
+              Satın Alma Oluştur
+            </Button>
+          ) : undefined
+        }
+      />
 
-      <Card>
+      {successMessage ? (
+        <SuccessAlert message={successMessage} onDismiss={() => setSuccessMessage(null)} />
+      ) : null}
+
+      <Card className="shadow-sm">
         <CardContent className="space-y-6 pt-6">
           <PurchasesFilters
             filters={filters}

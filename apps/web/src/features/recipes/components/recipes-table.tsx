@@ -18,6 +18,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { EmptyState } from '@/components/common/empty-state';
+import { emptyListTitle, READ_ONLY_EMPTY_HINT } from '@/lib/utils/empty-state-messages';
 import { formatBaseUnit, formatDateTime, formatQuantityDisplay } from '@/lib/utils/display';
 import type { RecipeListItem } from '../types/recipe.types';
 
@@ -53,8 +54,12 @@ export function RecipesTable({
   if (recipes.length === 0) {
     return (
       <EmptyState
-        title="Henüz reçete yok"
-        description="Ürün maliyetlerini hesaplamak ve üretime hazırlanmak için reçete oluşturun."
+        title={emptyListTitle(canEdit, 'Henüz reçete yok')}
+        description={
+          canEdit
+            ? 'Ürün reçetelerini oluşturarak malzeme kullanımını ve maliyetleri hesaplayın.'
+            : READ_ONLY_EMPTY_HINT
+        }
         action={
           onCreate && canEdit ? (
             <Button type="button" onClick={onCreate}>

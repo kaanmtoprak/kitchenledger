@@ -19,6 +19,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { EmptyState } from '@/components/common/empty-state';
+import { emptyListTitle, READ_ONLY_EMPTY_HINT } from '@/lib/utils/empty-state-messages';
 import { formatDateTime, formatQuantityDisplay } from '@/lib/utils/display';
 import type { Product } from '../types/product.types';
 
@@ -56,8 +57,12 @@ export function ProductsTable({
   if (products.length === 0) {
     return (
       <EmptyState
-        title="Henüz ürün yok"
-        description="Reçete tanımlamadan önce ilk ürününüzü oluşturun."
+        title={emptyListTitle(canEdit, 'Henüz ürün yok')}
+        description={
+          canEdit
+            ? 'Satılabilir ürünlerinizi tanımlayın; ardından reçete ve maliyet takibine geçin.'
+            : READ_ONLY_EMPTY_HINT
+        }
         action={
           onCreate && canEdit ? (
             <Button type="button" onClick={onCreate}>

@@ -16,6 +16,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -180,6 +181,9 @@ export function RecipeFormDialog({
                           ))}
                         </SelectContent>
                       </Select>
+                      <FormDescription>
+                        Her ürün için yalnızca bir aktif reçete tanımlanabilir.
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -210,6 +214,9 @@ export function RecipeFormDialog({
                       <FormControl>
                         <Input {...field} inputMode="decimal" />
                       </FormControl>
+                      <FormDescription>
+                        Bu reçeteden kaç birim/porsiyon elde edildiğini belirtin.
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -241,7 +248,12 @@ export function RecipeFormDialog({
                 />
               </div>
 
-              <RecipeItemsFieldArray form={form} ingredients={ingredients} />
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">
+                  Malzeme miktarları ürün maliyeti hesaplamasında kullanılır.
+                </p>
+                <RecipeItemsFieldArray form={form} ingredients={ingredients} />
+              </div>
 
               <div className="rounded-lg border bg-muted/40 p-3 text-sm">
                 <p>

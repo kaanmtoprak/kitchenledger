@@ -19,6 +19,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { EmptyState } from '@/components/common/empty-state';
+import { emptyListTitle, READ_ONLY_EMPTY_HINT } from '@/lib/utils/empty-state-messages';
 import { formatBaseUnit, formatDateTime, formatQuantityDisplay } from '@/lib/utils/display';
 import type { Ingredient } from '../types/ingredient.types';
 
@@ -54,8 +55,12 @@ export function IngredientsTable({
   if (ingredients.length === 0) {
     return (
       <EmptyState
-        title="Henüz malzeme yok"
-        description="Reçete maliyetlerini hesaplamaya başlamak için ilk malzemenizi oluşturun."
+        title={emptyListTitle(canEdit, 'Henüz malzeme yok')}
+        description={
+          canEdit
+            ? 'Ham maddeleri tanımlayarak reçete maliyeti ve stok takibine başlayın.'
+            : READ_ONLY_EMPTY_HINT
+        }
         action={
           onCreate && canEdit ? (
             <Button type="button" onClick={onCreate}>

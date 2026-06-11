@@ -7,6 +7,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ConfirmDialog } from '@/components/common/confirm-dialog';
+import { PageHeader } from '@/components/common/page-header';
+import { SuccessAlert } from '@/components/common/success-alert';
 import { TablePagination } from '@/components/common/table-pagination';
 import { branchesApi } from '@/features/branches/api/branches.api';
 import { BranchFormDialog } from '@/features/branches/components/branch-form-dialog';
@@ -33,6 +35,7 @@ export default function BranchesPage() {
     search: '',
     includeInactive: false,
   });
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingBranch, setEditingBranch] = useState<Branch | null>(null);
   const [deactivatingBranch, setDeactivatingBranch] = useState<Branch | null>(null);
@@ -113,6 +116,7 @@ export default function BranchesPage() {
   };
 
   const handleSubmit = async (values: BranchFormValues) => {
+    setSuccessMessage(null);
     const payload = {
       name: values.name.trim(),
       code: values.code.trim().toUpperCase(),
@@ -121,6 +125,7 @@ export default function BranchesPage() {
 
     if (editingBranch) {
       await updateMutation.mutateAsync({ id: editingBranch.id, payload });
+      setSuccessMessage('Şube güncellendi.');
       return;
     }
 
@@ -128,26 +133,29 @@ export default function BranchesPage() {
       name: payload.name,
       code: payload.code,
     });
+    setSuccessMessage('Şube oluşturuldu.');
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Şubeler</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Lokasyonları ve şube bazlı stoku yönetin.
-          </p>
-        </div>
-        {permissions.canManageBranches ? (
-          <Button type="button" onClick={openCreateDialog}>
-            <Plus className="h-4 w-4" />
-            Şube Oluştur
-          </Button>
-        ) : null}
-      </div>
+      <PageHeader
+        title="Şubeler"
+        description="Şube ve lokasyon bazlı stok hareketlerini yönetin."
+        action={
+          permissions.canManageBranches ? (
+            <Button type="button" onClick={openCreateDialog}>
+              <Plus className="h-4 w-4" />
+              Şube Oluştur
+            </Button>
+          ) : undefined
+        }
+      />
 
-      <Card>
+      {successMessage ? (
+        <SuccessAlert message={successMessage} onDismiss={() => setSuccessMessage(null)} />
+      ) : null}
+
+      <Card className="shadow-sm">
         <CardContent className="space-y-6 pt-6">
           <BranchesFilters filters={filters} onChange={setFilters} />
 
@@ -209,6 +217,9 @@ export default function BranchesPage() {
               return;
             }
             deactivateMutation.mutate(deactivatingBranch.id, {
+              onSuccess: () => {
+                setSuccessMessage('Şube pasife alındı.');
+              },
               onError: (error) => {
                 setDeactivateError(getApiErrorMessage(error, 'Şube pasife alınamadı.'));
               },

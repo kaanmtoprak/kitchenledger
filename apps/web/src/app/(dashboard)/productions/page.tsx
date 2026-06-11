@@ -6,6 +6,8 @@ import { Plus } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { PageHeader } from '@/components/common/page-header';
+import { SuccessAlert } from '@/components/common/success-alert';
 import { TablePagination } from '@/components/common/table-pagination';
 import { branchesApi } from '@/features/branches/api/branches.api';
 import { productsApi } from '@/features/products/api/products.api';
@@ -49,6 +51,7 @@ export default function ProductionsPage() {
     from: '',
     to: '',
   });
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [detailProductionId, setDetailProductionId] = useState<string | null>(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
@@ -110,6 +113,7 @@ export default function ProductionsPage() {
   });
 
   const handleCreateSubmit = async (values: ProductionFormValues) => {
+    setSuccessMessage(null);
     await createMutation.mutateAsync({
       branchId: values.branchId,
       productId: values.productId,
@@ -117,6 +121,7 @@ export default function ProductionsPage() {
       producedAt: values.producedAt ? new Date(values.producedAt).toISOString() : undefined,
       notes: optionalField(values.notes),
     });
+    setSuccessMessage('Üretim kaydedildi. FIFO stok tüketimi işlendi.');
   };
 
   const handleViewProduction = (production: ProductionListItem) => {
@@ -126,22 +131,24 @@ export default function ProductionsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Üretimler</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Üretim kayıtlarını girin ve FIFO maliyetlendirmesiyle stok tüketin.
-          </p>
-        </div>
-        {permissions.canCreateProduction ? (
-          <Button type="button" onClick={() => setCreateDialogOpen(true)}>
-            <Plus className="h-4 w-4" />
-            Üretim Oluştur
-          </Button>
-        ) : null}
-      </div>
+      <PageHeader
+        title="Üretimler"
+        description="Üretim kayıtları oluşturun; FIFO stok tüketimi ve gerçek maliyetleri izleyin."
+        action={
+          permissions.canCreateProduction ? (
+            <Button type="button" onClick={() => setCreateDialogOpen(true)}>
+              <Plus className="h-4 w-4" />
+              Üretim Oluştur
+            </Button>
+          ) : undefined
+        }
+      />
 
-      <Card>
+      {successMessage ? (
+        <SuccessAlert message={successMessage} onDismiss={() => setSuccessMessage(null)} />
+      ) : null}
+
+      <Card className="shadow-sm">
         <CardContent className="space-y-6 pt-6">
           <ProductionsFilters
             filters={filters}
