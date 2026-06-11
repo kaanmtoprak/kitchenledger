@@ -1,0 +1,26 @@
+{
+  "name": "kitchenledger",
+  "description": "Multi-tenant SaaS for food-production inventory, costing and FIFO production",
+  "private": true,
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,md,json}\"",
+    "db:generate": "pnpm --filter @kitchenledger/db db:generate",
+    "db:migrate": "pnpm --filter @kitchenledger/db db:migrate",
+    "db:deploy": "pnpm --filter @kitchenledger/db db:deploy",
+    "db:push": "pnpm --filter @kitchenledger/db db:push",
+    "db:seed": "pnpm --filter @kitchenledger/db db:seed",
+    "db:studio": "pnpm --filter @kitchenledger/db db:studio"
+  },
+  "devDependencies": {
+    "prettier": "^3.5.3",
+    "turbo": "^2.5.4"
+  },
+  "packageManager": "pnpm@10.30.3",
+  "engines": {
+    "node": ">=20"
+  }
+}

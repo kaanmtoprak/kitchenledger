@@ -1,0 +1,37 @@
+{
+  "name": "@kitchenledger/db",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "prisma generate && tsc",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "prisma generate",
+    "db:migrate": "dotenv -e ../../apps/api/.env -- prisma migrate dev",
+    "db:deploy": "dotenv -e ../../apps/api/.env -- prisma migrate deploy",
+    "db:push": "dotenv -e ../../apps/api/.env -- prisma db push",
+    "db:seed": "dotenv -e ../../apps/api/.env -- tsx prisma/seed.ts",
+    "db:studio": "dotenv -e ../../apps/api/.env -- prisma studio"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.9.0"
+  },
+  "devDependencies": {
+    "@kitchenledger/typescript-config": "workspace:*",
+    "@types/node": "^24.0.0",
+    "dotenv-cli": "^8.0.0",
+    "prisma": "^6.9.0",
+    "tsx": "^4.20.3",
+    "typescript": "^5.7.3"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  }
+}
