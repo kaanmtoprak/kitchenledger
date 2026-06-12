@@ -174,15 +174,44 @@ See [docs/SCREENSHOTS.md](docs/SCREENSHOTS.md) for the capture guide.
 
 **Pending screenshots:**
 
-- Dashboard
-- Inventory
-- Purchases
-- Recipe costing
-- Productions
-- Orders
-- Reports
-- Stock adjustment
-- Team management
-- Audit logs
+### Dashboard
+
+![Dashboard](assets/screenshots/01-dashboard.png)
+
+### Inventory
+
+![Inventory](assets/screenshots/02-inventory.png)
+
+### Purchases
+
+![Purchases](assets/screenshots/03-purchases.png)
+
+### Recipe Costing
+
+![Recipe Costing](assets/screenshots/04-recipes-cost.png)
+
+### Productions
+
+![Productions](assets/screenshots/05-productions.png)
+
+### Orders
+
+![Orders](assets/screenshots/06-orders.png)
+
+### Reports
+
+![Reports](assets/screenshots/07-reports.png)
+
+### Stock Adjustment
+
+![Stock Adjustment](assets/screenshots/08-stock-adjustment.png)
+
+### Team Management
+
+![Team Management](assets/screenshots/09-team-management.png)
+
+### Audit Logs
+
+![Audit Logs](assets/screenshots/10-audit-logs.png)
 
 Save captured images to `assets/screenshots/` using the filenames listed in the screenshot guide. Add `![...](assets/screenshots/....png)` links to this section only after the files exist.
