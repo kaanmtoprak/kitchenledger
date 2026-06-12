@@ -7,6 +7,8 @@ Portfolyo, demo ve GitHub sunumu öncesi manuel kontrol listesi.
 
 **Reports QA (Adım 31):** `/reports` — 4 tab, filtreler, özet kartlar, CSV export (max 1000 kayıt), branch scope korunur; VIEWER export yapabilir.
 
+**Team management QA (Adım 36):** `/team` — OWNER/ADMIN kullanıcı oluşturma, rol/şube atama, pasife alma; MANAGER/STAFF/VIEWER menü ve API erişimi yok.
+
 ---
 
 ## A. Kurulum Kontrolü
@@ -59,12 +61,16 @@ Tüm demo kullanıcılar için şifre: **`Password123!`**
 ### OWNER / ADMIN
 
 - [ ] Tüm sidebar sayfaları görünüyor
+- [ ] **Kullanıcılar** (`/team`) menüde görünüyor
+- [ ] Yeni kullanıcı oluşturma, rol ve şube atama çalışıyor
+- [ ] Pasife alınan kullanıcı organizasyona erişemiyor
 - [ ] Create / Edit / Pasife Al aksiyonları görünüyor
 - [ ] Şube yönetimi (oluşturma/düzenleme) erişilebilir
 - [ ] Her iki şube verisi (Main Kitchen + Kadikoy) görülebiliyor
 
 ### BRANCH_MANAGER (`manager@kitchenledger.app`)
 
+- [ ] **Kullanıcılar** menüsü görünmüyor; `/team` URL → erişim engeli mesajı
 - [ ] Şube yönetimi (Yeni Şube) görünmüyor
 - [ ] Pasife Al aksiyonları görünmüyor
 - [ ] Satın alma, sipariş ve üretim oluşturabiliyor

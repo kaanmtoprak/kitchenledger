@@ -26,6 +26,19 @@ const exactMessages: Record<string, string> = {
   'Product SKU already exists': 'Bu ürün kodu zaten mevcut.',
   'No access to this branch': 'Bu şubeye erişim yetkiniz yok.',
   'No access to this organization': 'Bu işletmeye erişim yetkiniz yok.',
+  'Organization membership is inactive': 'Bu işletmedeki üyeliğiniz pasif.',
+  'User is already a member of this organization':
+    'Bu kullanıcı zaten organizasyon üyesi.',
+  'Team member not found': 'Kullanıcı bulunamadı.',
+  'Only owners can assign the owner role': 'Sahip rolünü yalnızca sahip atayabilir.',
+  'Only owners can assign the admin role': 'Yönetici rolünü yalnızca sahip atayabilir.',
+  'Admins can only assign branch manager, staff, or viewer roles':
+    'Yöneticiler yalnızca şube yöneticisi, personel veya görüntüleyici atayabilir.',
+  'Admins cannot manage owner or admin members':
+    'Yöneticiler sahip veya yönetici kullanıcıları düzenleyemez.',
+  'You cannot change your own role': 'Kendi rolünüzü değiştiremezsiniz.',
+  'You cannot deactivate your own membership': 'Kendi üyeliğinizi pasife alamazsınız.',
+  'At least one branch is required for this role': 'Bu rol için en az bir şube seçilmelidir.',
   'One or more ingredients not found': 'Bir veya daha fazla malzeme bulunamadı.',
   'Order not found': 'Sipariş bulunamadı.',
   'Duplicate product in order items': 'Aynı ürün birden fazla kez eklenemez.',

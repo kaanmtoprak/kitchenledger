@@ -217,6 +217,7 @@ async function main() {
         userId: user.id,
         organizationId: organization.id,
         role: demoUser.role,
+        isActive: true,
       },
     });
   }

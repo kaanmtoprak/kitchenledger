@@ -61,11 +61,22 @@ User ── OrganizationMember ── Organization
 
 Guards applied per route:
 
-- **TenantGuard** — validates `x-organization-id` and resolves tenant context
+- **TenantGuard** — validates `x-organization-id`, resolves tenant context, rejects inactive `OrganizationMember` records
 - **RolesGuard** — enforces `@Roles(...)` decorator when present
 - **BranchAccessGuard** — ensures the user can access the requested branch
 
-Frontend mirrors backend permissions via `permissions.ts` so UI actions match API enforcement. Branch filters and create-form selects use `accessibleBranchIds` from `/auth/me` (via `useAccessibleBranches`) so users only see branches they can access; backend guards remain authoritative.
+### Team management
+
+`TeamModule` (`/team`) lets OWNER and ADMIN manage organization members:
+
+- Create users (or attach existing users to the organization)
+- Assign roles with privilege-escalation rules enforced server-side
+- Assign branch access via `BranchMember` records (required for branch-scoped roles)
+- Deactivate memberships (`OrganizationMember.isActive`) without deleting the user account
+
+`/auth/me` returns only **active** memberships. Inactive members lose API access to that organization immediately.
+
+Frontend mirrors backend permissions via `permissions.ts` (`canManageTeam` for OWNER/ADMIN). Branch filters and create-form selects use `accessibleBranchIds` from `/auth/me` (via `useAccessibleBranches`) so users only see branches they can access; backend guards remain authoritative.
 
 ## Reports and CSV Export
 

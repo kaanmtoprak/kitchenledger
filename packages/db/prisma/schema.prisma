@@ -87,6 +87,7 @@ model OrganizationMember {
   userId         String
   organizationId String
   role           Role
+  isActive       Boolean  @default(true)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 

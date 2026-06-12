@@ -15,6 +15,7 @@ import { ProductsModule } from './products/products.module';
 import { PurchasesModule } from './purchases/purchases.module';
 import { RecipesModule } from './recipes/recipes.module';
 import { SuppliersModule } from './suppliers/suppliers.module';
+import { TeamModule } from './team/team.module';
 
 const devOnlyModules = env.isProduction ? [] : [DebugModule];
 
@@ -35,6 +36,7 @@ const devOnlyModules = env.isProduction ? [] : [DebugModule];
     RecipesModule,
     ProductionsModule,
     DashboardModule,
+    TeamModule,
   ],
 })
 export class AppModule {}

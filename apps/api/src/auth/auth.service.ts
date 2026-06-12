@@ -220,7 +220,9 @@ export class AuthService {
         firstName: true,
         lastName: true,
         memberships: {
+          where: { isActive: true },
           select: {
+            id: true,
             organizationId: true,
             role: true,
             organization: {
@@ -255,6 +257,7 @@ export class AuthService {
     return {
       user: toSafeUser(user),
       memberships: user.memberships.map((membership) => ({
+        membershipId: membership.id,
         organizationId: membership.organizationId,
         role: membership.role,
         organization: toSafeOrganization(membership.organization),

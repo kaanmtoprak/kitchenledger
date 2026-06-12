@@ -2,6 +2,7 @@ export type AppRole = 'OWNER' | 'ADMIN' | 'BRANCH_MANAGER' | 'STAFF' | 'VIEWER';
 
 export type Permissions = {
   role: AppRole | null;
+  canManageTeam: boolean;
   canManageBranches: boolean;
   canDeactivateRecords: boolean;
   canMutateReferenceData: boolean;
@@ -21,6 +22,7 @@ export function createPermissions(role: string | null | undefined): Permissions 
 
   return {
     role: normalizedRole,
+    canManageTeam: isOwnerOrAdmin,
     canManageBranches: isOwnerOrAdmin,
     canDeactivateRecords: isOwnerOrAdmin,
     canMutateReferenceData,

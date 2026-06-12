@@ -28,7 +28,25 @@ Quick REST reference for KitchenLedger. Not a full Swagger spec — intended for
 | POST   | `/auth/login`    | Login; sets refresh cookie                                                                                   |
 | POST   | `/auth/refresh`  | Refresh access token (cookie)                                                                                |
 | POST   | `/auth/logout`   | Clear refresh token                                                                                          |
-| GET    | `/auth/me`       | Current user and memberships (includes `accessibleBranchIds` per org: `null` = all branches for OWNER/ADMIN) |
+| GET    | `/auth/me`       | Current user and active memberships (includes `membershipId`, `accessibleBranchIds` per org: `null` = all branches for OWNER/ADMIN) |
+
+---
+
+## Team
+
+OWNER and ADMIN only (`JwtAuthGuard` + `TenantGuard` + `RolesGuard`).
+
+| Method | Endpoint              | Description                                                                 |
+| ------ | --------------------- | --------------------------------------------------------------------------- |
+| GET    | `/team`               | List organization members (role, branches, status, last login)              |
+| POST   | `/team`               | Create user and/or add organization membership with role and branch access  |
+| PATCH  | `/team/:membershipId` | Update role, branch access and/or deactivate membership (`isActive: false`)   |
+
+**Notes:**
+
+- `OrganizationMember.isActive: false` blocks tenant access via `TenantGuard`
+- OWNER can assign any role; ADMIN can assign BRANCH_MANAGER, STAFF, VIEWER only
+- BRANCH_MANAGER / STAFF / VIEWER require at least one `branchId`
 
 ---
 

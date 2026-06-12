@@ -15,6 +15,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { AppSidebarNav } from '@/components/layout/app-sidebar';
 import { OrganizationSwitcher } from '@/components/layout/organization-switcher';
 import { useAuth } from '@/lib/auth/use-auth';
+import { usePermissions } from '@/lib/auth/use-permissions';
 
 function getInitials(firstName: string, lastName: string) {
   return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
@@ -22,6 +23,7 @@ function getInitials(firstName: string, lastName: string) {
 
 export function AppHeader() {
   const { user, logout } = useAuth();
+  const permissions = usePermissions();
 
   return (
     <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-slate-200 bg-white/95 px-4 shadow-[0_1px_3px_0_rgb(15_23_42/0.05)] backdrop-blur-md md:px-6">
@@ -39,7 +41,7 @@ export function AppHeader() {
               <span className="text-[11px] font-medium text-muted-foreground">Operasyon Paneli</span>
             </div>
             <div className="p-4">
-              <AppSidebarNav />
+              <AppSidebarNav canManageTeam={permissions.canManageTeam} />
             </div>
           </SheetContent>
         </Sheet>

@@ -13,15 +13,18 @@ import {
   ShoppingCart,
   Store,
   Truck,
+  Users,
   UtensilsCrossed,
   type LucideIcon,
 } from 'lucide-react';
+import { usePermissions } from '@/lib/auth/use-permissions';
 import { cn } from '@/lib/utils';
 
 type NavItem = {
   label: string;
   href: string;
   icon: LucideIcon;
+  requiresManageTeam?: boolean;
 };
 
 type NavGroup = {
@@ -35,6 +38,12 @@ const navGroups: NavGroup[] = [
     items: [
       { label: 'Panel', href: '/dashboard', icon: LayoutDashboard },
       { label: 'Raporlar', href: '/reports', icon: FileSpreadsheet },
+      {
+        label: 'Kullanıcılar',
+        href: '/team',
+        icon: Users,
+        requiresManageTeam: true,
+      },
     ],
   },
   {
@@ -58,7 +67,13 @@ const navGroups: NavGroup[] = [
   },
 ];
 
-export function AppSidebarNav({ className }: { className?: string }) {
+export function AppSidebarNav({
+  className,
+  canManageTeam = false,
+}: {
+  className?: string;
+  canManageTeam?: boolean;
+}) {
   const pathname = usePathname();
 
   return (
@@ -68,7 +83,9 @@ export function AppSidebarNav({ className }: { className?: string }) {
           <p className="px-3 text-[11px] font-medium uppercase tracking-wider text-slate-400">
             {group.label}
           </p>
-          {group.items.map((item) => {
+          {group.items
+            .filter((item) => !item.requiresManageTeam || canManageTeam)
+            .map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
 
@@ -96,6 +113,8 @@ export function AppSidebarNav({ className }: { className?: string }) {
 }
 
 export function AppSidebar() {
+  const permissions = usePermissions();
+
   return (
     <aside className="hidden w-64 shrink-0 border-r border-slate-200 bg-surface-sidebar md:flex md:flex-col">
       <div className="flex h-[4.5rem] flex-col justify-center border-b border-slate-200 bg-white/60 px-6">
@@ -105,7 +124,7 @@ export function AppSidebar() {
         <p className="text-[11px] font-medium text-muted-foreground">Operasyon Paneli</p>
       </div>
       <div className="flex-1 overflow-y-auto p-4">
-        <AppSidebarNav />
+        <AppSidebarNav canManageTeam={permissions.canManageTeam} />
       </div>
     </aside>
   );

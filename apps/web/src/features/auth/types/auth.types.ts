@@ -12,6 +12,7 @@ export type Organization = {
 };
 
 export type Membership = {
+  membershipId: string;
   organizationId: string;
   role: string;
   organization: Organization;

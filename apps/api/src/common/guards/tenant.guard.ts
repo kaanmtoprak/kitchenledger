@@ -42,6 +42,7 @@ export class TenantGuard implements CanActivate {
         id: true,
         organizationId: true,
         role: true,
+        isActive: true,
         organization: {
           select: { id: true },
         },
@@ -50,6 +51,10 @@ export class TenantGuard implements CanActivate {
 
     if (!membership) {
       throw new ForbiddenException('No access to this organization');
+    }
+
+    if (!membership.isActive) {
+      throw new ForbiddenException('Organization membership is inactive');
     }
 
     const tenant: TenantContext = {

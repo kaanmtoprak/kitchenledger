@@ -67,7 +67,17 @@ All demo users share the password **`Password123!`**.
 
 - Can see both branches
 - Can manage branches and deactivate records
+- Can open **Kullanıcılar** (`/team`) to create users and manage roles / branch access
 - Full MVP management actions visible in UI
+
+## Team Management Demo Flow
+
+1. Login as `owner@kitchenledger.app`
+2. Open **Genel → Kullanıcılar** (`/team`)
+3. Click **Yeni Kullanıcı** — create a STAFF user with **Main Kitchen** branch access
+4. Logout and login as the new user — confirm Main Kitchen scope only and no `/team` menu
+5. Login as `admin@kitchenledger.app` — confirm STAFF/VIEWER creation works; OWNER/ADMIN creation and editing of owner/admin users is blocked
+6. As owner, deactivate a test user — confirm they can no longer access the organization API
 
 ## Branch Scope Notes
 
