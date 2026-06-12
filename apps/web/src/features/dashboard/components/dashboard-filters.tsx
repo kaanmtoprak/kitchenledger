@@ -61,9 +61,7 @@ export function DashboardFiltersBar({
         >
           <SelectTrigger>
             <SelectValue
-              placeholder={
-                branches.length === 0 ? NO_ACCESSIBLE_BRANCHES_MESSAGE : 'Tüm Şubeler'
-              }
+              placeholder={branches.length === 0 ? NO_ACCESSIBLE_BRANCHES_MESSAGE : 'Tüm Şubeler'}
             />
           </SelectTrigger>
           <SelectContent>

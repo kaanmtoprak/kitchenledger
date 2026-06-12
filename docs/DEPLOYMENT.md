@@ -10,7 +10,9 @@ Related docs: [README](../README.md) · [QA_CHECKLIST.md](QA_CHECKLIST.md) · [A
 | ------------- | -------------------------------------------------------------- |
 | Web (Next.js) | [Vercel](https://vercel.com)                                   |
 | API (NestJS)  | [Railway](https://railway.app) or [Render](https://render.com) |
-| PostgreSQL    | Supabase Postgres, Neon, Railway Postgres, or similar          |
+| PostgreSQL    | [Neon](https://neon.tech), [Supabase](https://supabase.com) (Postgres only), Railway Postgres, or similar |
+
+**Note:** Supabase is used here only as a managed PostgreSQL host. KitchenLedger does **not** use Supabase Auth, Supabase SDK, or Row Level Security — auth and tenancy are handled by the NestJS API.
 
 ## Monorepo Notes
 
@@ -123,23 +125,29 @@ pnpm db:deploy && pnpm --filter @kitchenledger/api start:prod
 
 ### Web Build (Vercel)
 
-**Build command:**
+Recommended Vercel project settings (monorepo):
 
-```bash
-pnpm build
+| Setting            | Value                                      |
+| ------------------ | ------------------------------------------ |
+| Framework Preset   | Next.js                                    |
+| Root Directory     | `apps/web` (or repo root — see below)      |
+| Install Command    | `pnpm install` (from repo root)            |
+| Build Command      | `cd ../.. && pnpm --filter @kitchenledger/web build` if Root = `apps/web`; otherwise `pnpm --filter @kitchenledger/web build` |
+| Output Directory   | `.next` (default; Vercel auto-detects)     |
+| Node.js Version    | 20.x                                       |
+
+**Environment variable (Vercel):**
+
+```env
+NEXT_PUBLIC_API_URL=https://your-api-domain.com
 ```
 
-Or filter to web only:
+If the Vercel project root is the **repository root** instead of `apps/web`:
 
-```bash
-pnpm --filter @kitchenledger/web build
-```
-
-**Output directory:** `.next` (Vercel auto-detects Next.js)
-
-**Install command:** `pnpm install`
-
-Configure Vercel monorepo settings so the root is the repository root, or set the app directory to `apps/web` and adjust install/build accordingly.
+| Setting       | Value                                |
+| ------------- | ------------------------------------ |
+| Root Directory | `.` (default)                       |
+| Build Command  | `pnpm --filter @kitchenledger/web build` |
 
 ## Cookie / CORS Notes
 

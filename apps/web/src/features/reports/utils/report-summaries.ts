@@ -1,4 +1,7 @@
-import { calculateItemsTotal, type PurchaseListItem } from '@/features/purchases/types/purchase.types';
+import {
+  calculateItemsTotal,
+  type PurchaseListItem,
+} from '@/features/purchases/types/purchase.types';
 import type { ProductionListItem } from '@/features/productions/types/production.types';
 import type { StockMovementItem } from '@/features/inventory/types/inventory.types';
 import type { OrderListItem } from '@/features/orders/types/order.types';
@@ -26,8 +29,7 @@ export function summarizeProductions(productions: ProductionListItem[]) {
     const value = Number.parseFloat(row.totalCostSnapshot ?? '');
     return sum + (Number.isNaN(value) ? 0 : value);
   }, 0);
-  const averageUnitCost =
-    totalQuantity > 0 && totalCost > 0 ? totalCost / totalQuantity : 0;
+  const averageUnitCost = totalQuantity > 0 && totalCost > 0 ? totalCost / totalQuantity : 0;
 
   return { productionCount, totalQuantity, totalCost, averageUnitCost };
 }

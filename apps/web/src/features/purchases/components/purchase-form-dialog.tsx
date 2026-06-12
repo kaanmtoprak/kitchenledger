@@ -5,13 +5,9 @@ import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { DateTimeLocalInput } from '@/components/common/datetime-local-input';
+import { FormDialogContent } from '@/components/common/form-dialog-content';
 import {
   Form,
   FormControl,
@@ -102,7 +98,7 @@ export function PurchaseFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
+      <FormDialogContent className="sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle>Satın Alma Oluştur</DialogTitle>
         </DialogHeader>
@@ -159,7 +155,9 @@ export function PurchaseFormDialog({
                         ))}
                       </SelectContent>
                     </Select>
-                    <FormDescription>Tedarikçi seçimi maliyet analizi için kullanılır.</FormDescription>
+                    <FormDescription>
+                      Tedarikçi seçimi maliyet analizi için kullanılır.
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -172,7 +170,7 @@ export function PurchaseFormDialog({
                   <FormItem>
                     <FormLabel>Satın Alma Tarihi</FormLabel>
                     <FormControl>
-                      <Input type="datetime-local" {...field} />
+                      <DateTimeLocalInput {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -234,7 +232,7 @@ export function PurchaseFormDialog({
             </DialogFooter>
           </form>
         </Form>
-      </DialogContent>
+      </FormDialogContent>
     </Dialog>
   );
 }

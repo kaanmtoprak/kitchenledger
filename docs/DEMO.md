@@ -83,10 +83,10 @@ Use these to validate branch filtering in Purchases, Inventory, Dashboard, and P
 
 Seeded orders:
 
-| Order No       | Branch         | Customer     | Product              |
-| -------------- | -------------- | ------------ | -------------------- |
-| ORD-2026-0001  | Main Kitchen   | Ayşe Yılmaz  | San Sebastian (×2)   |
-| ORD-2026-0002  | Kadikoy Branch | Mert Demir   | Chocolate Cake (×1)  |
+| Order No      | Branch         | Customer    | Product             |
+| ------------- | -------------- | ----------- | ------------------- |
+| ORD-2026-0001 | Main Kitchen   | Ayşe Yılmaz | San Sebastian (×2)  |
+| ORD-2026-0002 | Kadikoy Branch | Mert Demir  | Chocolate Cake (×1) |
 
 ## Branch select scope
 

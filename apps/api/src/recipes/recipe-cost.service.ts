@@ -107,9 +107,10 @@ export class RecipeCostService {
       ? '0'
       : serializeDecimal(totalCost.div(yieldQuantity))!;
 
-    const servingCost = serializeDecimal(
-      totalCost.div(recipe.product.defaultServingCount),
-    )!;
+    const servingCost =
+      recipe.product.defaultServingCount > 0
+        ? serializeDecimal(totalCost.div(recipe.product.defaultServingCount))
+        : null;
 
     return {
       recipe: {

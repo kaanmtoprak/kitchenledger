@@ -150,10 +150,7 @@ export function StockAdjustmentDialog({
     weightedAverageUnitCost !== '0' &&
     Number.parseFloat(weightedAverageUnitCost) > 0;
 
-  const batchOptions = useMemo(
-    () => batchesQuery.data?.data ?? [],
-    [batchesQuery.data],
-  );
+  const batchOptions = useMemo(() => batchesQuery.data?.data ?? [], [batchesQuery.data]);
 
   useEffect(() => {
     if (!isDecrease) {
@@ -372,8 +369,8 @@ export function StockAdjustmentDialog({
                           <SelectItem key={batch.id} value={batch.id}>
                             Parti {batch.id.slice(-6)} — Kalan:{' '}
                             {formatQuantityDisplay(batch.remainingQuantity)}{' '}
-                            {formatBaseUnit(batch.unit as Ingredient['baseUnit'])} — Birim
-                            maliyet: {formatCurrency(batch.unitCost)}
+                            {formatBaseUnit(batch.unit as Ingredient['baseUnit'])} — Birim maliyet:{' '}
+                            {formatCurrency(batch.unitCost)}
                           </SelectItem>
                         ))}
                       </SelectContent>

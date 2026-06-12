@@ -15,11 +15,7 @@ import {
 } from '@/components/ui/table';
 import { useAuth } from '@/lib/auth/use-auth';
 import { getApiErrorMessage } from '@/lib/utils/api-error-message';
-import {
-  formatCurrency,
-  formatDateTime,
-  formatQuantityDisplay,
-} from '@/lib/utils/display';
+import { formatCurrency, formatDateTime, formatQuantityDisplay } from '@/lib/utils/display';
 import { ordersApi } from '../api/orders.api';
 import { OrderStatusBadge } from './order-status-badge';
 import { OrderStatusSelect } from './order-status-select';
@@ -151,9 +147,7 @@ export function OrderDetailDialog({
               </div>
               <div>
                 <p className="text-muted-foreground">Teslim tarihi</p>
-                <p className="font-medium">
-                  {order.dueAt ? formatDateTime(order.dueAt) : '—'}
-                </p>
+                <p className="font-medium">{order.dueAt ? formatDateTime(order.dueAt) : '—'}</p>
               </div>
               <div className="md:col-span-2">
                 <p className="text-muted-foreground">Notlar</p>

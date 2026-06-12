@@ -40,17 +40,43 @@ const exactMessages: Record<string, string> = {
   'Invalid adjustment type': 'Geçersiz işlem tipi.',
 };
 
+type InsufficientStockDetails = {
+  ingredientName?: string;
+  requiredQuantity?: string;
+  availableQuantity?: string;
+  unit?: string;
+};
+
+type StructuredApiErrorBody = {
+  code?: string;
+  message?: string;
+  details?: InsufficientStockDetails;
+};
+
+function formatInsufficientStockMessage(details: InsufficientStockDetails): string | null {
+  if (!details.ingredientName || !details.requiredQuantity || !details.availableQuantity) {
+    return null;
+  }
+
+  const unitLabel = details.unit ? formatBaseUnit(details.unit as BaseUnit) : details.unit ?? '';
+  return `${details.ingredientName} için yeterli stok yok. Gerekli: ${details.requiredQuantity} ${unitLabel}, Mevcut: ${details.availableQuantity} ${unitLabel}`;
+}
+
 function translateInsufficientStock(message: string): string | null {
   const match = message.match(
-    /^Insufficient stock for (.+)\. Required: ([\d.]+) (\w+), available: ([\d.]+) (\w+)$/,
+    /^Insufficient stock for (.+)\. Required: ([\d.]+) (\w+), available: ([\d.]+) (\w+)$/i,
   );
   if (!match) {
     return null;
   }
 
   const [, name, required, unit, available] = match;
-  const unitLabel = formatBaseUnit(unit as BaseUnit);
-  return `${name} için yeterli stok yok. Gerekli: ${required} ${unitLabel}, Mevcut: ${available} ${unitLabel}`;
+  return formatInsufficientStockMessage({
+    ingredientName: name,
+    requiredQuantity: required,
+    availableQuantity: available,
+    unit,
+  });
 }
 
 function translateUnitMismatch(message: string): string | null {
@@ -63,7 +89,50 @@ function translateUnitMismatch(message: string): string | null {
   return `${name} için birim uyuşmuyor. Beklenen: ${formatBaseUnit(unit as BaseUnit)}`;
 }
 
-function translateBackendMessage(message: string): string {
+function extractStructuredBody(error: ApiError): StructuredApiErrorBody | null {
+  const details = error.details;
+  if (!details || typeof details !== 'object') {
+    return null;
+  }
+
+  const body = details as Record<string, unknown>;
+  const messageField = body.message;
+
+  if (messageField && typeof messageField === 'object' && !Array.isArray(messageField)) {
+    return messageField as StructuredApiErrorBody;
+  }
+
+  if (typeof body.code === 'string') {
+    return {
+      code: body.code,
+      message: typeof body.message === 'string' ? body.message : undefined,
+      details:
+        body.details && typeof body.details === 'object'
+          ? (body.details as InsufficientStockDetails)
+          : undefined,
+    };
+  }
+
+  return null;
+}
+
+function translateBackendMessage(message: string, error?: ApiError): string {
+  const structured = error ? extractStructuredBody(error) : null;
+  if (structured?.code === 'INSUFFICIENT_STOCK') {
+    const fromDetails = structured.details
+      ? formatInsufficientStockMessage(structured.details)
+      : null;
+    if (fromDetails) {
+      return fromDetails;
+    }
+    if (structured.message) {
+      const translated = translateInsufficientStock(structured.message);
+      if (translated) {
+        return translated;
+      }
+    }
+  }
+
   if (exactMessages[message]) {
     return exactMessages[message];
   }
@@ -93,20 +162,22 @@ export function getApiErrorMessage(
       return 'Oturum süreniz dolmuş olabilir. Lütfen tekrar giriş yapın.';
     }
     if (error.status === 404) {
-      return error.message ? translateBackendMessage(error.message) : 'Kayıt bulunamadı.';
+      return error.message
+        ? translateBackendMessage(error.message, error)
+        : 'Kayıt bulunamadı.';
     }
     if (error.status === 409) {
       return error.message
-        ? translateBackendMessage(error.message)
+        ? translateBackendMessage(error.message, error)
         : 'Bu kayıt zaten mevcut veya işlem mevcut verilerle çakışıyor.';
     }
     if (error.status === 400) {
       return error.message
-        ? translateBackendMessage(error.message)
+        ? translateBackendMessage(error.message, error)
         : 'Geçersiz istek. Lütfen alanları kontrol edin.';
     }
     if (error.message) {
-      return translateBackendMessage(error.message);
+      return translateBackendMessage(error.message, error);
     }
     return fallback;
   }

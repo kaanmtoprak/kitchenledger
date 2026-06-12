@@ -4,6 +4,8 @@ Multi-tenant SaaS platform for small food-production businesses to manage ingred
 
 **Stack:** TypeScript · Next.js · NestJS · PostgreSQL
 
+**Live demo:** _Coming soon — URL will be added after Vercel/Railway deployment._
+
 ## Overview
 
 ### Problem

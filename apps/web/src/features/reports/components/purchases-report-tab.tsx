@@ -24,18 +24,16 @@ import {
 import { BranchFilterSelect } from '@/components/common/branch-filter-select';
 import { EmptyState } from '@/components/common/empty-state';
 import { purchasesApi } from '@/features/purchases/api/purchases.api';
-import { calculateItemsTotal, type PurchaseListItem } from '@/features/purchases/types/purchase.types';
+import {
+  calculateItemsTotal,
+  type PurchaseListItem,
+} from '@/features/purchases/types/purchase.types';
 import { suppliersApi } from '@/features/suppliers/api/suppliers.api';
 import { useAccessibleBranches } from '@/lib/hooks/use-accessible-branches';
 import { useDebouncedValue } from '@/lib/hooks/use-debounced-value';
 import { useAuth } from '@/lib/auth/use-auth';
 import { getApiErrorMessage } from '@/lib/utils/api-error-message';
-import {
-  downloadCsv,
-  formatCsvCurrency,
-  formatCsvDateTime,
-  type CsvColumn,
-} from '@/lib/utils/csv';
+import { downloadCsv, formatCsvCurrency, formatCsvDateTime, type CsvColumn } from '@/lib/utils/csv';
 import { fetchPaginatedRecords, REPORT_PREVIEW_LIMIT } from '@/lib/utils/fetch-paginated';
 import { formatCurrency, formatDateTime } from '@/lib/utils/display';
 import { ReportSummaryCards } from './report-summary-cards';
@@ -59,7 +57,9 @@ type PurchasesReportRow = PurchaseListItem & {
 
 export function PurchasesReportTab() {
   const { selectedOrganizationId } = useAuth();
-  const { branches, branchesQuery } = useAccessibleBranches({ queryKeySuffix: 'reports-purchases' });
+  const { branches, branchesQuery } = useAccessibleBranches({
+    queryKeySuffix: 'reports-purchases',
+  });
   const [filters, setFilters] = useState<PurchasesReportFilterState>(defaultFilters);
   const [isExporting, setIsExporting] = useState(false);
   const debouncedSearch = useDebouncedValue(filters.search, 300);
@@ -282,7 +282,9 @@ export function PurchasesReportTab() {
                   <TableCell className="text-right whitespace-nowrap">
                     {formatCurrency(row.totalAmount)}
                   </TableCell>
-                  <TableCell className="max-w-[160px] truncate">{row.notes?.trim() || '—'}</TableCell>
+                  <TableCell className="max-w-[160px] truncate">
+                    {row.notes?.trim() || '—'}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

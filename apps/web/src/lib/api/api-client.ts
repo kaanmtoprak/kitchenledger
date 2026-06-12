@@ -22,17 +22,41 @@ function shouldSkipRefresh(path: string): boolean {
   return NO_REFRESH_PATHS.some((authPath) => path.startsWith(authPath));
 }
 
+function extractErrorMessage(payload: {
+  message?: string | string[] | Record<string, unknown>;
+}): string {
+  const { message } = payload;
+
+  if (typeof message === 'string') {
+    return message;
+  }
+
+  if (Array.isArray(message)) {
+    return message.join(', ');
+  }
+
+  if (message && typeof message === 'object') {
+    const structured = message as { message?: string; code?: string };
+    if (typeof structured.message === 'string') {
+      return structured.message;
+    }
+    if (typeof structured.code === 'string') {
+      return structured.code;
+    }
+  }
+
+  return 'Request failed';
+}
+
 async function parseErrorResponse(response: Response): Promise<ApiError> {
   let message = response.statusText || 'Request failed';
   let details: unknown;
 
   try {
-    const data = (await response.json()) as { message?: string | string[] };
-    if (typeof data.message === 'string') {
-      message = data.message;
-    } else if (Array.isArray(data.message)) {
-      message = data.message.join(', ');
-    }
+    const data = (await response.json()) as {
+      message?: string | string[] | Record<string, unknown>;
+    };
+    message = extractErrorMessage(data);
     details = data;
   } catch {
     // ignore JSON parse errors

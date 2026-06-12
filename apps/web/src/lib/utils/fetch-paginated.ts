@@ -4,10 +4,7 @@ export const REPORT_API_PAGE_LIMIT = 100;
 export const REPORT_EXPORT_MAX_RECORDS = 1000;
 export const REPORT_PREVIEW_LIMIT = 50;
 
-type PageFetcher<T> = (
-  page: number,
-  limit: number,
-) => Promise<PaginatedResponse<T>>;
+type PageFetcher<T> = (page: number, limit: number) => Promise<PaginatedResponse<T>>;
 
 export async function fetchPaginatedRecords<T>(
   fetchPage: PageFetcher<T>,

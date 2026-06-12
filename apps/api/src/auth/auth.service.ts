@@ -246,7 +246,8 @@ export class AuthService {
 
     const branchIdsByOrganization = new Map<string, string[]>();
     for (const branchMember of branchMembers) {
-      const existing = branchIdsByOrganization.get(branchMember.organizationId) ?? [];
+      const existing =
+        branchIdsByOrganization.get(branchMember.organizationId) ?? [];
       existing.push(branchMember.branchId);
       branchIdsByOrganization.set(branchMember.organizationId, existing);
     }

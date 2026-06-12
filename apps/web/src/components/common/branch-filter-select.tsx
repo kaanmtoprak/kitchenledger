@@ -29,8 +29,7 @@ export function BranchFilterSelect({
   allLabel = 'Tüm Şubeler',
 }: BranchFilterSelectProps) {
   const isDisabled = isLoading || branches.length === 0;
-  const placeholder =
-    branches.length === 0 ? NO_ACCESSIBLE_BRANCHES_MESSAGE : allLabel;
+  const placeholder = branches.length === 0 ? NO_ACCESSIBLE_BRANCHES_MESSAGE : allLabel;
 
   return (
     <div>

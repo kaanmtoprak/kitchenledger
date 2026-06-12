@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -132,13 +131,11 @@ export class ProductionsService {
         );
 
         if (!batchPlan) {
-          throw new ConflictException(
-            this.stockConsumptionService.buildInsufficientStockMessage(
-              required.ingredientName,
-              required.unit,
-              required.requiredQuantity,
-              available,
-            ),
+          this.stockConsumptionService.throwInsufficientStock(
+            required.ingredientName,
+            required.unit,
+            required.requiredQuantity,
+            available,
           );
         }
 
@@ -184,12 +181,15 @@ export class ProductionsService {
             select: { id: true, remainingQuantity: true },
           });
 
-          if (
-            !batch ||
-            batch.remainingQuantity.lt(batchPlan.consumedQuantity)
-          ) {
-            throw new ConflictException(
-              `Insufficient stock for ${plan.ingredientName} during consumption`,
+          const availableQuantity =
+            batch?.remainingQuantity ?? new Prisma.Decimal(0);
+
+          if (!batch || availableQuantity.lt(batchPlan.consumedQuantity)) {
+            this.stockConsumptionService.throwInsufficientStock(
+              plan.ingredientName,
+              plan.unit,
+              batchPlan.consumedQuantity,
+              availableQuantity,
             );
           }
 

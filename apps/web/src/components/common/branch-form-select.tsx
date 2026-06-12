@@ -26,8 +26,7 @@ export function BranchFormSelect({
   placeholder = 'Şube seçin',
 }: BranchFormSelectProps) {
   const isDisabled = isLoading || branches.length === 0;
-  const resolvedPlaceholder =
-    branches.length === 0 ? NO_ACCESSIBLE_BRANCHES_MESSAGE : placeholder;
+  const resolvedPlaceholder = branches.length === 0 ? NO_ACCESSIBLE_BRANCHES_MESSAGE : placeholder;
 
   return (
     <Select value={value} onValueChange={onChange} disabled={isDisabled}>

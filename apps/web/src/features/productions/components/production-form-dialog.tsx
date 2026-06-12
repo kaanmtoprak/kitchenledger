@@ -1,17 +1,13 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { DateTimeLocalInput } from '@/components/common/datetime-local-input';
+import { FormDialogContent } from '@/components/common/form-dialog-content';
 import {
   Form,
   FormControl,
@@ -67,6 +63,10 @@ export function ProductionFormDialog({
   const watchedProductId = form.watch('productId');
   const watchedQuantity = form.watch('quantityProduced');
 
+  useEffect(() => {
+    setError(null);
+  }, [watchedBranchId, watchedProductId, watchedQuantity]);
+
   const handleOpenChange = (nextOpen: boolean) => {
     if (nextOpen) {
       form.reset(defaultProductionFormValues);
@@ -91,7 +91,7 @@ export function ProductionFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+      <FormDialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Üretim Oluştur</DialogTitle>
         </DialogHeader>
@@ -173,8 +173,15 @@ export function ProductionFormDialog({
                 <FormItem>
                   <FormLabel>Üretim Tarihi</FormLabel>
                   <FormControl>
-                    <Input {...field} type="datetime-local" />
+                    <DateTimeLocalInput
+                      value={field.value ?? ''}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
+                    />
                   </FormControl>
+                  <FormDescription>Boş bırakılırsa kayıt anı kullanılır.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -212,7 +219,7 @@ export function ProductionFormDialog({
             </DialogFooter>
           </form>
         </Form>
-      </DialogContent>
+      </FormDialogContent>
     </Dialog>
   );
 }

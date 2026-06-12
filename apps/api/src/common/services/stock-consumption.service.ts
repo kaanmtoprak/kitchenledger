@@ -1,6 +1,14 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { BaseUnit, Prisma } from '@kitchenledger/db';
 import { PrismaService } from '../../prisma/prisma.service';
+import { serializeDecimal } from '../utils/decimal.util';
+
+export type InsufficientStockDetails = {
+  ingredientName: string;
+  requiredQuantity: string;
+  availableQuantity: string;
+  unit: BaseUnit;
+};
 
 export type FifoBatchPlan = {
   stockBatchId: string;
@@ -88,13 +96,57 @@ export class StockConsumptionService {
     return plan;
   }
 
+  buildInsufficientStockDetails(
+    ingredientName: string,
+    unit: BaseUnit,
+    required: Prisma.Decimal,
+    available: Prisma.Decimal,
+  ): InsufficientStockDetails {
+    return {
+      ingredientName,
+      requiredQuantity: serializeDecimal(required)!,
+      availableQuantity: serializeDecimal(available)!,
+      unit,
+    };
+  }
+
   buildInsufficientStockMessage(
     ingredientName: string,
     unit: BaseUnit,
     required: Prisma.Decimal,
     available: Prisma.Decimal,
   ): string {
-    return `Insufficient stock for ${ingredientName}. Required: ${required.toString()} ${unit}, available: ${available.toString()} ${unit}`;
+    const details = this.buildInsufficientStockDetails(
+      ingredientName,
+      unit,
+      required,
+      available,
+    );
+    return `Insufficient stock for ${details.ingredientName}. Required: ${details.requiredQuantity} ${details.unit}, available: ${details.availableQuantity} ${details.unit}`;
+  }
+
+  throwInsufficientStock(
+    ingredientName: string,
+    unit: BaseUnit,
+    required: Prisma.Decimal,
+    available: Prisma.Decimal,
+  ): never {
+    const details = this.buildInsufficientStockDetails(
+      ingredientName,
+      unit,
+      required,
+      available,
+    );
+    throw new ConflictException({
+      code: 'INSUFFICIENT_STOCK',
+      message: this.buildInsufficientStockMessage(
+        ingredientName,
+        unit,
+        required,
+        available,
+      ),
+      details,
+    });
   }
 
   sumAvailableQuantity(batches: StockBatchRow[]): Prisma.Decimal {
@@ -111,14 +163,7 @@ export class StockConsumptionService {
     available: Prisma.Decimal,
   ): void {
     if (available.lt(required)) {
-      throw new ConflictException(
-        this.buildInsufficientStockMessage(
-          ingredientName,
-          unit,
-          required,
-          available,
-        ),
-      );
+      this.throwInsufficientStock(ingredientName, unit, required, available);
     }
   }
 }

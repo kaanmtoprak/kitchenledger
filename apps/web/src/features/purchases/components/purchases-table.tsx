@@ -97,7 +97,9 @@ export function PurchasesTable({
                 <TableCell className="whitespace-nowrap">
                   {formatDateTime(purchase.purchasedAt)}
                 </TableCell>
-                <TableCell>{purchase.invoiceNumber?.trim() ? purchase.invoiceNumber : '—'}</TableCell>
+                <TableCell>
+                  {purchase.invoiceNumber?.trim() ? purchase.invoiceNumber : '—'}
+                </TableCell>
                 <TableCell className="max-w-[140px] truncate">
                   {branchNameById[purchase.branchId] ?? purchase.branchId}
                 </TableCell>

@@ -1,10 +1,4 @@
-import {
-  BaseUnit,
-  OrderStatus,
-  PrismaClient,
-  Role,
-  StockMovementType,
-} from '@prisma/client';
+import { BaseUnit, OrderStatus, PrismaClient, Role, StockMovementType } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime/library';
 
 const prisma = new PrismaClient();
@@ -172,10 +166,7 @@ async function createDemoOrder(params: {
     totalPrice: item.quantity.mul(item.unitPrice),
   }));
 
-  const totalAmount = itemRows.reduce(
-    (sum, item) => sum.add(item.totalPrice),
-    new Decimal(0),
-  );
+  const totalAmount = itemRows.reduce((sum, item) => sum.add(item.totalPrice), new Decimal(0));
 
   const customer = await prisma.customer.create({
     data: {

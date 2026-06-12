@@ -51,7 +51,9 @@ const defaultFilters: ProductionsReportFilterState = {
 
 export function ProductionsReportTab() {
   const { selectedOrganizationId } = useAuth();
-  const { branches, branchesQuery } = useAccessibleBranches({ queryKeySuffix: 'reports-productions' });
+  const { branches, branchesQuery } = useAccessibleBranches({
+    queryKeySuffix: 'reports-productions',
+  });
   const [filters, setFilters] = useState<ProductionsReportFilterState>(defaultFilters);
   const [isExporting, setIsExporting] = useState(false);
 
@@ -244,7 +246,9 @@ export function ProductionsReportTab() {
                   <TableCell className="text-right whitespace-nowrap">
                     {formatCurrency(row.unitCostSnapshot)}
                   </TableCell>
-                  <TableCell className="max-w-[160px] truncate">{row.notes?.trim() || '—'}</TableCell>
+                  <TableCell className="max-w-[160px] truncate">
+                    {row.notes?.trim() || '—'}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

@@ -32,7 +32,10 @@ export class CreateStockAdjustmentDto {
   @IsEnum(ADJUSTMENT_TYPES)
   type!: StockAdjustmentType;
 
-  @ValidateIf((dto: CreateStockAdjustmentDto) => dto.type === StockMovementType.MANUAL_ADJUSTMENT)
+  @ValidateIf(
+    (dto: CreateStockAdjustmentDto) =>
+      dto.type === StockMovementType.MANUAL_ADJUSTMENT,
+  )
   @IsEnum(AdjustmentDirection)
   adjustmentDirection?: AdjustmentDirection;
 

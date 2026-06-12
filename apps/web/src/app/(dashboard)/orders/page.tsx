@@ -12,10 +12,7 @@ import { TablePagination } from '@/components/common/table-pagination';
 import { ordersApi } from '@/features/orders/api/orders.api';
 import { OrderDetailDialog } from '@/features/orders/components/order-detail-dialog';
 import { OrderFormDialog } from '@/features/orders/components/order-form-dialog';
-import {
-  OrdersFilters,
-  type OrdersFilterState,
-} from '@/features/orders/components/orders-filters';
+import { OrdersFilters, type OrdersFilterState } from '@/features/orders/components/orders-filters';
 import { OrdersTable } from '@/features/orders/components/orders-table';
 import type { OrderFormValues } from '@/features/orders/schemas/order.schemas';
 import type { OrderListItem, OrderStatus } from '@/features/orders/types/order.types';
@@ -211,9 +208,7 @@ export default function OrdersPage() {
             canUpdateStatus={permissions.canUpdateOrderStatus}
             onView={handleViewOrder}
             onCreate={permissions.canCreateOrder ? () => setCreateDialogOpen(true) : undefined}
-            onStatusChange={
-              permissions.canUpdateOrderStatus ? handleStatusChange : undefined
-            }
+            onStatusChange={permissions.canUpdateOrderStatus ? handleStatusChange : undefined}
             updatingOrderId={updatingOrderId}
           />
 

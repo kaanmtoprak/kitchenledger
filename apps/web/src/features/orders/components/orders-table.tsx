@@ -91,9 +91,7 @@ export function OrdersTable({
           {orders.map((order) => (
             <TableRow key={order.id}>
               <TableCell className="font-medium whitespace-nowrap">{order.orderNumber}</TableCell>
-              <TableCell className="whitespace-nowrap">
-                {formatDateTime(order.orderedAt)}
-              </TableCell>
+              <TableCell className="whitespace-nowrap">{formatDateTime(order.orderedAt)}</TableCell>
               <TableCell className="max-w-[160px] truncate">
                 {order.customer?.name ?? '—'}
               </TableCell>

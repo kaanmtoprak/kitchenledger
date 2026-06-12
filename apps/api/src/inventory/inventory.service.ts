@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -115,13 +114,11 @@ export class InventoryService {
       }
 
       if (batch.remainingQuantity.lt(params.quantity)) {
-        throw new ConflictException(
-          this.stockConsumptionService.buildInsufficientStockMessage(
-            params.ingredientName,
-            params.unit,
-            params.quantity,
-            batch.remainingQuantity,
-          ),
+        this.stockConsumptionService.throwInsufficientStock(
+          params.ingredientName,
+          params.unit,
+          params.quantity,
+          batch.remainingQuantity,
         );
       }
 
@@ -162,7 +159,8 @@ export class InventoryService {
       params.branchId,
       params.ingredientId,
     );
-    const available = this.stockConsumptionService.sumAvailableQuantity(batches);
+    const available =
+      this.stockConsumptionService.sumAvailableQuantity(batches);
 
     this.stockConsumptionService.assertSufficientStock(
       params.ingredientName,
@@ -177,13 +175,11 @@ export class InventoryService {
     );
 
     if (!plan) {
-      throw new ConflictException(
-        this.stockConsumptionService.buildInsufficientStockMessage(
-          params.ingredientName,
-          params.unit,
-          params.quantity,
-          available,
-        ),
+      this.stockConsumptionService.throwInsufficientStock(
+        params.ingredientName,
+        params.unit,
+        params.quantity,
+        available,
       );
     }
 
@@ -194,8 +190,11 @@ export class InventoryService {
       });
 
       if (!batch || batch.remainingQuantity.lt(batchPlan.consumedQuantity)) {
-        throw new ConflictException(
-          `Insufficient stock for ${params.ingredientName} during adjustment`,
+        this.stockConsumptionService.throwInsufficientStock(
+          params.ingredientName,
+          params.unit,
+          batchPlan.consumedQuantity,
+          batch?.remainingQuantity ?? new Prisma.Decimal(0),
         );
       }
 
@@ -325,7 +324,10 @@ export class InventoryService {
       (dto.type === StockMovementType.MANUAL_ADJUSTMENT &&
         dto.adjustmentDirection === AdjustmentDirection.DECREASE);
 
-    if (dto.type === StockMovementType.MANUAL_ADJUSTMENT && !dto.adjustmentDirection) {
+    if (
+      dto.type === StockMovementType.MANUAL_ADJUSTMENT &&
+      !dto.adjustmentDirection
+    ) {
       throw new BadRequestException('Adjustment direction is required');
     }
 

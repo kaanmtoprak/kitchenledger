@@ -24,7 +24,10 @@ import {
 import { BranchFilterSelect } from '@/components/common/branch-filter-select';
 import { EmptyState } from '@/components/common/empty-state';
 import { inventoryApi } from '@/features/inventory/api/inventory.api';
-import type { StockMovementItem, StockMovementType } from '@/features/inventory/types/inventory.types';
+import type {
+  StockMovementItem,
+  StockMovementType,
+} from '@/features/inventory/types/inventory.types';
 import { ingredientsApi } from '@/features/ingredients/api/ingredients.api';
 import { useAccessibleBranches } from '@/lib/hooks/use-accessible-branches';
 import { useAuth } from '@/lib/auth/use-auth';
@@ -74,7 +77,9 @@ type StockMovementReportRow = StockMovementItem & {
 
 export function StockMovementsReportTab() {
   const { selectedOrganizationId } = useAuth();
-  const { branches, branchesQuery } = useAccessibleBranches({ queryKeySuffix: 'reports-movements' });
+  const { branches, branchesQuery } = useAccessibleBranches({
+    queryKeySuffix: 'reports-movements',
+  });
   const [filters, setFilters] = useState<StockMovementsReportFilterState>(defaultFilters);
   const [isExporting, setIsExporting] = useState(false);
 
@@ -135,8 +140,7 @@ export function StockMovementsReportTab() {
         { header: 'Birim', value: (row) => formatUnit(row.unit) },
         {
           header: 'Birim Maliyet',
-          value: (row) =>
-            row.unitCostValue !== null ? formatCsvCurrency(row.unitCostValue) : '',
+          value: (row) => (row.unitCostValue !== null ? formatCsvCurrency(row.unitCostValue) : ''),
         },
         {
           header: 'Toplam Maliyet',
@@ -187,12 +191,12 @@ export function StockMovementsReportTab() {
           <Label className="mb-2 block text-xs text-muted-foreground">Hareket Tipi</Label>
           <Select
             value={filters.movementType ?? 'all'}
-              onValueChange={(value) =>
-                setFilters({
-                  ...filters,
-                  movementType: value === 'all' ? undefined : (value as StockMovementType),
-                })
-              }
+            onValueChange={(value) =>
+              setFilters({
+                ...filters,
+                movementType: value === 'all' ? undefined : (value as StockMovementType),
+              })
+            }
           >
             <SelectTrigger>
               <SelectValue placeholder="Tüm hareketler" />
@@ -311,7 +315,9 @@ export function StockMovementsReportTab() {
                   <TableCell className="text-right whitespace-nowrap">
                     {row.totalCostValue !== null ? formatCurrency(row.totalCostValue) : '—'}
                   </TableCell>
-                  <TableCell className="max-w-[200px] truncate">{row.reason?.trim() || '—'}</TableCell>
+                  <TableCell className="max-w-[200px] truncate">
+                    {row.reason?.trim() || '—'}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

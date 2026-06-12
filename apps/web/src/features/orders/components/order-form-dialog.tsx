@@ -2,16 +2,12 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { DateTimeLocalInput } from '@/components/common/datetime-local-input';
+import { FormDialogContent } from '@/components/common/form-dialog-content';
 import {
   Form,
   FormControl,
@@ -58,17 +54,15 @@ export function OrderFormDialog({
     defaultValues: defaultOrderFormValues,
   });
 
-  const watchedItems = form.watch('items');
+  const watchedItems = useWatch({ control: form.control, name: 'items' });
 
-  const summary = useMemo(
-    () => ({
-      itemCount: watchedItems.filter((item) => item.productId).length,
-      total: calculateOrderItemsTotal(
-        watchedItems.filter((item) => item.productId && item.quantity && item.unitPrice),
-      ),
-    }),
-    [watchedItems],
-  );
+  const summary = useMemo(() => {
+    const items = watchedItems ?? defaultOrderFormValues.items;
+    return {
+      itemCount: items.filter((item) => item.productId).length,
+      total: calculateOrderItemsTotal(items),
+    };
+  }, [watchedItems]);
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (nextOpen) {
@@ -92,7 +86,7 @@ export function OrderFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
+      <FormDialogContent className="sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle>Yeni Sipariş</DialogTitle>
         </DialogHeader>
@@ -174,7 +168,7 @@ export function OrderFormDialog({
                   <FormItem>
                     <FormLabel>Sipariş tarihi</FormLabel>
                     <FormControl>
-                      <Input type="datetime-local" {...field} />
+                      <DateTimeLocalInput {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -188,7 +182,7 @@ export function OrderFormDialog({
                   <FormItem>
                     <FormLabel>Teslim tarihi</FormLabel>
                     <FormControl>
-                      <Input type="datetime-local" {...field} />
+                      <DateTimeLocalInput {...field} />
                     </FormControl>
                     <FormDescription>
                       Opsiyoneldir; sipariş takibi için kullanılabilir.
@@ -223,9 +217,7 @@ export function OrderFormDialog({
             <div className="rounded-lg border bg-muted/30 p-4">
               <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
                 <span>{summary.itemCount} kalem</span>
-                <span className="font-medium">
-                  Genel toplam: {formatCurrency(summary.total)}
-                </span>
+                <span className="font-medium">Genel toplam: {formatCurrency(summary.total)}</span>
               </div>
             </div>
 
@@ -239,7 +231,7 @@ export function OrderFormDialog({
             </DialogFooter>
           </form>
         </Form>
-      </DialogContent>
+      </FormDialogContent>
     </Dialog>
   );
 }

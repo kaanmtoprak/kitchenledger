@@ -111,7 +111,7 @@ export type RecipeCostResponse = {
   summary: {
     totalCost: string | null;
     unitCost: string;
-    servingCost: string;
+    servingCost: string | null;
     hasMissingCosts: boolean;
   };
 };

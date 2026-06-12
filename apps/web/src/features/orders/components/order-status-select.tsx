@@ -24,7 +24,11 @@ export function OrderStatusSelect({
   className,
 }: OrderStatusSelectProps) {
   return (
-    <Select value={value} onValueChange={(next) => onChange(next as OrderStatus)} disabled={disabled}>
+    <Select
+      value={value}
+      onValueChange={(next) => onChange(next as OrderStatus)}
+      disabled={disabled}
+    >
       <SelectTrigger className={className}>
         <SelectValue placeholder="Durum seçin" />
       </SelectTrigger>

@@ -34,7 +34,10 @@ export class OrdersController {
   }
 
   @Get()
-  list(@CurrentTenant() tenant: TenantContext, @Query() query: ListOrdersQueryDto) {
+  list(
+    @CurrentTenant() tenant: TenantContext,
+    @Query() query: ListOrdersQueryDto,
+  ) {
     return this.ordersService.list(tenant, query);
   }
 

@@ -42,9 +42,7 @@ export const orderFormSchema = z
     items: z.array(orderItemSchema).min(1, 'En az bir ürün eklenmelidir.'),
   })
   .superRefine((data, ctx) => {
-    const productIds = data.items
-      .map((item) => item.productId)
-      .filter((id) => id.trim() !== '');
+    const productIds = data.items.map((item) => item.productId).filter((id) => id.trim() !== '');
 
     if (new Set(productIds).size !== productIds.length) {
       ctx.addIssue({

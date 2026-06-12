@@ -22,12 +22,12 @@ Quick REST reference for KitchenLedger. Not a full Swagger spec — intended for
 
 ## Auth
 
-| Method | Endpoint         | Description                    |
-| ------ | ---------------- | ------------------------------ |
-| POST   | `/auth/register` | Register user and organization |
-| POST   | `/auth/login`    | Login; sets refresh cookie     |
-| POST   | `/auth/refresh`  | Refresh access token (cookie)  |
-| POST   | `/auth/logout`   | Clear refresh token            |
+| Method | Endpoint         | Description                                                                                                  |
+| ------ | ---------------- | ------------------------------------------------------------------------------------------------------------ |
+| POST   | `/auth/register` | Register user and organization                                                                               |
+| POST   | `/auth/login`    | Login; sets refresh cookie                                                                                   |
+| POST   | `/auth/refresh`  | Refresh access token (cookie)                                                                                |
+| POST   | `/auth/logout`   | Clear refresh token                                                                                          |
 | GET    | `/auth/me`       | Current user and memberships (includes `accessibleBranchIds` per org: `null` = all branches for OWNER/ADMIN) |
 
 ---
@@ -80,12 +80,12 @@ Quick REST reference for KitchenLedger. Not a full Swagger spec — intended for
 
 ## Orders
 
-| Method | Endpoint               | Description                                      |
-| ------ | ---------------------- | ------------------------------------------------ |
-| POST   | `/orders`              | Create customer order with line items            |
-| GET    | `/orders`              | List orders (branch-scoped, filterable)          |
-| GET    | `/orders/:id`          | Get order detail                                 |
-| PATCH  | `/orders/:id/status`   | Update order status                              |
+| Method | Endpoint             | Description                             |
+| ------ | -------------------- | --------------------------------------- |
+| POST   | `/orders`            | Create customer order with line items   |
+| GET    | `/orders`            | List orders (branch-scoped, filterable) |
+| GET    | `/orders/:id`        | Get order detail                        |
+| PATCH  | `/orders/:id/status` | Update order status                     |
 
 **List query params:** `page`, `limit`, `q`, `branchId`, `status`, `from`, `to`, `includeItems`
 
@@ -103,11 +103,11 @@ Quick REST reference for KitchenLedger. Not a full Swagger spec — intended for
 
 ## Inventory
 
-| Method | Endpoint               | Description                        |
-| ------ | ---------------------- | ---------------------------------- |
-| GET    | `/inventory/stock`     | Stock summary by branch/ingredient |
-| GET    | `/inventory/batches`   | Stock batches                      |
-| GET    | `/inventory/movements` | Stock movement history             |
+| Method | Endpoint                 | Description                                     |
+| ------ | ------------------------ | ----------------------------------------------- |
+| GET    | `/inventory/stock`       | Stock summary by branch/ingredient              |
+| GET    | `/inventory/batches`     | Stock batches                                   |
+| GET    | `/inventory/movements`   | Stock movement history                          |
 | POST   | `/inventory/adjustments` | Create stock adjustment (waste, return, manual) |
 
 **Adjustment body:** `branchId`, `ingredientId`, `type` (`WASTE` | `RETURN` | `MANUAL_ADJUSTMENT`), `quantity`, `reason`, optional `stockBatchId`, optional `unitCost`, optional `adjustmentDirection` (`INCREASE` | `DECREASE` for manual)
@@ -170,12 +170,12 @@ Quick REST reference for KitchenLedger. Not a full Swagger spec — intended for
 
 There is no dedicated `/reports` API module. The web app aggregates existing filtered list endpoints client-side:
 
-| Report tab           | Source endpoint           |
-| -------------------- | ------------------------- |
-| Satın Almalar        | `GET /purchases`          |
-| Üretimler            | `GET /productions`        |
-| Stok Hareketleri     | `GET /inventory/movements`|
-| Siparişler           | `GET /orders`             |
+| Report tab       | Source endpoint            |
+| ---------------- | -------------------------- |
+| Satın Almalar    | `GET /purchases`           |
+| Üretimler        | `GET /productions`         |
+| Stok Hareketleri | `GET /inventory/movements` |
+| Siparişler       | `GET /orders`              |
 
 CSV export reuses the same filters with paginated fetches (`limit=100`, up to 1000 rows). Branch scope is enforced by existing list APIs and `useAccessibleBranches` on the UI.
 

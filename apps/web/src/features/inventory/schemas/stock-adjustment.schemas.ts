@@ -12,16 +12,13 @@ const positiveNumberString = (label: string) =>
 const optionalNonNegativeNumberString = z
   .string()
   .optional()
-  .refine(
-    (value) => {
-      if (!value?.trim()) {
-        return true;
-      }
-      const num = Number.parseFloat(value);
-      return !Number.isNaN(num) && num >= 0;
-    },
-    'Birim maliyet negatif olamaz.',
-  );
+  .refine((value) => {
+    if (!value?.trim()) {
+      return true;
+    }
+    const num = Number.parseFloat(value);
+    return !Number.isNaN(num) && num >= 0;
+  }, 'Birim maliyet negatif olamaz.');
 
 export const stockAdjustmentTypes = ['WASTE', 'RETURN', 'MANUAL_ADJUSTMENT'] as const;
 export const adjustmentDirections = ['INCREASE', 'DECREASE'] as const;

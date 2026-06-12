@@ -103,7 +103,9 @@ export class OrdersService {
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
       customer: row.customer,
-      itemCount: includeItems ? (row.items?.length ?? 0) : (row._count?.items ?? 0),
+      itemCount: includeItems
+        ? (row.items?.length ?? 0)
+        : (row._count?.items ?? 0),
       ...(includeItems && row.items
         ? { items: row.items.map((item) => this.mapOrderItem(item)) }
         : {}),
