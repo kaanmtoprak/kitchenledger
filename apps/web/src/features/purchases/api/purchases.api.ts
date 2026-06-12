@@ -1,5 +1,6 @@
 import { apiClient } from '@/lib/api/api-client';
 import type {
+  CancelPurchasePayload,
   CreatePurchasePayload,
   ListPurchasesParams,
   PurchaseDetail,
@@ -17,6 +18,7 @@ function buildQueryString(params?: ListPurchasesParams): string {
   if (params.limit !== undefined) search.set('limit', String(params.limit));
   if (params.branchId) search.set('branchId', params.branchId);
   if (params.supplierId) search.set('supplierId', params.supplierId);
+  if (params.status) search.set('status', params.status);
   if (params.from) search.set('from', params.from);
   if (params.to) search.set('to', params.to);
   if (params.q) search.set('q', params.q);
@@ -33,4 +35,7 @@ export const purchasesApi = {
   getById: (id: string) => apiClient.get<PurchaseDetail>(`/purchases/${id}`),
 
   create: (payload: CreatePurchasePayload) => apiClient.post<PurchaseDetail>('/purchases', payload),
+
+  cancel: (id: string, payload: CancelPurchasePayload) =>
+    apiClient.patch<PurchaseDetail>(`/purchases/${id}/cancel`, payload),
 };

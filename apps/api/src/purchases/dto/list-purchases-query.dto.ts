@@ -1,5 +1,6 @@
+import { PurchaseStatus } from '@kitchenledger/db';
 import { Transform } from 'class-transformer';
-import { IsBoolean, IsDateString, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsDateString, IsEnum, IsOptional, IsString } from 'class-validator';
 import { PaginationQueryDto } from '../../common/pagination/pagination.dto';
 import { parseBooleanQuery } from '../../common/utils/boolean.util';
 
@@ -24,4 +25,8 @@ export class ListPurchasesQueryDto extends PaginationQueryDto {
   @Transform(({ value }) => parseBooleanQuery(value))
   @IsBoolean()
   includeItems?: boolean = false;
+
+  @IsOptional()
+  @IsEnum(PurchaseStatus)
+  status?: PurchaseStatus;
 }

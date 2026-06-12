@@ -50,6 +50,9 @@ const exactMessages: Record<string, string> = {
   'Unit cost is required': 'Birim maliyet gereklidir.',
   'Unit cost cannot be negative': 'Birim maliyet negatif olamaz.',
   'Invalid quantity': 'Miktar geçersiz.',
+  'This purchase has already been cancelled': 'Bu satın alma zaten iptal edilmiş.',
+  'This purchase cannot be cancelled because stock from its batches has been consumed':
+    'Bu satın alma iptal edilemez çünkü bağlı stok partilerinden tüketim yapılmış.',
   'Reason is required': 'Açıklama zorunludur.',
   'Adjustment direction is required': 'Manuel düzeltme için yön seçilmelidir.',
   'Invalid adjustment type': 'Geçersiz işlem tipi.',

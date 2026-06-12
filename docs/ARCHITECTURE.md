@@ -120,8 +120,8 @@ This distinction is central to KitchenLedger’s costing model:
 ## Important Trade-offs
 
 - **No unit conversion in MVP** — `baseUnit` must match across purchases, recipes and production
-- **No production update/delete** — corrections require future reversal/adjustment flows
-- **No purchase update/delete** — satın alma ve üretim kayıtları stok partisi, hareket ve maliyet ürettiği için doğrudan düzenlenmez; ileride iptal/düzeltme akışı planlanır
+- **No purchase edit** — purchases are cancelled via `PATCH /purchases/:id/cancel` when linked batches are fully unconsumed; partial/consumed batches cannot be cancelled in MVP
+- **No production update/delete** — production cancellation not implemented; corrections require future reversal/adjustment flows
 - **Orders are editable** — customer, items and totals can be updated unless status is `DELIVERED` or `CANCELLED`; branch and `orderedAt` remain fixed
 - **Access token in localStorage** — simpler MVP auth; refresh token remains HttpOnly cookie
 - **Concurrency** — stock consumption uses transactions but not pessimistic row locking; sufficient for MVP demo scale, improvable for high-throughput scenarios

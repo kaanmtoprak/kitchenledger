@@ -102,9 +102,16 @@ OWNER and ADMIN only (`JwtAuthGuard` + `TenantGuard` + `RolesGuard`).
 
 | Method | Endpoint         | Description                             |
 | ------ | ---------------- | --------------------------------------- |
-| POST   | `/purchases`     | Create purchase (creates stock batches) |
-| GET    | `/purchases`     | List purchases                          |
-| GET    | `/purchases/:id` | Get purchase detail                     |
+| POST   | `/purchases`              | Create purchase (creates stock batches) |
+| GET    | `/purchases`              | List purchases                          |
+| GET    | `/purchases/:id`          | Get purchase detail                     |
+| PATCH  | `/purchases/:id/cancel`   | Cancel purchase (reverses unconsumed stock) |
+
+**List query params:** `page`, `limit`, `q`, `branchId`, `supplierId`, `status`, `from`, `to`, `includeItems`
+
+**Purchase status:** `ACTIVE`, `CANCELLED`
+
+**Cancel rules:** Only when all linked stock batches are fully unconsumed (`remainingQuantity === initialQuantity`). Sets batch `remainingQuantity` to 0, writes `MANUAL_ADJUSTMENT` reversal movement, audit log `STATUS_CHANGE`. No purchase edit endpoint.
 
 ---
 

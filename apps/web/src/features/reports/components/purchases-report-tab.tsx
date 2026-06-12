@@ -35,7 +35,8 @@ import { useAuth } from '@/lib/auth/use-auth';
 import { getApiErrorMessage } from '@/lib/utils/api-error-message';
 import { downloadCsv, formatCsvCurrency, formatCsvDateTime, type CsvColumn } from '@/lib/utils/csv';
 import { fetchPaginatedRecords, REPORT_PREVIEW_LIMIT } from '@/lib/utils/fetch-paginated';
-import { formatCurrency, formatDateTime } from '@/lib/utils/display';
+import { formatCurrency, formatDateTime, formatPurchaseStatus } from '@/lib/utils/display';
+import type { PurchaseStatus } from '@/features/purchases/types/purchase.types';
 import { ReportSummaryCards } from './report-summary-cards';
 import { ReportsToolbar } from './reports-toolbar';
 import { summarizePurchases } from '../utils/report-summaries';
@@ -89,6 +90,7 @@ export function PurchasesReportTab() {
     debouncedSearch,
     filters.branchId,
     filters.supplierId,
+    filters.status,
     filters.from,
     filters.to,
   ];
@@ -104,6 +106,7 @@ export function PurchasesReportTab() {
           q: debouncedSearch || undefined,
           branchId: filters.branchId,
           supplierId: filters.supplierId,
+          status: filters.status,
           from: filters.from ? toStartOfDayIso(filters.from) : undefined,
           to: filters.to ? toEndOfDayIso(filters.to) : undefined,
         }),
@@ -134,6 +137,7 @@ export function PurchasesReportTab() {
       const columns: CsvColumn<PurchasesReportRow>[] = [
         { header: 'Satın Alma Tarihi', value: (row) => formatCsvDateTime(row.purchasedAt) },
         { header: 'Fatura No', value: (row) => row.invoiceNumber ?? '' },
+        { header: 'Durum', value: (row) => formatPurchaseStatus(row.status) },
         { header: 'Şube', value: (row) => row.branchName },
         { header: 'Tedarikçi', value: (row) => row.supplierName },
         { header: 'Kalem Sayısı', value: (row) => row.itemCount },
@@ -185,6 +189,28 @@ export function PurchasesReportTab() {
                     {supplier.name}
                   </SelectItem>
                 ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <Label className="mb-2 block text-xs text-muted-foreground">Durum</Label>
+            <Select
+              value={filters.status ?? 'all'}
+              onValueChange={(value) =>
+                setFilters({
+                  ...filters,
+                  status: value === 'all' ? undefined : (value as PurchaseStatus),
+                })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Tümü" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tümü</SelectItem>
+                <SelectItem value="ACTIVE">Aktif</SelectItem>
+                <SelectItem value="CANCELLED">İptal Edildi</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -262,6 +288,7 @@ export function PurchasesReportTab() {
               <TableRow>
                 <TableHead>Tarih</TableHead>
                 <TableHead>Fatura No</TableHead>
+                <TableHead>Durum</TableHead>
                 <TableHead>Şube</TableHead>
                 <TableHead>Tedarikçi</TableHead>
                 <TableHead className="text-right">Kalem Sayısı</TableHead>
@@ -276,6 +303,7 @@ export function PurchasesReportTab() {
                     {formatDateTime(row.purchasedAt)}
                   </TableCell>
                   <TableCell>{row.invoiceNumber?.trim() ? row.invoiceNumber : '—'}</TableCell>
+                  <TableCell>{formatPurchaseStatus(row.status)}</TableCell>
                   <TableCell className="max-w-[140px] truncate">{row.branchName}</TableCell>
                   <TableCell className="max-w-[160px] truncate">{row.supplierName}</TableCell>
                   <TableCell className="text-right">{row.itemCount}</TableCell>

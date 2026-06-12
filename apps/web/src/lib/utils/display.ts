@@ -1,5 +1,6 @@
 import type { BaseUnit } from '@/features/ingredients/types/ingredient.types';
 import type { OrderStatus } from '@/features/orders/types/order.types';
+import type { PurchaseStatus } from '@/features/purchases/types/purchase.types';
 
 const baseUnitLabels: Record<BaseUnit, string> = {
   GRAM: 'Gram',
@@ -101,6 +102,15 @@ export const ORDER_STATUS_OPTIONS: OrderStatus[] = [
 
 export function formatOrderStatus(status: OrderStatus | string): string {
   return orderStatusLabels[status as OrderStatus] ?? status;
+}
+
+const purchaseStatusLabels: Record<PurchaseStatus, string> = {
+  ACTIVE: 'Aktif',
+  CANCELLED: 'İptal Edildi',
+};
+
+export function formatPurchaseStatus(status: PurchaseStatus | string): string {
+  return purchaseStatusLabels[status as PurchaseStatus] ?? status;
 }
 
 export function formatQuantityDisplay(value: string | null | undefined): string {

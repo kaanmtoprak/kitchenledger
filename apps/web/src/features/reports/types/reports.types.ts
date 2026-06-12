@@ -1,5 +1,6 @@
 import type { StockMovementType } from '@/features/inventory/types/inventory.types';
 import type { OrderStatus } from '@/features/orders/types/order.types';
+import type { PurchaseStatus } from '@/features/purchases/types/purchase.types';
 
 export type ReportTabId = 'purchases' | 'productions' | 'movements' | 'orders';
 
@@ -11,6 +12,7 @@ export type ReportDateFilterState = {
 
 export type PurchasesReportFilterState = ReportDateFilterState & {
   supplierId?: string;
+  status?: PurchaseStatus;
   search: string;
 };
 

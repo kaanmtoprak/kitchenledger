@@ -114,19 +114,21 @@ Owner veya Admin ile giriş yapın:
 1. [ ] **Malzeme oluştur** — `/ingredients`
 2. [ ] **Tedarikçi oluştur** — `/suppliers`
 3. [ ] **Satın alma oluştur** — `/purchases` (kalem ekle, kaydet)
-4. [ ] **Stok özetinde artış** — `/inventory` → Stok Özeti / Stok Partileri
-5. [ ] **Stok düzeltme** — Fire/Zayi, İade veya Manuel Düzeltme; hareket geçmişinde görünmeli
-6. [ ] **Yetersiz stok** — Fire/azaltma denemesinde Türkçe hata mesajı
-7. [ ] **Sipariş oluştur** — `/orders` (müşteri + ürün kalemleri, toplam kontrol)
-8. [ ] **Sipariş düzenle** — Müşteri/kalem/değişiklik; canlı toplam; kayıt sonrası liste/detay/rapor güncel
-9. [ ] **Sipariş düzenleme engeli** — `DELIVERED` / `CANCELLED` siparişte Düzenle yok; API `400`
-10. [ ] **Sipariş durumu güncelle** — Liste veya detaydan
-11. [ ] **Ürün oluştur** — `/products`
-12. [ ] **Reçete oluştur** — `/recipes`
-13. [ ] **Reçete maliyetini görüntüle** — Maliyeti Gör + şube seç
-14. [ ] **Üretim oluştur** — `/productions`
-15. [ ] **FIFO tüketim** — Üretim detayında partiler ve maliyet kaydı
-16. [ ] **Panel ve Stok güncellendi** — `/dashboard` ve `/inventory`
+4. [ ] **Satın alma iptal** — Tüketilmemiş kayıt iptal; stok düşer, hareket ve audit log oluşur
+5. [ ] **Satın alma iptal engeli** — Tüketilmiş batch varsa iptal edilemez (409)
+6. [ ] **Stok özetinde artış** — `/inventory` → Stok Özeti / Stok Partileri
+7. [ ] **Stok düzeltme** — Fire/Zayi, İade veya Manuel Düzeltme; hareket geçmişinde görünmeli
+8. [ ] **Yetersiz stok** — Fire/azaltma denemesinde Türkçe hata mesajı
+9. [ ] **Sipariş oluştur** — `/orders` (müşteri + ürün kalemleri, toplam kontrol)
+10. [ ] **Sipariş düzenle** — Müşteri/kalem/değişiklik; canlı toplam; kayıt sonrası liste/detay/rapor güncel
+11. [ ] **Sipariş düzenleme engeli** — `DELIVERED` / `CANCELLED` siparişte Düzenle yok; API `400`
+12. [ ] **Sipariş durumu güncelle** — Liste veya detaydan
+13. [ ] **Ürün oluştur** — `/products`
+14. [ ] **Reçete oluştur** — `/recipes`
+15. [ ] **Reçete maliyetini görüntüle** — Maliyeti Gör + şube seç
+16. [ ] **Üretim oluştur** — `/productions`
+17. [ ] **FIFO tüketim** — Üretim detayında partiler ve maliyet kaydı
+18. [ ] **Panel ve Stok güncellendi** — `/dashboard` ve `/inventory`
 
 ---
 

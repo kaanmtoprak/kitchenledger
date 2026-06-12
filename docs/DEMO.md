@@ -30,17 +30,18 @@ All demo users share the password **`Password123!`**.
 3. Open **Inventory → Stock** for Main Kitchen stock levels
 4. Open **Products** and **Recipes**, then use **View Cost** with a branch selected
 5. Create a **Purchase** for Main Kitchen
-6. Confirm inventory stock/batches/movements updated
-7. Open **Inventory → Stok Düzelt** and record a **Fire/Zayi** (waste) adjustment; verify stock and movements update
-8. Record a **İade** (return) or **Manuel Düzeltme** increase; verify a new stock batch appears
-9. Open **Orders** and review seeded demo orders (Ayşe Yılmaz / Mert Demir)
-10. Create a new **Order** with product line items and verify total amount
-11. **Edit** a PENDING or CONFIRMED order — change customer name, line quantities/prices, add/remove items; verify live total and saved detail
-12. Update order **status** from the list or detail dialog
-13. Mark an order **DELIVERED** or **CANCELLED** and confirm **Düzenle** is hidden; direct `PATCH /orders/:id` returns `400`
-14. Create a **Production** for a product with a recipe
-15. Confirm FIFO consumption in production detail and inventory movements
-16. Return to **Dashboard** and verify updated metrics
+6. Cancel an **unconsumed** purchase (reason required); verify stock drops and audit log entry
+7. Confirm inventory stock/batches/movements updated
+8. Open **Inventory → Stok Düzelt** and record a **Fire/Zayi** (waste) adjustment; verify stock and movements update
+9. Record a **İade** (return) or **Manuel Düzeltme** increase; verify a new stock batch appears
+10. Open **Orders** and review seeded demo orders (Ayşe Yılmaz / Mert Demir)
+11. Create a new **Order** with product line items and verify total amount
+12. **Edit** a PENDING or CONFIRMED order — change customer name, line quantities/prices, add/remove items; verify live total and saved detail
+13. Update order **status** from the list or detail dialog
+14. Mark an order **DELIVERED** or **CANCELLED** and confirm **Düzenle** is hidden; direct `PATCH /orders/:id` returns `400`
+15. Create a **Production** for a product with a recipe
+16. Confirm FIFO consumption in production detail and inventory movements
+17. Return to **Dashboard** and verify updated metrics
 
 ## Role Testing Checklist
 
@@ -148,7 +149,8 @@ Full walkthrough validated via local dev (`localhost:3000` + `localhost:3001`):
 - No unit conversion; recipe/purchase units must match ingredient `baseUnit`
 - Satın alma ve üretim kayıtları doğrudan düzenlenmez; stok partisi, hareket ve maliyet kaydı ürettikleri için ileride iptal/düzeltme akışıyla ele alınacaktır
 - No production update/delete; reversals would require future stock adjustment flows
-- No purchase update/delete; corrections would require stock adjustment/reversal
+- Purchase records are not edited; unconsumed purchases can be cancelled (reversal movement + audit log). Consumed batches block cancellation.
+- Partial purchase reversal / production cancellation not in MVP
 - Access token is stored in `localStorage`; production-grade security can be improved later
 - High-concurrency stock consumption does not yet use advanced DB row locking
 

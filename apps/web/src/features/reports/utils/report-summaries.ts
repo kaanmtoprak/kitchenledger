@@ -8,9 +8,13 @@ import type { OrderListItem } from '@/features/orders/types/order.types';
 import { formatOrderStatus } from '@/lib/utils/display';
 
 export function summarizePurchases(purchases: PurchaseListItem[]) {
-  const purchaseCount = purchases.length;
-  const itemCount = purchases.reduce((sum, purchase) => sum + (purchase.items?.length ?? 0), 0);
-  const totalAmount = purchases.reduce(
+  const activePurchases = purchases.filter((purchase) => purchase.status === 'ACTIVE');
+  const purchaseCount = activePurchases.length;
+  const itemCount = activePurchases.reduce(
+    (sum, purchase) => sum + (purchase.items?.length ?? 0),
+    0,
+  );
+  const totalAmount = activePurchases.reduce(
     (sum, purchase) => sum + calculateItemsTotal(purchase.items),
     0,
   );

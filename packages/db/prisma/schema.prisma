@@ -31,6 +31,11 @@ enum StockMovementType {
   RETURN
 }
 
+enum PurchaseStatus {
+  ACTIVE
+  CANCELLED
+}
+
 enum OrderStatus {
   PENDING
   CONFIRMED
@@ -251,15 +256,19 @@ model RecipeItem {
 }
 
 model Purchase {
-  id             String   @id @default(cuid())
-  organizationId String
-  branchId       String
-  supplierId     String?
-  purchasedAt    DateTime
-  invoiceNumber  String?
-  notes          String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id                 String         @id @default(cuid())
+  organizationId       String
+  branchId           String
+  supplierId         String?
+  purchasedAt        DateTime
+  invoiceNumber      String?
+  notes              String?
+  status             PurchaseStatus @default(ACTIVE)
+  cancelledAt        DateTime?
+  cancelledByUserId  String?
+  cancellationReason String?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
 
   organization Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   branch       Branch         @relation(fields: [branchId], references: [id], onDelete: Cascade)
@@ -270,6 +279,7 @@ model Purchase {
   @@index([branchId])
   @@index([supplierId])
   @@index([purchasedAt])
+  @@index([status])
 }
 
 model PurchaseItem {

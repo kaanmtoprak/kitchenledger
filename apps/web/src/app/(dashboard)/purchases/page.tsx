@@ -11,6 +11,7 @@ import { SuccessAlert } from '@/components/common/success-alert';
 import { TablePagination } from '@/components/common/table-pagination';
 import { ingredientsApi } from '@/features/ingredients/api/ingredients.api';
 import { purchasesApi } from '@/features/purchases/api/purchases.api';
+import { PurchaseCancelDialog } from '@/features/purchases/components/purchase-cancel-dialog';
 import { PurchaseDetailDialog } from '@/features/purchases/components/purchase-detail-dialog';
 import { PurchaseFormDialog } from '@/features/purchases/components/purchase-form-dialog';
 import {
@@ -56,6 +57,8 @@ export default function PurchasesPage() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [detailPurchaseId, setDetailPurchaseId] = useState<string | null>(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
+  const [cancelPurchase, setCancelPurchase] = useState<PurchaseListItem | null>(null);
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
 
   const debouncedSearch = useDebouncedValue(filters.search, 300);
 
@@ -101,15 +104,24 @@ export default function PurchasesPage() {
     enabled: Boolean(selectedOrganizationId),
   });
 
+  const invalidatePurchaseQueries = async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['purchases'] }),
+      queryClient.invalidateQueries({ queryKey: ['inventory'] }),
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] }),
+      queryClient.invalidateQueries({ queryKey: ['reports', 'purchases'] }),
+    ]);
+  };
+
   const createMutation = useMutation({
     mutationFn: purchasesApi.create,
-    onSuccess: async () => {
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['purchases'] }),
-        queryClient.invalidateQueries({ queryKey: ['inventory'] }),
-        queryClient.invalidateQueries({ queryKey: ['dashboard'] }),
-      ]);
-    },
+    onSuccess: invalidatePurchaseQueries,
+  });
+
+  const cancelMutation = useMutation({
+    mutationFn: ({ id, reason }: { id: string; reason: string }) =>
+      purchasesApi.cancel(id, { reason }),
+    onSuccess: invalidatePurchaseQueries,
   });
 
   const branchNameById = useMemo(() => {
@@ -149,6 +161,21 @@ export default function PurchasesPage() {
   const handleViewPurchase = (purchase: PurchaseListItem) => {
     setDetailPurchaseId(purchase.id);
     setDetailDialogOpen(true);
+  };
+
+  const handleCancelPurchase = (purchase: PurchaseListItem) => {
+    setCancelPurchase(purchase);
+    setCancelDialogOpen(true);
+  };
+
+  const handleConfirmCancel = async (reason: string) => {
+    if (!cancelPurchase) {
+      return;
+    }
+    setSuccessMessage(null);
+    await cancelMutation.mutateAsync({ id: cancelPurchase.id, reason });
+    setSuccessMessage('Satın alma iptal edildi.');
+    setCancelPurchase(null);
   };
 
   return (
@@ -194,7 +221,9 @@ export default function PurchasesPage() {
             supplierNameById={supplierNameById}
             isLoading={purchasesQuery.isLoading}
             canCreate={permissions.canCreatePurchase}
+            canCancel={permissions.canCancelPurchase}
             onView={handleViewPurchase}
+            onCancel={permissions.canCancelPurchase ? handleCancelPurchase : undefined}
             onCreate={permissions.canCreatePurchase ? () => setCreateDialogOpen(true) : undefined}
           />
 
@@ -222,7 +251,24 @@ export default function PurchasesPage() {
             setDetailPurchaseId(null);
           }
         }}
+        canCancel={permissions.canCancelPurchase}
+        onCancelled={() => setSuccessMessage('Satın alma iptal edildi.')}
       />
+
+      {permissions.canCancelPurchase ? (
+        <PurchaseCancelDialog
+          open={cancelDialogOpen}
+          onOpenChange={(open) => {
+            setCancelDialogOpen(open);
+            if (!open) {
+              setCancelPurchase(null);
+            }
+          }}
+          invoiceLabel={cancelPurchase?.invoiceNumber}
+          isLoading={cancelMutation.isPending}
+          onConfirm={handleConfirmCancel}
+        />
+      ) : null}
     </div>
   );
 }

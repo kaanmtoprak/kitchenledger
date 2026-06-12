@@ -1,6 +1,8 @@
 import type { PaginatedResponse } from '@/features/branches/types/branch.types';
 import type { BaseUnit } from '@/features/ingredients/types/ingredient.types';
 
+export type PurchaseStatus = 'ACTIVE' | 'CANCELLED';
+
 export type PurchaseItemIngredient = {
   id: string;
   name: string;
@@ -15,6 +17,9 @@ export type PurchaseListItem = {
   purchasedAt: string;
   invoiceNumber: string | null;
   notes: string | null;
+  status: PurchaseStatus;
+  cancelledAt: string | null;
+  cancellationReason: string | null;
   createdAt: string;
   updatedAt: string;
   items?: PurchaseListItemLine[];
@@ -29,15 +34,7 @@ export type PurchaseListItemLine = {
   ingredient: PurchaseItemIngredient;
 };
 
-export type PurchaseDetail = {
-  id: string;
-  branchId: string;
-  supplierId: string | null;
-  purchasedAt: string;
-  invoiceNumber: string | null;
-  notes: string | null;
-  createdAt: string;
-  updatedAt: string;
+export type PurchaseDetail = Omit<PurchaseListItem, 'items'> & {
   branch: {
     id: string;
     name: string;
@@ -66,10 +63,15 @@ export type ListPurchasesParams = {
   limit?: number;
   branchId?: string;
   supplierId?: string;
+  status?: PurchaseStatus;
   from?: string;
   to?: string;
   q?: string;
   includeItems?: boolean;
+};
+
+export type CancelPurchasePayload = {
+  reason: string;
 };
 
 export type CreatePurchaseItemPayload = {
@@ -89,6 +91,10 @@ export type CreatePurchasePayload = {
 };
 
 export type PurchasesListResponse = PaginatedResponse<PurchaseListItem>;
+
+export function isPurchaseActive(status: PurchaseStatus): boolean {
+  return status === 'ACTIVE';
+}
 
 export function calculateItemsTotal(items?: { totalPrice: string }[]): number {
   if (!items?.length) {

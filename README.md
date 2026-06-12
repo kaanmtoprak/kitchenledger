@@ -37,6 +37,7 @@ KitchenLedger connects purchasing, inventory, recipe costing and production into
 - FIFO production consumption
 - Production cost snapshots
 - Customer orders with branch-scoped create/edit/status tracking
+- Purchase cancellation with stock reversal (unconsumed batches only)
 - Dashboard analytics (purchases, production, low stock, recent activity)
 - Reports and CSV export (purchases, productions, stock movements, orders)
 - Demo role users for portfolio and QA scenarios

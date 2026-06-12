@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   UseGuards,
@@ -15,6 +16,7 @@ import { BranchAccessGuard } from '../common/guards/branch-access.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { TenantGuard } from '../common/guards/tenant.guard';
 import type { TenantContext } from '../common/types/tenant-context.type';
+import { CancelPurchaseDto } from './dto/cancel-purchase.dto';
 import { CreatePurchaseDto } from './dto/create-purchase.dto';
 import { ListPurchasesQueryDto } from './dto/list-purchases-query.dto';
 import { PurchasesService } from './purchases.service';
@@ -45,5 +47,16 @@ export class PurchasesController {
   @Get(':id')
   findOne(@CurrentTenant() tenant: TenantContext, @Param('id') id: string) {
     return this.purchasesService.findOne(tenant, id);
+  }
+
+  @Patch(':id/cancel')
+  @UseGuards(RolesGuard)
+  @Roles(Role.OWNER, Role.ADMIN, Role.BRANCH_MANAGER, Role.STAFF)
+  cancel(
+    @CurrentTenant() tenant: TenantContext,
+    @Param('id') id: string,
+    @Body() dto: CancelPurchaseDto,
+  ) {
+    return this.purchasesService.cancel(tenant, id, dto);
   }
 }
