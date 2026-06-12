@@ -37,7 +37,13 @@ import {
   type CsvColumn,
 } from '@/lib/utils/csv';
 import { fetchPaginatedRecords, REPORT_PREVIEW_LIMIT } from '@/lib/utils/fetch-paginated';
-import { formatCurrency, formatDateTime, formatQuantityDisplay } from '@/lib/utils/display';
+import {
+  formatCurrency,
+  formatDateTime,
+  formatProductionStatus,
+  formatQuantityDisplay,
+} from '@/lib/utils/display';
+import type { ProductionStatus } from '@/features/productions/types/production.types';
 import { ReportSummaryCards } from './report-summary-cards';
 import { ReportsToolbar } from './reports-toolbar';
 import { summarizeProductions } from '../utils/report-summaries';
@@ -48,6 +54,12 @@ const defaultFilters: ProductionsReportFilterState = {
   from: '',
   to: '',
 };
+
+const STATUS_OPTIONS: Array<{ value: 'all' | ProductionStatus; label: string }> = [
+  { value: 'all', label: 'Tümü' },
+  { value: 'ACTIVE', label: 'Aktif' },
+  { value: 'CANCELLED', label: 'İptal Edildi' },
+];
 
 export function ProductionsReportTab() {
   const { selectedOrganizationId } = useAuth();
@@ -70,6 +82,7 @@ export function ProductionsReportTab() {
       selectedOrganizationId,
       filters.branchId,
       filters.productId,
+      filters.status,
       filters.from,
       filters.to,
     ],
@@ -80,6 +93,7 @@ export function ProductionsReportTab() {
           limit,
           branchId: filters.branchId,
           productId: filters.productId,
+          status: filters.status,
           from: filters.from ? toStartOfDayIso(filters.from) : undefined,
           to: filters.to ? toEndOfDayIso(filters.to) : undefined,
         }),
@@ -96,6 +110,7 @@ export function ProductionsReportTab() {
     try {
       const columns: CsvColumn<ProductionListItem>[] = [
         { header: 'Üretim Tarihi', value: (row) => formatCsvDateTime(row.producedAt) },
+        { header: 'Durum', value: (row) => formatProductionStatus(row.status) },
         { header: 'Ürün', value: (row) => row.productName },
         { header: 'Şube', value: (row) => row.branchName },
         {
@@ -127,6 +142,30 @@ export function ProductionsReportTab() {
           isLoading={branchesQuery.isLoading}
           onChange={(branchId) => setFilters({ ...filters, branchId })}
         />
+
+        <div>
+          <Label className="mb-2 block text-xs text-muted-foreground">Durum</Label>
+          <Select
+            value={filters.status ?? 'all'}
+            onValueChange={(value) =>
+              setFilters({
+                ...filters,
+                status: value === 'all' ? undefined : (value as ProductionStatus),
+              })
+            }
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Tümü" />
+            </SelectTrigger>
+            <SelectContent>
+              {STATUS_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
         <div>
           <Label className="mb-2 block text-xs text-muted-foreground">Ürün</Label>
@@ -221,6 +260,7 @@ export function ProductionsReportTab() {
             <TableHeader>
               <TableRow>
                 <TableHead>Üretim Tarihi</TableHead>
+                <TableHead>Durum</TableHead>
                 <TableHead>Ürün</TableHead>
                 <TableHead>Şube</TableHead>
                 <TableHead className="text-right">Üretilen Miktar</TableHead>
@@ -235,6 +275,7 @@ export function ProductionsReportTab() {
                   <TableCell className="whitespace-nowrap">
                     {formatDateTime(row.producedAt)}
                   </TableCell>
+                  <TableCell>{formatProductionStatus(row.status)}</TableCell>
                   <TableCell className="max-w-[160px] truncate">{row.productName}</TableCell>
                   <TableCell className="max-w-[140px] truncate">{row.branchName}</TableCell>
                   <TableCell className="text-right whitespace-nowrap">

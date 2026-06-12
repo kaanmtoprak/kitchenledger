@@ -113,6 +113,17 @@ export function formatPurchaseStatus(status: PurchaseStatus | string): string {
   return purchaseStatusLabels[status as PurchaseStatus] ?? status;
 }
 
+export type ProductionStatus = 'ACTIVE' | 'CANCELLED';
+
+const productionStatusLabels: Record<ProductionStatus, string> = {
+  ACTIVE: 'Aktif',
+  CANCELLED: 'İptal Edildi',
+};
+
+export function formatProductionStatus(status: ProductionStatus | string): string {
+  return productionStatusLabels[status as ProductionStatus] ?? status;
+}
+
 export function formatQuantityDisplay(value: string | null | undefined): string {
   if (!value) {
     return '—';

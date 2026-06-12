@@ -1,9 +1,16 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { AuditAction, BaseUnit, Prisma, StockMovementType } from '@kitchenledger/db';
+import {
+  AuditAction,
+  BaseUnit,
+  Prisma,
+  ProductionStatus,
+  StockMovementType,
+} from '@kitchenledger/db';
 import { AuditService } from '../audit/audit.service';
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -21,6 +28,7 @@ import {
   CreateProductionDto,
   validateQuantityProduced,
 } from './dto/create-production.dto';
+import { CancelProductionDto } from './dto/cancel-production.dto';
 import { ListProductionsQueryDto } from './dto/list-productions-query.dto';
 
 @Injectable()
@@ -31,6 +39,41 @@ export class ProductionsService {
     private readonly stockConsumptionService: StockConsumptionService,
     private readonly auditService: AuditService,
   ) {}
+
+  private mapProductionBase(row: {
+    id: string;
+    branchId: string;
+    productId: string;
+    recipeId: string;
+    quantityProduced: Prisma.Decimal;
+    totalCostSnapshot: Prisma.Decimal;
+    unitCostSnapshot: Prisma.Decimal;
+    producedAt: Date;
+    notes: string | null;
+    status: ProductionStatus;
+    cancelledAt: Date | null;
+    cancelledByUserId: string | null;
+    cancellationReason: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+  }) {
+    return {
+      id: row.id,
+      branchId: row.branchId,
+      productId: row.productId,
+      recipeId: row.recipeId,
+      quantityProduced: serializeDecimal(row.quantityProduced),
+      totalCostSnapshot: serializeDecimal(row.totalCostSnapshot),
+      unitCostSnapshot: serializeDecimal(row.unitCostSnapshot),
+      producedAt: row.producedAt,
+      notes: row.notes,
+      status: row.status,
+      cancelledAt: row.cancelledAt,
+      cancellationReason: row.cancellationReason,
+      createdAt: row.createdAt,
+      updatedAt: row.updatedAt,
+    };
+  }
 
   async create(tenant: TenantContext, dto: CreateProductionDto) {
     try {
@@ -306,6 +349,7 @@ export class ProductionsService {
             },
           }
         : {}),
+      ...(query.status ? { status: query.status } : {}),
     };
 
     const [rows, total] = await Promise.all([
@@ -315,11 +359,18 @@ export class ProductionsService {
           id: true,
           branchId: true,
           productId: true,
+          recipeId: true,
           quantityProduced: true,
           totalCostSnapshot: true,
           unitCostSnapshot: true,
           producedAt: true,
           notes: true,
+          status: true,
+          cancelledAt: true,
+          cancelledByUserId: true,
+          cancellationReason: true,
+          createdAt: true,
+          updatedAt: true,
           branch: { select: { name: true } },
           product: { select: { name: true, sku: true } },
         },
@@ -331,17 +382,10 @@ export class ProductionsService {
     ]);
 
     const data = rows.map((row) => ({
-      id: row.id,
-      branchId: row.branchId,
+      ...this.mapProductionBase(row),
       branchName: row.branch.name,
-      productId: row.productId,
       productName: row.product.name,
       productSku: row.product.sku,
-      quantityProduced: serializeDecimal(row.quantityProduced),
-      totalCostSnapshot: serializeDecimal(row.totalCostSnapshot),
-      unitCostSnapshot: serializeDecimal(row.unitCostSnapshot),
-      producedAt: row.producedAt,
-      notes: row.notes,
     }));
 
     return buildPaginatedResponse(data, total, pagination);
@@ -362,6 +406,7 @@ export class ProductionsService {
           },
         },
         stockMovements: {
+          where: { type: StockMovementType.PRODUCTION_CONSUMPTION },
           select: {
             id: true,
             ingredientId: true,
@@ -448,17 +493,7 @@ export class ProductionsService {
     }
 
     return {
-      id: production.id,
-      branchId: production.branchId,
-      productId: production.productId,
-      recipeId: production.recipeId,
-      quantityProduced: serializeDecimal(production.quantityProduced),
-      totalCostSnapshot: serializeDecimal(production.totalCostSnapshot),
-      unitCostSnapshot: serializeDecimal(production.unitCostSnapshot),
-      producedAt: production.producedAt,
-      notes: production.notes,
-      createdAt: production.createdAt,
-      updatedAt: production.updatedAt,
+      ...this.mapProductionBase(production),
       branch: production.branch,
       product: production.product,
       recipe: {
@@ -476,5 +511,248 @@ export class ProductionsService {
         batches: consumption.batches,
       })),
     };
+  }
+
+  async cancel(tenant: TenantContext, id: string, dto: CancelProductionDto) {
+    const production = await this.prisma.production.findFirst({
+      where: { id, organizationId: tenant.organizationId },
+      include: {
+        product: { select: { name: true } },
+        stockMovements: {
+          where: { type: StockMovementType.PRODUCTION_CONSUMPTION },
+          include: {
+            stockBatch: {
+              select: {
+                id: true,
+                initialQuantity: true,
+                remainingQuantity: true,
+                unit: true,
+                unitCost: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!production) {
+      throw new NotFoundException('Production not found');
+    }
+
+    await this.branchAccessService.ensureBranchAccess(
+      tenant,
+      production.branchId,
+    );
+
+    if (production.status === ProductionStatus.CANCELLED) {
+      throw new BadRequestException('This production has already been cancelled');
+    }
+
+    if (production.stockMovements.length === 0) {
+      throw new BadRequestException(
+        'No stock consumption movements found for this production',
+      );
+    }
+
+    const reason = dto.reason.trim();
+    const beforeSnapshot = {
+      status: production.status,
+      cancellationReason: production.cancellationReason,
+    };
+
+    return this.prisma.$transaction(async (tx) => {
+      const restoredMovements: Array<{
+        movementId: string;
+        stockBatchId: string | null;
+        ingredientId: string;
+        quantity: string;
+        unit: BaseUnit;
+      }> = [];
+
+      for (const movement of production.stockMovements) {
+        if (!movement.stockBatchId || !movement.stockBatch) {
+          throw new BadRequestException(
+            'No stock consumption movements found for this production',
+          );
+        }
+
+        const batch = movement.stockBatch;
+        const newRemainingQuantity = batch.remainingQuantity.add(movement.quantity);
+
+        if (newRemainingQuantity.gt(batch.initialQuantity)) {
+          throw new ConflictException(
+            'Production cancellation failed because stock batch quantity would exceed initial quantity',
+          );
+        }
+
+        await tx.stockBatch.update({
+          where: { id: batch.id },
+          data: { remainingQuantity: newRemainingQuantity },
+        });
+
+        await tx.stockMovement.create({
+          data: {
+            organizationId: tenant.organizationId,
+            branchId: production.branchId,
+            ingredientId: movement.ingredientId,
+            stockBatchId: movement.stockBatchId,
+            productionId: production.id,
+            type: StockMovementType.MANUAL_ADJUSTMENT,
+            quantity: movement.quantity,
+            unit: movement.unit,
+            reason: `Üretim iptali: ${reason}`,
+          },
+        });
+
+        restoredMovements.push({
+          movementId: movement.id,
+          stockBatchId: movement.stockBatchId,
+          ingredientId: movement.ingredientId,
+          quantity: serializeDecimal(movement.quantity)!,
+          unit: movement.unit,
+        });
+      }
+
+      const updated = await tx.production.update({
+        where: { id: production.id },
+        data: {
+          status: ProductionStatus.CANCELLED,
+          cancelledAt: new Date(),
+          cancelledByUserId: tenant.userId,
+          cancellationReason: reason,
+        },
+        include: {
+          branch: { select: { id: true, name: true, code: true } },
+          product: { select: { id: true, name: true, sku: true } },
+          recipe: {
+            select: {
+              id: true,
+              name: true,
+              yieldQuantity: true,
+              yieldUnit: true,
+            },
+          },
+          stockMovements: {
+            where: { type: StockMovementType.PRODUCTION_CONSUMPTION },
+            select: {
+              id: true,
+              ingredientId: true,
+              stockBatchId: true,
+              quantity: true,
+              unit: true,
+              createdAt: true,
+              ingredient: { select: { id: true, name: true, sku: true } },
+              stockBatch: {
+                select: { id: true, unitCost: true, receivedAt: true },
+              },
+            },
+            orderBy: { createdAt: 'asc' },
+          },
+        },
+      });
+
+      await this.auditService.logFromTenant(
+        tenant,
+        {
+          action: AuditAction.STATUS_CHANGE,
+          entityType: 'Production',
+          entityId: updated.id,
+          entityLabel: production.product.name,
+          branchId: updated.branchId,
+          before: beforeSnapshot,
+          after: {
+            status: updated.status,
+            cancellationReason: updated.cancellationReason,
+          },
+          metadata: {
+            reason,
+            productName: production.product.name,
+            quantityProduced: serializeDecimal(updated.quantityProduced),
+            reversedMovementCount: restoredMovements.length,
+            restoredMovements,
+          },
+        },
+        tx,
+      );
+
+      const consumptionsMap = new Map<
+        string,
+        {
+          ingredientId: string;
+          ingredientName: string;
+          quantity: Prisma.Decimal;
+          unit: BaseUnit;
+          cost: Prisma.Decimal;
+          batches: Array<{
+            stockBatchId: string | null;
+            consumedQuantity: string;
+            unitCost: string | null;
+            cost: string;
+            movementId: string;
+          }>;
+        }
+      >();
+
+      for (const movement of updated.stockMovements) {
+        const movementCost = movement.stockBatch
+          ? movement.quantity.mul(movement.stockBatch.unitCost)
+          : new Prisma.Decimal(0);
+
+        const existing = consumptionsMap.get(movement.ingredientId);
+        if (!existing) {
+          consumptionsMap.set(movement.ingredientId, {
+            ingredientId: movement.ingredientId,
+            ingredientName: movement.ingredient.name,
+            quantity: movement.quantity,
+            unit: movement.unit,
+            cost: movementCost,
+            batches: [
+              {
+                stockBatchId: movement.stockBatchId,
+                consumedQuantity: serializeDecimal(movement.quantity)!,
+                unitCost: movement.stockBatch
+                  ? serializeDecimal(movement.stockBatch.unitCost)
+                  : null,
+                cost: serializeDecimal(movementCost)!,
+                movementId: movement.id,
+              },
+            ],
+          });
+          continue;
+        }
+
+        existing.quantity = existing.quantity.add(movement.quantity);
+        existing.cost = existing.cost.add(movementCost);
+        existing.batches.push({
+          stockBatchId: movement.stockBatchId,
+          consumedQuantity: serializeDecimal(movement.quantity)!,
+          unitCost: movement.stockBatch
+            ? serializeDecimal(movement.stockBatch.unitCost)
+            : null,
+          cost: serializeDecimal(movementCost)!,
+          movementId: movement.id,
+        });
+      }
+
+      return {
+        ...this.mapProductionBase(updated),
+        branch: updated.branch,
+        product: updated.product,
+        recipe: {
+          id: updated.recipe.id,
+          name: updated.recipe.name,
+          yieldQuantity: serializeDecimal(updated.recipe.yieldQuantity),
+          yieldUnit: updated.recipe.yieldUnit,
+        },
+        consumptions: [...consumptionsMap.values()].map((consumption) => ({
+          ingredientId: consumption.ingredientId,
+          ingredientName: consumption.ingredientName,
+          quantity: serializeDecimal(consumption.quantity),
+          unit: consumption.unit,
+          cost: serializeDecimal(consumption.cost),
+          batches: consumption.batches,
+        })),
+      };
+    });
   }
 }

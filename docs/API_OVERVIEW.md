@@ -185,11 +185,16 @@ OWNER and ADMIN only (`JwtAuthGuard` + `TenantGuard` + `RolesGuard`).
 
 ## Productions
 
-| Method | Endpoint           | Description                      |
-| ------ | ------------------ | -------------------------------- |
-| POST   | `/productions`     | Create production (FIFO consume) |
-| GET    | `/productions`     | List productions                 |
-| GET    | `/productions/:id` | Get production with consumptions |
+| Method | Endpoint                | Description                      |
+| ------ | ----------------------- | -------------------------------- |
+| POST   | `/productions`          | Create production (FIFO consume) |
+| GET    | `/productions`          | List productions                 |
+| GET    | `/productions/:id`      | Get production with consumptions |
+| PATCH  | `/productions/:id/cancel` | Cancel production (restore FIFO stock) |
+
+**Production status:** `ACTIVE`, `CANCELLED`
+
+**Cancel rules:** Only `ACTIVE` productions; restores consumed quantities to original batches; creates reversal `MANUAL_ADJUSTMENT` movements; writes audit log. Dashboard/report totals exclude `CANCELLED` productions.
 
 ---
 

@@ -11,6 +11,7 @@ import { SuccessAlert } from '@/components/common/success-alert';
 import { TablePagination } from '@/components/common/table-pagination';
 import { productsApi } from '@/features/products/api/products.api';
 import { productionsApi } from '@/features/productions/api/productions.api';
+import { ProductionCancelDialog } from '@/features/productions/components/production-cancel-dialog';
 import { ProductionDetailDialog } from '@/features/productions/components/production-detail-dialog';
 import { ProductionFormDialog } from '@/features/productions/components/production-form-dialog';
 import {
@@ -55,6 +56,8 @@ export default function ProductionsPage() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [detailProductionId, setDetailProductionId] = useState<string | null>(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
+  const [cancelProduction, setCancelProduction] = useState<ProductionListItem | null>(null);
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
 
   const debouncedSearch = useDebouncedValue(filters.search, 300);
 
@@ -98,6 +101,7 @@ export default function ProductionsPage() {
       queryClient.invalidateQueries({ queryKey: ['productions'] }),
       queryClient.invalidateQueries({ queryKey: ['inventory'] }),
       queryClient.invalidateQueries({ queryKey: ['dashboard'] }),
+      queryClient.invalidateQueries({ queryKey: ['reports', 'productions'] }),
       queryClient.invalidateQueries({ queryKey: ['products'] }),
       queryClient.invalidateQueries({ queryKey: ['recipes'] }),
     ]);
@@ -105,6 +109,12 @@ export default function ProductionsPage() {
 
   const createMutation = useMutation({
     mutationFn: productionsApi.create,
+    onSuccess: invalidateRelated,
+  });
+
+  const cancelMutation = useMutation({
+    mutationFn: ({ id, reason }: { id: string; reason: string }) =>
+      productionsApi.cancel(id, { reason }),
     onSuccess: invalidateRelated,
   });
 
@@ -123,6 +133,21 @@ export default function ProductionsPage() {
   const handleViewProduction = (production: ProductionListItem) => {
     setDetailProductionId(production.id);
     setDetailDialogOpen(true);
+  };
+
+  const handleCancelProduction = (production: ProductionListItem) => {
+    setCancelProduction(production);
+    setCancelDialogOpen(true);
+  };
+
+  const handleConfirmCancel = async (reason: string) => {
+    if (!cancelProduction) {
+      return;
+    }
+    setSuccessMessage(null);
+    await cancelMutation.mutateAsync({ id: cancelProduction.id, reason });
+    setSuccessMessage('Üretim iptal edildi. Tüketilen stoklar geri eklendi.');
+    setCancelProduction(null);
   };
 
   return (
@@ -166,7 +191,9 @@ export default function ProductionsPage() {
             productions={productionsQuery.data?.data ?? []}
             isLoading={productionsQuery.isLoading}
             canCreate={permissions.canCreateProduction}
+            canCancel={permissions.canCancelProduction}
             onView={handleViewProduction}
+            onCancel={handleCancelProduction}
             onCreate={permissions.canCreateProduction ? () => setCreateDialogOpen(true) : undefined}
           />
 
@@ -187,12 +214,30 @@ export default function ProductionsPage() {
       <ProductionDetailDialog
         productionId={detailProductionId}
         open={detailDialogOpen}
+        canCancel={permissions.canCancelProduction}
+        onCancelled={() => {
+          setSuccessMessage('Üretim iptal edildi. Tüketilen stoklar geri eklendi.');
+          void invalidateRelated();
+        }}
         onOpenChange={(open) => {
           setDetailDialogOpen(open);
           if (!open) {
             setDetailProductionId(null);
           }
         }}
+      />
+
+      <ProductionCancelDialog
+        open={cancelDialogOpen}
+        onOpenChange={(open) => {
+          setCancelDialogOpen(open);
+          if (!open) {
+            setCancelProduction(null);
+          }
+        }}
+        productLabel={cancelProduction?.productName}
+        isLoading={cancelMutation.isPending}
+        onConfirm={handleConfirmCancel}
       />
     </div>
   );

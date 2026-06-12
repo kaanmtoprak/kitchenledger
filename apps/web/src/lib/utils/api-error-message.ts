@@ -53,6 +53,11 @@ const exactMessages: Record<string, string> = {
   'This purchase has already been cancelled': 'Bu satın alma zaten iptal edilmiş.',
   'This purchase cannot be cancelled because stock from its batches has been consumed':
     'Bu satın alma iptal edilemez çünkü bağlı stok partilerinden tüketim yapılmış.',
+  'This production has already been cancelled': 'Bu üretim zaten iptal edilmiş.',
+  'No stock consumption movements found for this production':
+    'Bu üretime bağlı stok tüketim hareketi bulunamadı.',
+  'Production cancellation failed because stock batch quantity would exceed initial quantity':
+    'Stok partisi miktarı ilk miktarı aşacağı için üretim iptali yapılamadı.',
   'Reason is required': 'Açıklama zorunludur.',
   'Adjustment direction is required': 'Manuel düzeltme için yön seçilmelidir.',
   'Invalid adjustment type': 'Geçersiz işlem tipi.',

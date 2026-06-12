@@ -41,7 +41,8 @@ All demo users share the password **`Password123!`**.
 14. Mark an order **DELIVERED** or **CANCELLED** and confirm **Düzenle** is hidden; direct `PATCH /orders/:id` returns `400`
 15. Create a **Production** for a product with a recipe
 16. Confirm FIFO consumption in production detail and inventory movements
-17. Return to **Dashboard** and verify updated metrics
+17. **Cancel** an active production (reason required); verify stock restored, reversal movements and audit log
+18. Return to **Dashboard** and verify updated metrics (cancelled production excluded from cost totals)
 
 ## Role Testing Checklist
 
@@ -148,9 +149,9 @@ Full walkthrough validated via local dev (`localhost:3000` + `localhost:3001`):
 - Return/manual stock increases create new batches; no approval workflow or document upload for adjustments
 - No unit conversion; recipe/purchase units must match ingredient `baseUnit`
 - Satın alma ve üretim kayıtları doğrudan düzenlenmez; stok partisi, hareket ve maliyet kaydı ürettikleri için ileride iptal/düzeltme akışıyla ele alınacaktır
-- No production update/delete; reversals would require future stock adjustment flows
+- No production edit; active productions can be cancelled (FIFO restoration + reversal movements + audit log)
 - Purchase records are not edited; unconsumed purchases can be cancelled (reversal movement + audit log). Consumed batches block cancellation.
-- Partial purchase reversal / production cancellation not in MVP
+- Partial reversal / advanced correction workflows not in MVP
 - Access token is stored in `localStorage`; production-grade security can be improved later
 - High-concurrency stock consumption does not yet use advanced DB row locking
 

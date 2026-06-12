@@ -36,6 +36,11 @@ enum PurchaseStatus {
   CANCELLED
 }
 
+enum ProductionStatus {
+  ACTIVE
+  CANCELLED
+}
+
 enum OrderStatus {
   PENDING
   CONFIRMED
@@ -354,18 +359,22 @@ model StockMovement {
 }
 
 model Production {
-  id                 String   @id @default(cuid())
+  id                 String           @id @default(cuid())
   organizationId     String
   branchId           String
   productId          String
   recipeId           String
-  quantityProduced   Decimal  @db.Decimal(18, 6)
-  totalCostSnapshot  Decimal  @db.Decimal(18, 6)
-  unitCostSnapshot   Decimal  @db.Decimal(18, 6)
+  quantityProduced   Decimal          @db.Decimal(18, 6)
+  totalCostSnapshot  Decimal          @db.Decimal(18, 6)
+  unitCostSnapshot   Decimal          @db.Decimal(18, 6)
   producedAt         DateTime
   notes              String?
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  status             ProductionStatus @default(ACTIVE)
+  cancelledAt        DateTime?
+  cancelledByUserId  String?
+  cancellationReason String?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
 
   organization   Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   branch         Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
@@ -377,6 +386,7 @@ model Production {
   @@index([branchId])
   @@index([productId])
   @@index([producedAt])
+  @@index([status])
 }
 
 model Customer {

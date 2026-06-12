@@ -1,5 +1,6 @@
 import { apiClient } from '@/lib/api/api-client';
 import type {
+  CancelProductionPayload,
   CreateProductionPayload,
   ListProductionsParams,
   ProductionDetail,
@@ -34,6 +35,9 @@ function buildQueryString(params?: ListProductionsParams): string {
   if (params.to) {
     search.set('to', params.to);
   }
+  if (params.status) {
+    search.set('status', params.status);
+  }
 
   const query = search.toString();
   return query ? `?${query}` : '';
@@ -47,4 +51,7 @@ export const productionsApi = {
 
   create: (payload: CreateProductionPayload) =>
     apiClient.post<ProductionDetail>('/productions', payload),
+
+  cancel: (id: string, payload: CancelProductionPayload) =>
+    apiClient.patch<ProductionDetail>(`/productions/${id}/cancel`, payload),
 };

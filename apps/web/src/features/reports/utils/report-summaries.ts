@@ -24,12 +24,13 @@ export function summarizePurchases(purchases: PurchaseListItem[]) {
 }
 
 export function summarizeProductions(productions: ProductionListItem[]) {
-  const productionCount = productions.length;
-  const totalQuantity = productions.reduce((sum, row) => {
+  const activeProductions = productions.filter((production) => production.status === 'ACTIVE');
+  const productionCount = activeProductions.length;
+  const totalQuantity = activeProductions.reduce((sum, row) => {
     const value = Number.parseFloat(row.quantityProduced ?? '');
     return sum + (Number.isNaN(value) ? 0 : value);
   }, 0);
-  const totalCost = productions.reduce((sum, row) => {
+  const totalCost = activeProductions.reduce((sum, row) => {
     const value = Number.parseFloat(row.totalCostSnapshot ?? '');
     return sum + (Number.isNaN(value) ? 0 : value);
   }, 0);

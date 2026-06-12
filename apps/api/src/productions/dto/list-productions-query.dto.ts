@@ -1,4 +1,5 @@
-import { IsDateString, IsOptional, IsString } from 'class-validator';
+import { ProductionStatus } from '@kitchenledger/db';
+import { IsDateString, IsEnum, IsOptional, IsString } from 'class-validator';
 import { PaginationQueryDto } from '../../common/pagination/pagination.dto';
 
 export class ListProductionsQueryDto extends PaginationQueryDto {
@@ -17,4 +18,8 @@ export class ListProductionsQueryDto extends PaginationQueryDto {
   @IsOptional()
   @IsDateString()
   to?: string;
+
+  @IsOptional()
+  @IsEnum(ProductionStatus)
+  status?: ProductionStatus;
 }

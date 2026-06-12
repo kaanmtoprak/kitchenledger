@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@kitchenledger/db';
+import { Prisma, ProductionStatus } from '@kitchenledger/db';
 import { PrismaService } from '../prisma/prisma.service';
 import { BranchAccessService } from '../common/services/branch-access.service';
 import { TenantContext } from '../common/types/tenant-context.type';
@@ -159,6 +159,7 @@ export class DashboardService {
     const productions = await this.prisma.production.findMany({
       where: {
         organizationId: tenant.organizationId,
+        status: ProductionStatus.ACTIVE,
         producedAt: { gte: range.from, lte: range.to },
         ...(branchFilter !== undefined ? { branchId: branchFilter } : {}),
       },
@@ -220,6 +221,7 @@ export class DashboardService {
     const productions = await this.prisma.production.findMany({
       where: {
         organizationId: tenant.organizationId,
+        status: ProductionStatus.ACTIVE,
         producedAt: { gte: range.from, lte: range.to },
         ...(branchFilter !== undefined ? { branchId: branchFilter } : {}),
       },
@@ -365,9 +367,11 @@ export class DashboardService {
         select: {
           id: true,
           branchId: true,
+          status: true,
           quantityProduced: true,
           totalCostSnapshot: true,
           createdAt: true,
+          cancelledAt: true,
           branch: { select: { name: true } },
           product: { select: { name: true } },
         },
@@ -395,11 +399,20 @@ export class DashboardService {
       ...productions.map((production) => ({
         type: 'PRODUCTION' as const,
         id: production.id,
-        title: `Produced ${production.product.name}`,
-        description: `Quantity: ${serializeDecimal(production.quantityProduced)}, Cost: ${serializeDecimal(production.totalCostSnapshot)}`,
+        title:
+          production.status === ProductionStatus.CANCELLED
+            ? `Üretim iptal edildi: ${production.product.name}`
+            : `Produced ${production.product.name}`,
+        description:
+          production.status === ProductionStatus.CANCELLED
+            ? `İptal: ${serializeDecimal(production.quantityProduced)} adet`
+            : `Quantity: ${serializeDecimal(production.quantityProduced)}, Cost: ${serializeDecimal(production.totalCostSnapshot)}`,
         branchId: production.branchId,
         branchName: production.branch.name,
-        createdAt: production.createdAt,
+        createdAt:
+          production.status === ProductionStatus.CANCELLED && production.cancelledAt
+            ? production.cancelledAt
+            : production.createdAt,
       })),
       ...purchases.map((purchase) => ({
         type: 'PURCHASE' as const,
@@ -577,6 +590,7 @@ export class DashboardService {
     const productions = await this.prisma.production.findMany({
       where: {
         organizationId,
+        status: ProductionStatus.ACTIVE,
         producedAt: { gte: range.from, lte: range.to },
         ...(branchFilter !== undefined ? { branchId: branchFilter } : {}),
       },

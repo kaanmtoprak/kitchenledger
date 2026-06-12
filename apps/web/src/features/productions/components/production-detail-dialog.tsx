@@ -1,7 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { Ban } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -19,23 +22,32 @@ import {
   formatBaseUnit,
   formatCurrency,
   formatDate,
+  formatDateTime,
   formatQuantityDisplay,
 } from '@/lib/utils/display';
 import { productionsApi } from '../api/productions.api';
-import { formatShortId } from '../types/production.types';
+import { ProductionCancelDialog } from './production-cancel-dialog';
+import { ProductionStatusBadge } from './production-status-badge';
+import { formatShortId, isProductionActive } from '../types/production.types';
 
 type ProductionDetailDialogProps = {
   productionId: string | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  canCancel?: boolean;
+  onCancelled?: () => void;
 };
 
 export function ProductionDetailDialog({
   productionId,
   open,
   onOpenChange,
+  canCancel = false,
+  onCancelled,
 }: ProductionDetailDialogProps) {
   const { selectedOrganizationId } = useAuth();
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
 
   const detailQuery = useQuery({
     queryKey: ['productions', 'detail', selectedOrganizationId, productionId],
@@ -45,10 +57,25 @@ export function ProductionDetailDialog({
 
   const production = detailQuery.data;
 
+  const handleCancel = async (reason: string) => {
+    if (!production) {
+      return;
+    }
+    setIsCancelling(true);
+    try {
+      await productionsApi.cancel(production.id, { reason });
+      await detailQuery.refetch();
+      onCancelled?.();
+    } finally {
+      setIsCancelling(false);
+    }
+  };
+
   return (
+    <>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
-        <DialogHeader>
+        <DialogHeader className="space-y-0 pr-10">
           <DialogTitle>Üretim Detayı</DialogTitle>
         </DialogHeader>
 
@@ -70,6 +97,36 @@ export function ProductionDetailDialog({
 
         {production ? (
           <div className="space-y-6">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <p className="text-sm text-muted-foreground">Durum</p>
+                <ProductionStatusBadge status={production.status} />
+              </div>
+              {canCancel && isProductionActive(production.status) ? (
+                <Button type="button" variant="outline" size="sm" onClick={() => setCancelDialogOpen(true)}>
+                  <Ban className="mr-2 h-4 w-4" />
+                  İptal Et
+                </Button>
+              ) : null}
+            </div>
+
+            {!isProductionActive(production.status) ? (
+              <div className="grid gap-3 rounded-lg border p-4 text-sm md:grid-cols-2">
+                <div>
+                  <p className="text-muted-foreground">İptal nedeni</p>
+                  <p className="font-medium">
+                    {production.cancellationReason?.trim() ? production.cancellationReason : '—'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">İptal tarihi</p>
+                  <p className="font-medium">
+                    {production.cancelledAt ? formatDateTime(production.cancelledAt) : '—'}
+                  </p>
+                </div>
+              </div>
+            ) : null}
+
             <CostExplanation variant="production" />
 
             <div className="grid gap-3 text-sm md:grid-cols-2">
@@ -175,5 +232,14 @@ export function ProductionDetailDialog({
         ) : null}
       </DialogContent>
     </Dialog>
+
+    <ProductionCancelDialog
+      open={cancelDialogOpen}
+      onOpenChange={setCancelDialogOpen}
+      productLabel={production?.product.name}
+      isLoading={isCancelling}
+      onConfirm={handleCancel}
+    />
+    </>
   );
 }

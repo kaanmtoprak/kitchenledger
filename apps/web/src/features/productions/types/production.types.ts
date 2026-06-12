@@ -1,5 +1,8 @@
 import type { PaginatedResponse } from '@/features/branches/types/branch.types';
 import type { BaseUnit } from '@/features/ingredients/types/ingredient.types';
+import type { ProductionStatus } from '@/lib/utils/display';
+
+export type { ProductionStatus };
 
 export type ProductionListItem = {
   id: string;
@@ -8,11 +11,17 @@ export type ProductionListItem = {
   productId: string;
   productName: string;
   productSku: string;
+  recipeId: string;
   quantityProduced: string | null;
   totalCostSnapshot: string | null;
   unitCostSnapshot: string | null;
   producedAt: string;
   notes: string | null;
+  status: ProductionStatus;
+  cancelledAt: string | null;
+  cancellationReason: string | null;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type ProductionConsumptionBatch = {
@@ -32,18 +41,7 @@ export type ProductionConsumption = {
   batches: ProductionConsumptionBatch[];
 };
 
-export type ProductionDetail = {
-  id: string;
-  branchId: string;
-  productId: string;
-  recipeId: string;
-  quantityProduced: string | null;
-  totalCostSnapshot: string | null;
-  unitCostSnapshot: string | null;
-  producedAt: string;
-  notes: string | null;
-  createdAt: string;
-  updatedAt: string;
+export type ProductionDetail = Omit<ProductionListItem, 'branchName' | 'productName' | 'productSku'> & {
   branch: {
     id: string;
     name: string;
@@ -69,8 +67,13 @@ export type ListProductionsParams = {
   q?: string;
   branchId?: string;
   productId?: string;
+  status?: ProductionStatus;
   from?: string;
   to?: string;
+};
+
+export type CancelProductionPayload = {
+  reason: string;
 };
 
 export type CreateProductionPayload = {
@@ -98,6 +101,10 @@ export function calculateEstimatedProductionCost(
     estimatedUnitCost: unit,
     estimatedTotalCost: unit * qty,
   };
+}
+
+export function isProductionActive(status: ProductionStatus | null | undefined): boolean {
+  return status === 'ACTIVE' || status === undefined || status === null;
 }
 
 export function formatShortId(id: string | null | undefined): string {

@@ -98,6 +98,7 @@ Reports are implemented entirely in `apps/web` — no dedicated `ReportsModule` 
 2. **StockMovement** records every change (`PURCHASE`, `PRODUCTION_CONSUMPTION`, `MANUAL_ADJUSTMENT`, `WASTE`, `RETURN`) for audit
 3. **Stock summary** aggregates `remainingQuantity` per ingredient per branch
 4. Batch `remainingQuantity` decreases on production consumption; depleted batches remain for history
+5. **Production cancellation** finds original `PRODUCTION_CONSUMPTION` movements, restores `remainingQuantity` on each batch (capped at `initialQuantity`), and records `MANUAL_ADJUSTMENT` reversal movements with reason `Üretim iptali: …`
 5. **Stock adjustments** (`WASTE`, `RETURN`, `MANUAL_ADJUSTMENT`) create `StockMovement` records; decreases consume FIFO or a selected batch; increases create a new `StockBatch` (no purchase link)
 
 ## Recipe Costing vs Production Costing
@@ -121,7 +122,7 @@ This distinction is central to KitchenLedger’s costing model:
 
 - **No unit conversion in MVP** — `baseUnit` must match across purchases, recipes and production
 - **No purchase edit** — purchases are cancelled via `PATCH /purchases/:id/cancel` when linked batches are fully unconsumed; partial/consumed batches cannot be cancelled in MVP
-- **No production update/delete** — production cancellation not implemented; corrections require future reversal/adjustment flows
+- **No production edit** — productions are cancelled via `PATCH /productions/:id/cancel`; original `PRODUCTION_CONSUMPTION` movements are reversed by restoring batch `remainingQuantity` and creating `MANUAL_ADJUSTMENT` reversal movements with audit log
 - **Orders are editable** — customer, items and totals can be updated unless status is `DELIVERED` or `CANCELLED`; branch and `orderedAt` remain fixed
 - **Access token in localStorage** — simpler MVP auth; refresh token remains HttpOnly cookie
 - **Concurrency** — stock consumption uses transactions but not pessimistic row locking; sufficient for MVP demo scale, improvable for high-throughput scenarios

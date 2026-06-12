@@ -128,7 +128,10 @@ Owner veya Admin ile giriş yapın:
 15. [ ] **Reçete maliyetini görüntüle** — Maliyeti Gör + şube seç
 16. [ ] **Üretim oluştur** — `/productions`
 17. [ ] **FIFO tüketim** — Üretim detayında partiler ve maliyet kaydı
-18. [ ] **Panel ve Stok güncellendi** — `/dashboard` ve `/inventory`
+18. [ ] **Üretim iptal** — Aktif üretim iptal; stok geri gelir, reversal hareketleri ve audit log oluşur
+19. [ ] **Üretim çift iptal engeli** — Aynı üretim tekrar iptal → `400`
+20. [ ] **Üretim raporu** — İptal edilen kayıtlar listede; özet toplamlar yalnızca ACTIVE
+21. [ ] **Panel ve Stok güncellendi** — `/dashboard` ve `/inventory` (iptal sonrası maliyet düşer)
 
 ---
 
@@ -158,6 +161,8 @@ Owner veya Admin ile giriş yapın:
 | Duplicate SKU (ürün/malzeme)             | API conflict mesajı (Türkçe çeviri)               |
 | Birim uyuşmazlığı (unit mismatch)        | Türkçe birim hatası                               |
 | Viewer mutation butonları                | Görünmemeli                                       |
+| Viewer üretim iptal (API)                | `403`                                             |
+| Üretim iptal sonrası stok                | Batch `remainingQuantity` geri gelir              |
 | Branch-scoped stok                       | Manager/staff sadece yetkili şube stokunu görmeli |
 
 ---
