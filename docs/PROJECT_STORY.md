@@ -60,6 +60,10 @@ Built a multi-tenant SaaS platform for small food-production businesses to manag
 
 **Stack:** Next.js · NestJS · PostgreSQL · Prisma · JWT · Turborepo
 
+## Portfolio Presentation
+
+This project is intentionally presented as a local full-stack case study. It includes demo seed data, documentation, screenshots and deployment notes, but it is not currently hosted as a public live demo. Reviewers can run the stack locally (`pnpm db:seed` + `pnpm dev`) or browse the repository docs and screenshots on GitHub.
+
 ## Future Improvements
 
 - Customer portal and order self-service

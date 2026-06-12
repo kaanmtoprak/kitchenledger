@@ -1,10 +1,14 @@
 # KitchenLedger
 
-Multi-tenant SaaS platform for small food-production businesses to manage ingredient inventory, supplier-based purchase costs, recipe costing, FIFO production consumption and branch-level analytics.
+KitchenLedger is a full-stack multi-tenant SaaS case study for small food-production businesses. It manages ingredient inventory, supplier purchases, recipe costing, FIFO production consumption, customer orders, stock adjustments, reports, team permissions and owner-only audit logs.
 
 **Stack:** TypeScript · Next.js · NestJS · PostgreSQL
 
-**Live demo:** Not currently deployed. Run locally with seed data — see [Local Development](#local-development) and [docs/DEMO.md](docs/DEMO.md).
+## Live Demo
+
+This project is not currently deployed. It is presented as a full-stack portfolio case study and can be run locally with the included demo seed data.
+
+Demo credentials are listed in [Demo Credentials](#demo-credentials) below. For a guided walkthrough, see [docs/DEMO.md](docs/DEMO.md).
 
 ## Overview
 
@@ -140,14 +144,15 @@ See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for env variables, build/start comm
 
 ## Documentation
 
-| Doc                                            | Description                         |
-| ---------------------------------------------- | ----------------------------------- |
-| [docs/DEMO.md](docs/DEMO.md)                   | Demo users, flows and role testing  |
-| [docs/QA_CHECKLIST.md](docs/QA_CHECKLIST.md)   | Final manual QA checklist (Turkish) |
-| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)       | Production deployment guide         |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)   | Technical architecture notes        |
-| [docs/PROJECT_STORY.md](docs/PROJECT_STORY.md) | Product story and portfolio summary |
-| [docs/API_OVERVIEW.md](docs/API_OVERVIEW.md)   | REST API quick reference            |
+| Doc                                              | Description                          |
+| ------------------------------------------------ | ------------------------------------ |
+| [docs/DEMO.md](docs/DEMO.md)                     | Demo Guide — users, flows, roles     |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)     | Architecture Notes                   |
+| [docs/API_OVERVIEW.md](docs/API_OVERVIEW.md)     | API Overview                         |
+| [docs/QA_CHECKLIST.md](docs/QA_CHECKLIST.md)     | QA Checklist (Turkish)               |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)         | Deployment Guide                     |
+| [docs/SCREENSHOTS.md](docs/SCREENSHOTS.md)       | Screenshot Guide (Turkish)           |
+| [docs/PROJECT_STORY.md](docs/PROJECT_STORY.md)   | Project Story — portfolio narrative  |
 
 ## Known MVP Limitations
 
@@ -163,14 +168,21 @@ See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for env variables, build/start comm
 
 ## Screenshots
 
-Screenshots will be added after deployment/demo capture.
+Screenshots will be captured from the local demo environment using the included seed data.
 
-| Screen            | Status  |
-| ----------------- | ------- |
-| Dashboard         | pending |
-| Inventory         | pending |
-| Purchase creation | pending |
-| Recipe costing    | pending |
-| Production detail | pending |
+See [docs/SCREENSHOTS.md](docs/SCREENSHOTS.md) for the capture guide.
 
-Placeholder directory: `assets/screenshots/`
+**Pending screenshots:**
+
+- Dashboard
+- Inventory
+- Purchases
+- Recipe costing
+- Productions
+- Orders
+- Reports
+- Stock adjustment
+- Team management
+- Audit logs
+
+Save captured images to `assets/screenshots/` using the filenames listed in the screenshot guide. Add `![...](assets/screenshots/....png)` links to this section only after the files exist.
