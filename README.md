@@ -1,12 +1,22 @@
 # KitchenLedger
 
-KitchenLedger is a full-stack multi-tenant SaaS case study for small food-production businesses. It manages ingredient inventory, supplier purchases, recipe costing, FIFO production consumption, customer orders, stock adjustments, reports, team permissions and owner-only audit logs.
+## Türkçe
+
+KitchenLedger, küçük üretim işletmeleri için geliştirilmiş full-stack ve çok kiracılı bir SaaS uygulamasıdır. Malzeme stoku, tedarikçi satın almaları, reçete maliyeti, FIFO üretim tüketimi, müşteri siparişleri, stok düzeltmeleri, raporlar, ekip yetkileri ve işlem kayıtları gibi temel işletme süreçlerini yönetir.
+
+Uygulama; organizasyon ve şube bazlı çalışma, rol tabanlı yetkilendirme, stok hareket geçmişi, güvenli iptal akışları ve kullanıcı bazlı işlem takibi üzerine kuruludur.
+
+## English
+
+KitchenLedger is a full-stack multi-tenant SaaS application built for small food-production businesses. It manages ingredient inventory, supplier purchases, recipe costing, FIFO-based production consumption, customer orders, stock adjustments, reports, team permissions and activity logs.
+
+The application is built around organization and branch-based workflows, role-based authorization, inventory movement history, safe cancellation flows and user-based activity tracking.
 
 **Stack:** TypeScript · Next.js · NestJS · PostgreSQL
 
 ## Live Demo
 
-This project is not currently deployed. It is presented as a full-stack portfolio case study and can be run locally with the included demo seed data.
+This project is not currently deployed. It can be run locally with the included seed data.
 
 Demo credentials are listed in [Demo Credentials](#demo-credentials) below. For a guided walkthrough, see [docs/DEMO.md](docs/DEMO.md).
 
@@ -43,7 +53,7 @@ KitchenLedger connects purchasing, inventory, recipe costing and production into
 - Customer orders with create, edit and status tracking (no stock side effects)
 - Dashboard analytics (purchases, production, low stock, recent activity)
 - Reports and CSV export (purchases, productions, stock movements, orders)
-- Demo role users for portfolio and QA scenarios
+- Demo role users for local testing and QA scenarios
 
 ## Tech Stack
 
@@ -144,15 +154,15 @@ See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for env variables, build/start comm
 
 ## Documentation
 
-| Doc                                              | Description                          |
-| ------------------------------------------------ | ------------------------------------ |
-| [docs/DEMO.md](docs/DEMO.md)                     | Demo Guide — users, flows, roles     |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)     | Architecture Notes                   |
-| [docs/API_OVERVIEW.md](docs/API_OVERVIEW.md)     | API Overview                         |
-| [docs/QA_CHECKLIST.md](docs/QA_CHECKLIST.md)     | QA Checklist (Turkish)               |
-| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)         | Deployment Guide                     |
-| [docs/SCREENSHOTS.md](docs/SCREENSHOTS.md)       | Screenshot Guide (Turkish)           |
-| [docs/PROJECT_STORY.md](docs/PROJECT_STORY.md)   | Project Story — portfolio narrative  |
+| Doc                                              | Description                         |
+| ------------------------------------------------ | ----------------------------------- |
+| [docs/DEMO.md](docs/DEMO.md)                     | Demo Guide — users, flows, roles    |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)     | Architecture Notes                  |
+| [docs/API_OVERVIEW.md](docs/API_OVERVIEW.md)     | API Overview                        |
+| [docs/QA_CHECKLIST.md](docs/QA_CHECKLIST.md)     | QA Checklist (Turkish)              |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)         | Deployment Guide                    |
+| [docs/SCREENSHOTS.md](docs/SCREENSHOTS.md)       | Screenshot Guide (Turkish)          |
+| [docs/PROJECT_STORY.md](docs/PROJECT_STORY.md)   | Project Story — product narrative   |
 
 ## Known MVP Limitations
 
@@ -168,50 +178,44 @@ See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for env variables, build/start comm
 
 ## Screenshots
 
-Screenshots will be captured from the local demo environment using the included seed data.
-
-See [docs/SCREENSHOTS.md](docs/SCREENSHOTS.md) for the capture guide.
-
-**Pending screenshots:**
+For the capture process and recommended screen states, see [docs/SCREENSHOTS.md](docs/SCREENSHOTS.md).
 
 ### Dashboard
 
 ![Dashboard](assets/screenshots/01-dashboard.png)
 
-### Inventory
+### Inventory / Stok
 
 ![Inventory](assets/screenshots/02-inventory.png)
 
-### Purchases
+### Purchases / Satın Almalar
 
 ![Purchases](assets/screenshots/03-purchases.png)
 
-### Recipe Costing
+### Recipe Costing / Reçete Maliyeti
 
 ![Recipe Costing](assets/screenshots/04-recipes-cost.png)
 
-### Productions
+### Productions / Üretimler
 
 ![Productions](assets/screenshots/05-productions.png)
 
-### Orders
+### Orders / Siparişler
 
 ![Orders](assets/screenshots/06-orders.png)
 
-### Reports
+### Reports / Raporlar
 
 ![Reports](assets/screenshots/07-reports.png)
 
-### Stock Adjustment
+### Stock Adjustment / Stok Düzeltme
 
 ![Stock Adjustment](assets/screenshots/08-stock-adjustment.png)
 
-### Team Management
+### Team Management / Kullanıcı Yönetimi
 
 ![Team Management](assets/screenshots/09-team-management.png)
 
-### Audit Logs
+### Audit Logs / İşlem Kayıtları
 
 ![Audit Logs](assets/screenshots/10-audit-logs.png)
-
-Save captured images to `assets/screenshots/` using the filenames listed in the screenshot guide. Add `![...](assets/screenshots/....png)` links to this section only after the files exist.
