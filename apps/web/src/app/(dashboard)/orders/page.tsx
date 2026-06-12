@@ -109,8 +109,13 @@ export default function OrdersPage() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: Parameters<typeof ordersApi.update>[1] }) =>
-      ordersApi.update(id, payload),
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: string;
+      payload: Parameters<typeof ordersApi.update>[1];
+    }) => ordersApi.update(id, payload),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['orders'] });
       await queryClient.invalidateQueries({ queryKey: ['reports', 'orders'] });
@@ -122,6 +127,7 @@ export default function OrdersPage() {
       ordersApi.updateStatus(id, { status }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['orders'] });
+      await queryClient.invalidateQueries({ queryKey: ['reports', 'orders'] });
       setSuccessMessage('Sipariş durumu güncellendi.');
     },
   });

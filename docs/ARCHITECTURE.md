@@ -14,18 +14,18 @@ Shared config packages (`eslint-config`, `typescript-config`) keep lint and TS s
 
 ## Backend Module Boundaries
 
-| Module                     | Responsibility                                                                                                      |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| **Auth**                   | Register, login, JWT access tokens, HttpOnly refresh cookie, `/auth/me`                                             |
-| **Tenant / Authorization** | `TenantGuard`, `RolesGuard`, `BranchAccessGuard`, `x-organization-id` header                                        |
-| **Reference Data**         | Branches, Ingredients, Suppliers — org-scoped CRUD                                                                  |
-| **Purchases**              | Purchase creation with line items; triggers stock batch + movement creation                                         |
-| **Inventory**              | Stock summary, batches, movement audit trail, adjustments (waste/return/manual)                                     |
-| **Products / Recipes**     | Product catalog, recipe definitions, branch-specific cost preview                                                   |
-| **Productions**            | Production runs, FIFO consumption, immutable cost snapshots                                                         |
+| Module                     | Responsibility                                                                                                               |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| **Auth**                   | Register, login, JWT access tokens, HttpOnly refresh cookie, `/auth/me`                                                      |
+| **Tenant / Authorization** | `TenantGuard`, `RolesGuard`, `BranchAccessGuard`, `x-organization-id` header                                                 |
+| **Reference Data**         | Branches, Ingredients, Suppliers — org-scoped CRUD                                                                           |
+| **Purchases**              | Purchase creation with line items; triggers stock batch + movement creation                                                  |
+| **Inventory**              | Stock summary, batches, movement audit trail, adjustments (waste/return/manual)                                              |
+| **Products / Recipes**     | Product catalog, recipe definitions, branch-specific cost preview                                                            |
+| **Productions**            | Production runs, FIFO consumption, immutable cost snapshots                                                                  |
 | **Orders**                 | Customer orders with line items, create/edit (except DELIVERED/CANCELLED), status workflow; no stock/production side effects |
-| **Dashboard**              | Aggregated analytics — summary, low stock, trends, recent activity                                                  |
-| **Health**                 | `/health` (DB readiness), `/health/live` (liveness)                                                                 |
+| **Dashboard**              | Aggregated analytics — summary, low stock, trends, recent activity                                                           |
+| **Health**                 | `/health` (DB readiness), `/health/live` (liveness)                                                                          |
 
 Debug endpoints (`/debug/*`) are registered only when `NODE_ENV !== production`.
 
@@ -98,8 +98,9 @@ Reports are implemented entirely in `apps/web` — no dedicated `ReportsModule` 
 2. **StockMovement** records every change (`PURCHASE`, `PRODUCTION_CONSUMPTION`, `MANUAL_ADJUSTMENT`, `WASTE`, `RETURN`) for audit
 3. **Stock summary** aggregates `remainingQuantity` per ingredient per branch
 4. Batch `remainingQuantity` decreases on production consumption; depleted batches remain for history
-5. **Production cancellation** finds original `PRODUCTION_CONSUMPTION` movements, restores `remainingQuantity` on each batch (capped at `initialQuantity`), and records `MANUAL_ADJUSTMENT` reversal movements with reason `Üretim iptali: …`
-5. **Stock adjustments** (`WASTE`, `RETURN`, `MANUAL_ADJUSTMENT`) create `StockMovement` records; decreases consume FIFO or a selected batch; increases create a new `StockBatch` (no purchase link)
+5. **Purchase cancellation** — only when all linked batches are fully unconsumed; sets `remainingQuantity` to 0 and writes `MANUAL_ADJUSTMENT` reversal movements with reason `Satın alma iptali: …`
+6. **Production cancellation** — finds original `PRODUCTION_CONSUMPTION` movements, restores `remainingQuantity` on each batch (capped at `initialQuantity`), and records `MANUAL_ADJUSTMENT` reversal movements with reason `Üretim iptali: …`
+7. **Stock adjustments** (`WASTE`, `RETURN`, `MANUAL_ADJUSTMENT`) create `StockMovement` records; decreases consume FIFO or a selected batch; increases create a new `StockBatch` (no purchase link)
 
 ## Recipe Costing vs Production Costing
 

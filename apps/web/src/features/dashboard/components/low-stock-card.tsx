@@ -63,8 +63,8 @@ export function LowStockCard({ data, isLoading, isError }: LowStockCardProps) {
                   </p>
                   <div className="space-y-1.5">
                     <p className="text-xs tabular-nums text-muted-foreground">
-                      {formatQuantity(item.totalRemaining)} / {formatQuantity(item.minimumStockLevel)}{' '}
-                      {formatUnit(item.unit)}
+                      {formatQuantity(item.totalRemaining)} /{' '}
+                      {formatQuantity(item.minimumStockLevel)} {formatUnit(item.unit)}
                     </p>
                     <div className="h-1.5 overflow-hidden rounded-full bg-white/80 ring-1 ring-slate-200/60">
                       <div

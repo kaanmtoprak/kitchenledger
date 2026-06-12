@@ -58,9 +58,7 @@ export default function AuditLogsPage() {
       actorUserId: filters.actorUserId || undefined,
       branchId: filters.branchId || undefined,
       from: filters.from ? new Date(filters.from).toISOString() : undefined,
-      to: filters.to
-        ? new Date(`${filters.to}T23:59:59.999`).toISOString()
-        : undefined,
+      to: filters.to ? new Date(`${filters.to}T23:59:59.999`).toISOString() : undefined,
     }),
     [
       page,

@@ -41,9 +41,7 @@ export function DashboardFiltersBar({
             type="button"
             size="sm"
             variant={filters.preset === option.value ? 'default' : 'outline'}
-            className={cn(
-              filters.preset !== option.value && 'border-slate-200 bg-white shadow-sm',
-            )}
+            className={cn(filters.preset !== option.value && 'border-slate-200 bg-white shadow-sm')}
             onClick={() => onChange({ ...filters, preset: option.value })}
           >
             {option.label}

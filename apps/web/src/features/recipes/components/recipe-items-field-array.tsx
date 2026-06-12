@@ -32,7 +32,8 @@ export function RecipeItemsFieldArray({ form, ingredients }: RecipeItemsFieldArr
     name: 'items',
   });
 
-  const watchedItems = useWatch({ control: form.control, name: 'items' }) ?? defaultRecipeFormValues.items;
+  const watchedItems =
+    useWatch({ control: form.control, name: 'items' }) ?? defaultRecipeFormValues.items;
 
   const getIngredientLabel = (ingredient: Ingredient) =>
     `${ingredient.name} (${ingredient.sku}) — ${formatBaseUnit(ingredient.baseUnit)}`;

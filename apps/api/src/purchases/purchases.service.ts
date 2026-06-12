@@ -422,7 +422,10 @@ export class PurchasesService {
       throw new NotFoundException('Purchase not found');
     }
 
-    await this.branchAccessService.ensureBranchAccess(tenant, purchase.branchId);
+    await this.branchAccessService.ensureBranchAccess(
+      tenant,
+      purchase.branchId,
+    );
 
     if (purchase.status === PurchaseStatus.CANCELLED) {
       throw new BadRequestException('This purchase has already been cancelled');

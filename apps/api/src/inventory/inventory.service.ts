@@ -3,7 +3,12 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { AuditAction, BaseUnit, Prisma, StockMovementType } from '@kitchenledger/db';
+import {
+  AuditAction,
+  BaseUnit,
+  Prisma,
+  StockMovementType,
+} from '@kitchenledger/db';
 import { AuditService } from '../audit/audit.service';
 import { PrismaService } from '../prisma/prisma.service';
 import {

@@ -82,43 +82,39 @@ export function ProductionTrendChart({ data, isLoading, isError }: ProductionTre
       <div className="rounded-lg border border-slate-100 bg-slate-50/60 p-3">
         <div className="w-full" style={{ height: chartHeight }}>
           <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-            <defs>
-              <linearGradient id="productionCostFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.15} />
-                <stop offset="95%" stopColor="var(--primary)" stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <CartesianGrid
-              stroke={CHART_GRID_COLOR}
-              strokeDasharray="3 3"
-              vertical={false}
-            />
-            <XAxis
-              dataKey="date"
-              tickFormatter={formatChartDate}
-              tick={{ fontSize: 12, fill: CHART_TICK_COLOR }}
-              axisLine={false}
-              tickLine={false}
-              minTickGap={24}
-            />
-            <YAxis
-              tickFormatter={(value: number) => formatCurrency(value)}
-              tick={{ fontSize: 12, fill: CHART_TICK_COLOR }}
-              axisLine={false}
-              tickLine={false}
-              width={88}
-            />
-            <Tooltip content={<CustomTooltip />} />
-            <Area
-              type="monotone"
-              dataKey="totalCostValue"
-              stroke="var(--primary)"
-              fill="url(#productionCostFill)"
-              strokeWidth={2}
-            />
-          </AreaChart>
-        </ResponsiveContainer>
+            <AreaChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id="productionCostFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.15} />
+                  <stop offset="95%" stopColor="var(--primary)" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid stroke={CHART_GRID_COLOR} strokeDasharray="3 3" vertical={false} />
+              <XAxis
+                dataKey="date"
+                tickFormatter={formatChartDate}
+                tick={{ fontSize: 12, fill: CHART_TICK_COLOR }}
+                axisLine={false}
+                tickLine={false}
+                minTickGap={24}
+              />
+              <YAxis
+                tickFormatter={(value: number) => formatCurrency(value)}
+                tick={{ fontSize: 12, fill: CHART_TICK_COLOR }}
+                axisLine={false}
+                tickLine={false}
+                width={88}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Area
+                type="monotone"
+                dataKey="totalCostValue"
+                stroke="var(--primary)"
+                fill="url(#productionCostFill)"
+                strokeWidth={2}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
         </div>
       </div>
     </DashboardSectionCard>

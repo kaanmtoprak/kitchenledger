@@ -8,8 +8,7 @@ type FormDialogContentProps = ComponentPropsWithoutRef<typeof DialogContent>;
 
 function isDateTimeInput(element: Element | null | undefined): boolean {
   return (
-    element instanceof HTMLInputElement &&
-    ['date', 'datetime-local', 'time'].includes(element.type)
+    element instanceof HTMLInputElement && ['date', 'datetime-local', 'time'].includes(element.type)
   );
 }
 

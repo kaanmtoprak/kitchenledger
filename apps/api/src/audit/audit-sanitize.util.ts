@@ -36,7 +36,9 @@ export function removeSensitiveFields<T>(value: T): T {
 
   const result: Record<string, unknown> = {};
 
-  for (const [key, nestedValue] of Object.entries(value as Record<string, unknown>)) {
+  for (const [key, nestedValue] of Object.entries(
+    value as Record<string, unknown>,
+  )) {
     if (isSensitiveKey(key)) {
       continue;
     }

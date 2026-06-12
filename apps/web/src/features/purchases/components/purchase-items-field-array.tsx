@@ -33,7 +33,8 @@ export function PurchaseItemsFieldArray({ form, ingredients }: PurchaseItemsFiel
     name: 'items',
   });
 
-  const watchedItems = useWatch({ control: form.control, name: 'items' }) ?? defaultPurchaseFormValues.items;
+  const watchedItems =
+    useWatch({ control: form.control, name: 'items' }) ?? defaultPurchaseFormValues.items;
 
   const getIngredientLabel = (ingredient: Ingredient) =>
     `${ingredient.name} (${ingredient.sku}) — ${formatBaseUnit(ingredient.baseUnit)}`;

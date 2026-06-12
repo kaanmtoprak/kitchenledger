@@ -9,9 +9,7 @@ const ADMIN_ASSIGNABLE_ROLES: Role[] = [
 
 export function requiresBranchAssignment(role: Role): boolean {
   return (
-    role === Role.BRANCH_MANAGER ||
-    role === Role.STAFF ||
-    role === Role.VIEWER
+    role === Role.BRANCH_MANAGER || role === Role.STAFF || role === Role.VIEWER
   );
 }
 

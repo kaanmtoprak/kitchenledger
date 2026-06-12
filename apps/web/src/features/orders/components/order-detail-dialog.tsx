@@ -56,7 +56,10 @@ export function OrderDetailDialog({
     mutationFn: ({ id, status }: { id: string; status: OrderStatus }) =>
       ordersApi.updateStatus(id, { status }),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['orders'] });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['orders'] }),
+        queryClient.invalidateQueries({ queryKey: ['reports', 'orders'] }),
+      ]);
       setStatusError(null);
       onStatusUpdated?.();
     },

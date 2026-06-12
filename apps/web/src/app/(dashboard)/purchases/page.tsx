@@ -110,6 +110,8 @@ export default function PurchasesPage() {
       queryClient.invalidateQueries({ queryKey: ['inventory'] }),
       queryClient.invalidateQueries({ queryKey: ['dashboard'] }),
       queryClient.invalidateQueries({ queryKey: ['reports', 'purchases'] }),
+      queryClient.invalidateQueries({ queryKey: ['reports', 'movements'] }),
+      queryClient.invalidateQueries({ queryKey: ['audit-logs'] }),
     ]);
   };
 

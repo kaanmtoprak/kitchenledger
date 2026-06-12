@@ -8,8 +8,8 @@ export function DashboardWelcomeBanner() {
       </div>
       <div className="space-y-1 text-sm">
         <p className="font-semibold leading-snug text-foreground">
-          Hoş geldiniz. Bu panelde stok değeri, kritik malzemeler, üretim maliyeti ve son hareketleri
-          takip edebilirsiniz.
+          Hoş geldiniz. Bu panelde stok değeri, kritik malzemeler, üretim maliyeti ve son
+          hareketleri takip edebilirsiniz.
         </p>
         <p className="leading-relaxed text-muted-foreground">
           Demo verilerle çalışıyorsunuz. Satın alma oluşturup stokların ve maliyetlerin nasıl

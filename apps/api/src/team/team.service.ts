@@ -415,10 +415,7 @@ export class TeamService {
         );
       }
 
-      await this.assertBranchesBelongToOrg(
-        organizationId,
-        effectiveBranchIds,
-      );
+      await this.assertBranchesBelongToOrg(organizationId, effectiveBranchIds);
       return;
     }
 

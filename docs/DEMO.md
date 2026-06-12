@@ -134,7 +134,7 @@ Backend guards remain the source of truth; unauthorized branch mutations still r
 
 Full walkthrough validated via local dev (`localhost:3000` + `localhost:3001`):
 
-- All dashboard routes load (Panel, Şubeler, Malzemeler, Satın Almalar, Stok, Siparişler, Ürünler, Reçeteler, Üretimler)
+- All dashboard routes load (Panel, Şubeler, Malzemeler, Satın Almalar, Stok, Siparişler, Ürünler, Reçeteler, Üretimler, Raporlar, Kullanıcılar, İşlem Kayıtları)
 - Owner end-to-end: purchase → stock → order → adjustment
 - Viewer: no create/adjust/status CTAs; Main Kitchen scope only
 - Manager: Kadikoy scope only in branch selects and lists
@@ -148,9 +148,9 @@ Full walkthrough validated via local dev (`localhost:3000` + `localhost:3001`):
 - No payment, invoice or delivery integration for orders
 - Return/manual stock increases create new batches; no approval workflow or document upload for adjustments
 - No unit conversion; recipe/purchase units must match ingredient `baseUnit`
-- Satın alma ve üretim kayıtları doğrudan düzenlenmez; stok partisi, hareket ve maliyet kaydı ürettikleri için ileride iptal/düzeltme akışıyla ele alınacaktır
-- No production edit; active productions can be cancelled (FIFO restoration + reversal movements + audit log)
-- Purchase records are not edited; unconsumed purchases can be cancelled (reversal movement + audit log). Consumed batches block cancellation.
+- Satın alma ve üretim kayıtları doğrudan düzenlenmez; güvenli iptal/reversal akışları mevcuttur
+- Active productions can be cancelled (FIFO restoration + reversal movements + audit log)
+- Unconsumed purchases can be cancelled (reversal movement + audit log); consumed batches block cancellation
 - Partial reversal / advanced correction workflows not in MVP
 - Access token is stored in `localStorage`; production-grade security can be improved later
 - High-concurrency stock consumption does not yet use advanced DB row locking

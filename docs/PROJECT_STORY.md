@@ -26,9 +26,13 @@ Run production for a branch → oldest stock batches are consumed first → cons
 
 Review purchase totals, production trends, low-stock ingredients and recent activity across branches.
 
-### Customer orders (MVP)
+### Customer orders
 
-Record branch-scoped customer orders with product line items and status tracking (`PENDING` → `DELIVERED` / `CANCELLED`). Each order creates a customer record; orders do not affect inventory or production.
+Record branch-scoped customer orders with product line items, edit workflow and status tracking (`PENDING` → `DELIVERED` / `CANCELLED`). Each order creates a customer record; orders do not affect inventory or production.
+
+### Purchase and production cancellation
+
+Cancel unconsumed purchases or active productions safely — stock batches and FIFO quantities are reversed with movement history and owner audit logs. Direct edit of purchase/production records is intentionally not supported.
 
 ### Reports and CSV export
 
@@ -58,9 +62,12 @@ Built a multi-tenant SaaS platform for small food-production businesses to manag
 
 ## Future Improvements
 
+- Customer portal and order self-service
+- Payment, invoice and delivery integrations
+- Email invite and password reset
 - Unit conversion (kg ↔ g, L ↔ ml)
-- Stock adjustment / reversal flow
-- PDF export and scheduled reports
+- Advanced partial reversal and correction workflows
+- PDF export, scheduled reports and server-side analytics aggregation
 - Subscription plans and billing
 - Advanced DB locking for concurrent stock consumption
-- Automated tests and CI/CD
+- Automated tests, CI/CD and production deployment

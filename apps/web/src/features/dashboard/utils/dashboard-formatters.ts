@@ -81,6 +81,17 @@ export function translateActivityItem(item: {
   description: string;
 }): { title: string; description: string } {
   if (item.type === 'PRODUCTION') {
+    const cancelledMatch = item.title.match(/^Üretim iptal edildi: (.+)$/);
+    if (cancelledMatch) {
+      const cancelledQtyMatch = item.description.match(/^İptal: (.+) adet$/);
+      return {
+        title: item.title,
+        description: cancelledQtyMatch
+          ? `İptal edilen miktar: ${cancelledQtyMatch[1]}`
+          : item.description,
+      };
+    }
+
     const producedMatch = item.title.match(/^Produced (.+)$/);
     const quantityCostMatch = item.description.match(/^Quantity: (.+), Cost: (.+)$/);
 

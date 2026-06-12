@@ -22,12 +22,12 @@ Quick REST reference for KitchenLedger. Not a full Swagger spec — intended for
 
 ## Auth
 
-| Method | Endpoint         | Description                                                                                                  |
-| ------ | ---------------- | ------------------------------------------------------------------------------------------------------------ |
-| POST   | `/auth/register` | Register user and organization                                                                               |
-| POST   | `/auth/login`    | Login; sets refresh cookie                                                                                   |
-| POST   | `/auth/refresh`  | Refresh access token (cookie)                                                                                |
-| POST   | `/auth/logout`   | Clear refresh token                                                                                          |
+| Method | Endpoint         | Description                                                                                                                         |
+| ------ | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| POST   | `/auth/register` | Register user and organization                                                                                                      |
+| POST   | `/auth/login`    | Login; sets refresh cookie                                                                                                          |
+| POST   | `/auth/refresh`  | Refresh access token (cookie)                                                                                                       |
+| POST   | `/auth/logout`   | Clear refresh token                                                                                                                 |
 | GET    | `/auth/me`       | Current user and active memberships (includes `membershipId`, `accessibleBranchIds` per org: `null` = all branches for OWNER/ADMIN) |
 
 ---
@@ -36,9 +36,9 @@ Quick REST reference for KitchenLedger. Not a full Swagger spec — intended for
 
 OWNER only (`JwtAuthGuard` + `TenantGuard` + `RolesGuard`).
 
-| Method | Endpoint      | Description                                      |
-| ------ | ------------- | ------------------------------------------------ |
-| GET    | `/audit-logs` | Paginated audit trail with filters and search    |
+| Method | Endpoint      | Description                                   |
+| ------ | ------------- | --------------------------------------------- |
+| GET    | `/audit-logs` | Paginated audit trail with filters and search |
 
 Query: `page`, `limit`, `action`, `entityType`, `actorUserId`, `branchId`, `from`, `to`, `search`
 
@@ -52,7 +52,7 @@ OWNER and ADMIN only (`JwtAuthGuard` + `TenantGuard` + `RolesGuard`).
 | ------ | --------------------- | --------------------------------------------------------------------------- |
 | GET    | `/team`               | List organization members (role, branches, status, last login)              |
 | POST   | `/team`               | Create user and/or add organization membership with role and branch access  |
-| PATCH  | `/team/:membershipId` | Update role, branch access and/or deactivate membership (`isActive: false`)   |
+| PATCH  | `/team/:membershipId` | Update role, branch access and/or deactivate membership (`isActive: false`) |
 
 **Notes:**
 
@@ -100,12 +100,12 @@ OWNER and ADMIN only (`JwtAuthGuard` + `TenantGuard` + `RolesGuard`).
 
 ## Purchases
 
-| Method | Endpoint         | Description                             |
-| ------ | ---------------- | --------------------------------------- |
-| POST   | `/purchases`              | Create purchase (creates stock batches) |
-| GET    | `/purchases`              | List purchases                          |
-| GET    | `/purchases/:id`          | Get purchase detail                     |
-| PATCH  | `/purchases/:id/cancel`   | Cancel purchase (reverses unconsumed stock) |
+| Method | Endpoint                | Description                                 |
+| ------ | ----------------------- | ------------------------------------------- |
+| POST   | `/purchases`            | Create purchase (creates stock batches)     |
+| GET    | `/purchases`            | List purchases                              |
+| GET    | `/purchases/:id`        | Get purchase detail                         |
+| PATCH  | `/purchases/:id/cancel` | Cancel purchase (reverses unconsumed stock) |
 
 **List query params:** `page`, `limit`, `q`, `branchId`, `supplierId`, `status`, `from`, `to`, `includeItems`
 
@@ -117,13 +117,13 @@ OWNER and ADMIN only (`JwtAuthGuard` + `TenantGuard` + `RolesGuard`).
 
 ## Orders
 
-| Method | Endpoint             | Description                             |
-| ------ | -------------------- | --------------------------------------- |
-| POST   | `/orders`            | Create customer order with line items   |
-| GET    | `/orders`            | List orders (branch-scoped, filterable) |
-| GET    | `/orders/:id`        | Get order detail                        |
+| Method | Endpoint             | Description                                     |
+| ------ | -------------------- | ----------------------------------------------- |
+| POST   | `/orders`            | Create customer order with line items           |
+| GET    | `/orders`            | List orders (branch-scoped, filterable)         |
+| GET    | `/orders/:id`        | Get order detail                                |
 | PATCH  | `/orders/:id`        | Update order (customer, items, due date, notes) |
-| PATCH  | `/orders/:id/status` | Update order status                     |
+| PATCH  | `/orders/:id/status` | Update order status                             |
 
 **List query params:** `page`, `limit`, `q`, `branchId`, `status`, `from`, `to`, `includeItems`
 
@@ -185,12 +185,14 @@ OWNER and ADMIN only (`JwtAuthGuard` + `TenantGuard` + `RolesGuard`).
 
 ## Productions
 
-| Method | Endpoint                | Description                      |
-| ------ | ----------------------- | -------------------------------- |
-| POST   | `/productions`          | Create production (FIFO consume) |
-| GET    | `/productions`          | List productions                 |
-| GET    | `/productions/:id`      | Get production with consumptions |
+| Method | Endpoint                  | Description                            |
+| ------ | ------------------------- | -------------------------------------- |
+| POST   | `/productions`            | Create production (FIFO consume)       |
+| GET    | `/productions`            | List productions                       |
+| GET    | `/productions/:id`        | Get production with consumptions       |
 | PATCH  | `/productions/:id/cancel` | Cancel production (restore FIFO stock) |
+
+**List query params:** `page`, `limit`, `q`, `branchId`, `productId`, `status`, `from`, `to`
 
 **Production status:** `ACTIVE`, `CANCELLED`
 

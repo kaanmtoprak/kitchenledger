@@ -63,9 +63,7 @@ export function CostBreakdown({ cost }: CostBreakdownProps) {
         <div>
           <p className="text-muted-foreground">Varsayılan porsiyon</p>
           <p className="font-medium">
-            {showServingCost
-              ? formatQuantityDisplay(recipe.product.defaultServingCount)
-              : '—'}
+            {showServingCost ? formatQuantityDisplay(recipe.product.defaultServingCount) : '—'}
           </p>
         </div>
       </div>

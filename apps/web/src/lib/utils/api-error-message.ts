@@ -27,8 +27,7 @@ const exactMessages: Record<string, string> = {
   'No access to this branch': 'Bu şubeye erişim yetkiniz yok.',
   'No access to this organization': 'Bu işletmeye erişim yetkiniz yok.',
   'Organization membership is inactive': 'Bu işletmedeki üyeliğiniz pasif.',
-  'User is already a member of this organization':
-    'Bu kullanıcı zaten organizasyon üyesi.',
+  'User is already a member of this organization': 'Bu kullanıcı zaten organizasyon üyesi.',
   'Team member not found': 'Kullanıcı bulunamadı.',
   'Only owners can assign the owner role': 'Sahip rolünü yalnızca sahip atayabilir.',
   'Only owners can assign the admin role': 'Yönetici rolünü yalnızca sahip atayabilir.',
@@ -81,7 +80,7 @@ function formatInsufficientStockMessage(details: InsufficientStockDetails): stri
     return null;
   }
 
-  const unitLabel = details.unit ? formatBaseUnit(details.unit as BaseUnit) : details.unit ?? '';
+  const unitLabel = details.unit ? formatBaseUnit(details.unit as BaseUnit) : (details.unit ?? '');
   return `${details.ingredientName} için yeterli stok yok. Gerekli: ${details.requiredQuantity} ${unitLabel}, Mevcut: ${details.availableQuantity} ${unitLabel}`;
 }
 
@@ -191,9 +190,7 @@ export function getApiErrorMessage(
       return 'Oturum süreniz dolmuş olabilir. Lütfen tekrar giriş yapın.';
     }
     if (error.status === 404) {
-      return error.message
-        ? translateBackendMessage(error.message, error)
-        : 'Kayıt bulunamadı.';
+      return error.message ? translateBackendMessage(error.message, error) : 'Kayıt bulunamadı.';
     }
     if (error.status === 409) {
       return error.message

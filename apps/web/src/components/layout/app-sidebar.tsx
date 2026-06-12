@@ -100,26 +100,26 @@ export function AppSidebarNav({
                 (!item.requiresViewAuditLogs || canViewAuditLogs),
             )
             .map((item) => {
-            const Icon = item.icon;
-            const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+              const Icon = item.icon;
+              const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
 
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  'flex items-center gap-3 rounded-xl border-l-2 py-2.5 pl-[10px] pr-3 text-sm font-medium transition-all duration-150',
-                  isActive
-                    ? 'border-l-blue-600 bg-blue-100/60 text-blue-700'
-                    : 'border-l-transparent text-slate-600 hover:bg-blue-50/50 hover:text-slate-900',
-                )}
-                aria-current={isActive ? 'page' : undefined}
-              >
-                <Icon className="h-4 w-4 shrink-0" />
-                {item.label}
-              </Link>
-            );
-          })}
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    'flex items-center gap-3 rounded-xl border-l-2 py-2.5 pl-[10px] pr-3 text-sm font-medium transition-all duration-150',
+                    isActive
+                      ? 'border-l-blue-600 bg-blue-100/60 text-blue-700'
+                      : 'border-l-transparent text-slate-600 hover:bg-blue-50/50 hover:text-slate-900',
+                  )}
+                  aria-current={isActive ? 'page' : undefined}
+                >
+                  <Icon className="h-4 w-4 shrink-0" />
+                  {item.label}
+                </Link>
+              );
+            })}
         </div>
       ))}
     </nav>

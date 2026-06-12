@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
@@ -28,17 +28,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import type { Branch } from '@/features/branches/types/branch.types';
-import {
-  formatRole,
-  getAssignableRoles,
-  requiresBranchSelection,
-} from '@/lib/auth/role-labels';
+import { formatRole, getAssignableRoles, requiresBranchSelection } from '@/lib/auth/role-labels';
 import type { AppRole } from '@/lib/auth/permissions';
 import { getApiErrorMessage } from '@/lib/utils/api-error-message';
-import {
-  teamEditSchema,
-  type TeamEditFormValues,
-} from '../schemas/team.schemas';
+import { teamEditSchema, type TeamEditFormValues } from '../schemas/team.schemas';
 import type { TeamMember } from '../types/team.types';
 import { BranchAccessSelector } from './branch-access-selector';
 
@@ -86,7 +79,7 @@ export function TeamEditDialog({
     values: open ? getFormValues(member) : getFormValues(null),
   });
 
-  const selectedRole = form.watch('role');
+  const selectedRole = useWatch({ control: form.control, name: 'role' });
 
   const handleSubmit = form.handleSubmit(async (values) => {
     setError(null);

@@ -87,7 +87,12 @@ export function ProductionCancelDialog({
         ) : null}
 
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => handleOpenChange(false)} disabled={isLoading}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => handleOpenChange(false)}
+            disabled={isLoading}
+          >
             Vazgeç
           </Button>
           <Button type="button" variant="destructive" onClick={handleConfirm} disabled={isLoading}>

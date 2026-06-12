@@ -95,10 +95,7 @@ export function OrderFormDialog({
       handleOpenChange(false);
     } catch (err) {
       setError(
-        getApiErrorMessage(
-          err,
-          isEdit ? 'Sipariş güncellenemedi.' : 'Sipariş oluşturulamadı.',
-        ),
+        getApiErrorMessage(err, isEdit ? 'Sipariş güncellenemedi.' : 'Sipariş oluşturulamadı.'),
       );
     }
   };
@@ -118,168 +115,168 @@ export function OrderFormDialog({
         ) : null}
 
         {!isLoading || !isEdit ? (
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-            {error ? (
-              <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            ) : null}
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+              {error ? (
+                <Alert variant="destructive">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              ) : null}
 
-            <div className="grid gap-4 md:grid-cols-2">
-              {isEdit && editBranch ? (
-                <div className="rounded-lg border p-3 text-sm">
-                  <p className="text-muted-foreground">Şube</p>
-                  <p className="font-medium">
-                    {editBranch.name} ({editBranch.code})
-                  </p>
-                </div>
-              ) : (
+              <div className="grid gap-4 md:grid-cols-2">
+                {isEdit && editBranch ? (
+                  <div className="rounded-lg border p-3 text-sm">
+                    <p className="text-muted-foreground">Şube</p>
+                    <p className="font-medium">
+                      {editBranch.name} ({editBranch.code})
+                    </p>
+                  </div>
+                ) : (
+                  <FormField
+                    control={form.control}
+                    name="branchId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Şube</FormLabel>
+                        <FormControl>
+                          <BranchFormSelect
+                            value={field.value}
+                            branches={branches}
+                            onChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormDescription>Sipariş bu şube altında takip edilir.</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
                 <FormField
                   control={form.control}
-                  name="branchId"
+                  name="customerName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Şube</FormLabel>
+                      <FormLabel>Müşteri adı</FormLabel>
                       <FormControl>
-                        <BranchFormSelect
-                          value={field.value}
-                          branches={branches}
-                          onChange={field.onChange}
-                        />
+                        <Input {...field} placeholder="Ayşe Yılmaz" />
                       </FormControl>
-                      <FormDescription>Sipariş bu şube altında takip edilir.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-              )}
 
-              <FormField
-                control={form.control}
-                name="customerName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Müşteri adı</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Ayşe Yılmaz" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="customerPhone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Telefon</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="+90 5xx xxx xx xx" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="customerEmail"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>E-posta</FormLabel>
-                    <FormControl>
-                      <Input {...field} type="email" placeholder="musteri@example.com" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {isEdit && order ? (
-                <div className="rounded-lg border p-3 text-sm">
-                  <p className="text-muted-foreground">Sipariş tarihi</p>
-                  <p className="font-medium">{formatDateTime(order.orderedAt)}</p>
-                </div>
-              ) : (
                 <FormField
                   control={form.control}
-                  name="orderedAt"
+                  name="customerPhone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Sipariş tarihi</FormLabel>
+                      <FormLabel>Telefon</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="+90 5xx xxx xx xx" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="customerEmail"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>E-posta</FormLabel>
+                      <FormControl>
+                        <Input {...field} type="email" placeholder="musteri@example.com" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {isEdit && order ? (
+                  <div className="rounded-lg border p-3 text-sm">
+                    <p className="text-muted-foreground">Sipariş tarihi</p>
+                    <p className="font-medium">{formatDateTime(order.orderedAt)}</p>
+                  </div>
+                ) : (
+                  <FormField
+                    control={form.control}
+                    name="orderedAt"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Sipariş tarihi</FormLabel>
+                        <FormControl>
+                          <DateTimeLocalInput {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
+                <FormField
+                  control={form.control}
+                  name="dueAt"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Teslim tarihi</FormLabel>
                       <FormControl>
                         <DateTimeLocalInput {...field} />
                       </FormControl>
+                      <FormDescription>
+                        Opsiyoneldir; sipariş takibi için kullanılabilir.
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-              )}
 
-              <FormField
-                control={form.control}
-                name="dueAt"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Teslim tarihi</FormLabel>
-                    <FormControl>
-                      <DateTimeLocalInput {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      Opsiyoneldir; sipariş takibi için kullanılabilir.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="notes"
-                render={({ field }) => (
-                  <FormItem className="md:col-span-2">
-                    <FormLabel>Notlar</FormLabel>
-                    <FormControl>
-                      <Textarea {...field} rows={3} placeholder="İsteğe bağlı" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <p className="text-sm text-muted-foreground">
-                Her ürün için miktar ve satış fiyatını girin.
-              </p>
-              <OrderItemsFieldArray form={form} products={products} />
-            </div>
-
-            <div className="rounded-lg border bg-muted p-4">
-              <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
-                <span>{summary.itemCount} kalem</span>
-                <span className="font-medium">Genel toplam: {formatCurrency(summary.total)}</span>
+                <FormField
+                  control={form.control}
+                  name="notes"
+                  render={({ field }) => (
+                    <FormItem className="md:col-span-2">
+                      <FormLabel>Notlar</FormLabel>
+                      <FormControl>
+                        <Textarea {...field} rows={3} placeholder="İsteğe bağlı" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
-            </div>
 
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
-                Vazgeç
-              </Button>
-              <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting
-                  ? isEdit
-                    ? 'Güncelleniyor...'
-                    : 'Oluşturuluyor...'
-                  : isEdit
-                    ? 'Siparişi Güncelle'
-                    : 'Sipariş oluştur'}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">
+                  Her ürün için miktar ve satış fiyatını girin.
+                </p>
+                <OrderItemsFieldArray form={form} products={products} />
+              </div>
+
+              <div className="rounded-lg border bg-muted p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
+                  <span>{summary.itemCount} kalem</span>
+                  <span className="font-medium">Genel toplam: {formatCurrency(summary.total)}</span>
+                </div>
+              </div>
+
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
+                  Vazgeç
+                </Button>
+                <Button type="submit" disabled={form.formState.isSubmitting}>
+                  {form.formState.isSubmitting
+                    ? isEdit
+                      ? 'Güncelleniyor...'
+                      : 'Oluşturuluyor...'
+                    : isEdit
+                      ? 'Siparişi Güncelle'
+                      : 'Sipariş oluştur'}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
         ) : null}
       </FormDialogContent>
     </Dialog>

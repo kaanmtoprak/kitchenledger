@@ -56,9 +56,7 @@ export function AuditLogsFilters({
 
       <Select
         value={filters.action || ALL_VALUE}
-        onValueChange={(value) =>
-          update({ action: value === ALL_VALUE ? '' : value })
-        }
+        onValueChange={(value) => update({ action: value === ALL_VALUE ? '' : value })}
       >
         <SelectTrigger>
           <SelectValue placeholder="İşlem tipi" />
@@ -75,9 +73,7 @@ export function AuditLogsFilters({
 
       <Select
         value={filters.entityType || ALL_VALUE}
-        onValueChange={(value) =>
-          update({ entityType: value === ALL_VALUE ? '' : value })
-        }
+        onValueChange={(value) => update({ entityType: value === ALL_VALUE ? '' : value })}
       >
         <SelectTrigger>
           <SelectValue placeholder="Kayıt türü" />
@@ -94,9 +90,7 @@ export function AuditLogsFilters({
 
       <Select
         value={filters.actorUserId || ALL_VALUE}
-        onValueChange={(value) =>
-          update({ actorUserId: value === ALL_VALUE ? '' : value })
-        }
+        onValueChange={(value) => update({ actorUserId: value === ALL_VALUE ? '' : value })}
       >
         <SelectTrigger>
           <SelectValue placeholder="Kullanıcı" />
@@ -113,9 +107,7 @@ export function AuditLogsFilters({
 
       <Select
         value={filters.branchId || ALL_VALUE}
-        onValueChange={(value) =>
-          update({ branchId: value === ALL_VALUE ? '' : value })
-        }
+        onValueChange={(value) => update({ branchId: value === ALL_VALUE ? '' : value })}
       >
         <SelectTrigger>
           <SelectValue placeholder="Şube" />

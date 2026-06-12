@@ -19,10 +19,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { EmptyState } from '@/components/common/empty-state';
-import {
-  canManageTeamMember,
-  hasOrgWideBranchAccess,
-} from '@/lib/auth/role-labels';
+import { canManageTeamMember, hasOrgWideBranchAccess } from '@/lib/auth/role-labels';
 import type { AppRole } from '@/lib/auth/permissions';
 import { formatDate, formatDateTime } from '@/lib/utils/display';
 import type { TeamMember } from '../types/team.types';
@@ -119,9 +116,7 @@ export function TeamTable({
                   {member.isActive ? 'Aktif' : 'Pasif'}
                 </Badge>
               </TableCell>
-              <TableCell>
-                {member.lastLoginAt ? formatDateTime(member.lastLoginAt) : '—'}
-              </TableCell>
+              <TableCell>{member.lastLoginAt ? formatDateTime(member.lastLoginAt) : '—'}</TableCell>
               <TableCell>{formatDate(member.createdAt)}</TableCell>
               <TableCell className="text-right">
                 {canManage ? (

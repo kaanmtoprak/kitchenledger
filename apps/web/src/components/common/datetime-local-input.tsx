@@ -16,22 +16,21 @@ function openNativePicker(input: HTMLInputElement) {
   }
 }
 
-export const DateTimeLocalInput = React.forwardRef<
-  HTMLInputElement,
-  React.ComponentProps<'input'>
->(({ className, type = 'datetime-local', onClick, ...props }, ref) => {
-  return (
-    <Input
-      ref={ref}
-      type={type}
-      className={cn(className)}
-      onClick={(event) => {
-        openNativePicker(event.currentTarget);
-        onClick?.(event);
-      }}
-      {...props}
-    />
-  );
-});
+export const DateTimeLocalInput = React.forwardRef<HTMLInputElement, React.ComponentProps<'input'>>(
+  ({ className, type = 'datetime-local', onClick, ...props }, ref) => {
+    return (
+      <Input
+        ref={ref}
+        type={type}
+        className={cn(className)}
+        onClick={(event) => {
+          openNativePicker(event.currentTarget);
+          onClick?.(event);
+        }}
+        {...props}
+      />
+    );
+  },
+);
 
 DateTimeLocalInput.displayName = 'DateTimeLocalInput';

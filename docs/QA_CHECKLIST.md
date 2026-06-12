@@ -11,6 +11,8 @@ Portfolyo, demo ve GitHub sunumu öncesi manuel kontrol listesi.
 
 **Audit logs QA (Adım 37):** `/audit-logs` — OWNER-only; mutation sonrası kayıt; hassas alan yok; ADMIN erişemez.
 
+**Final hardening (Adım 40):** Docs tutarlılığı, RHF `useWatch` temizliği, query invalidation ve bilinen sınırlar güncellendi; yeni feature yok.
+
 ---
 
 ## A. Kurulum Kontrolü

@@ -2,10 +2,7 @@ import { Badge } from '@/components/ui/badge';
 import { formatRole } from '@/lib/auth/role-labels';
 import type { AppRole } from '@/lib/auth/permissions';
 
-const roleVariants: Record<
-  AppRole,
-  'default' | 'secondary' | 'info' | 'warning' | 'muted'
-> = {
+const roleVariants: Record<AppRole, 'default' | 'secondary' | 'info' | 'warning' | 'muted'> = {
   OWNER: 'default',
   ADMIN: 'info',
   BRANCH_MANAGER: 'warning',

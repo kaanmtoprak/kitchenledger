@@ -63,8 +63,8 @@ export function PurchaseCancelDialog({
         <DialogHeader>
           <DialogTitle>Satın alma iptal edilsin mi?</DialogTitle>
           <DialogDescription>
-            Bu işlem yalnızca bağlı stok partilerinden tüketim yapılmadıysa uygulanabilir.
-            İptal edilen satın alma stoktan düşülür ve işlem geçmişine kaydedilir.
+            Bu işlem yalnızca bağlı stok partilerinden tüketim yapılmadıysa uygulanabilir. İptal
+            edilen satın alma stoktan düşülür ve işlem geçmişine kaydedilir.
             {invoiceLabel ? ` (${invoiceLabel})` : ''}
           </DialogDescription>
         </DialogHeader>
@@ -87,7 +87,12 @@ export function PurchaseCancelDialog({
         ) : null}
 
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => handleOpenChange(false)} disabled={isLoading}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => handleOpenChange(false)}
+            disabled={isLoading}
+          >
             Vazgeç
           </Button>
           <Button type="button" variant="destructive" onClick={handleConfirm} disabled={isLoading}>

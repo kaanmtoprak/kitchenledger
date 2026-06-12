@@ -4,7 +4,7 @@ Multi-tenant SaaS platform for small food-production businesses to manage ingred
 
 **Stack:** TypeScript · Next.js · NestJS · PostgreSQL
 
-**Live demo:** _Coming soon — URL will be added after Vercel/Railway deployment._
+**Live demo:** Not currently deployed. Run locally with seed data — see [Local Development](#local-development) and [docs/DEMO.md](docs/DEMO.md).
 
 ## Overview
 
@@ -26,19 +26,17 @@ KitchenLedger connects purchasing, inventory, recipe costing and production into
 ## Core Features
 
 - Multi-tenant organization and branch management
-- Role-based access control (OWNER, ADMIN, BRANCH_MANAGER, STAFF, VIEWER)
-- Team / user management (OWNER and ADMIN can invite users, assign roles and branch access)
-- Owner-only audit logs for critical mutations (create, update, status, stock adjustments)
-- Ingredient and supplier management with minimum stock levels
-- Purchase-based stock batch creation
+- Role and branch-based authorization (OWNER, ADMIN, BRANCH_MANAGER, STAFF, VIEWER)
+- Team management — invite users, assign roles and branch access (OWNER/ADMIN)
+- Owner-only audit logs for critical mutations
+- Ingredient, supplier, product and recipe management
+- Purchase-based stock batches with automatic movements
+- Purchase cancellation / reversal (unconsumed batches only)
 - Inventory stock summary, movement history and stock adjustments (waste, return, manual)
-- Product and recipe management
-- Branch-specific recipe cost calculation (weighted average)
-- FIFO production consumption
-- Production cost snapshots
-- Customer orders with branch-scoped create/edit/status tracking
-- Purchase cancellation with stock reversal (unconsumed batches only)
-- Production cancellation with FIFO stock restoration and reversal movements
+- Branch-specific recipe costing (weighted average preview)
+- FIFO production consumption with immutable cost snapshots
+- Production cancellation / FIFO stock restoration and reversal movements
+- Customer orders with create, edit and status tracking (no stock side effects)
 - Dashboard analytics (purchases, production, low stock, recent activity)
 - Reports and CSV export (purchases, productions, stock movements, orders)
 - Demo role users for portfolio and QA scenarios
@@ -153,9 +151,13 @@ See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for env variables, build/start comm
 
 ## Known MVP Limitations
 
+- No customer portal, payment or invoice integration
+- No email invite or password-reset flows
+- No automated tests or CI/CD pipeline in this repository
 - No unit conversion; ingredient `baseUnit` must match recipe/purchase units exactly
-- No production update/delete; reversal flows can be added later
-- No purchase update/delete; stock adjustment/reversal can be added later
+- No purchase or production direct edit; safe cancellation/reversal flows are implemented instead
+- No advanced partial reversal or correction workflows beyond cancel flows
+- Reports aggregate existing list APIs client-side (no dedicated analytics backend)
 - Access token stored in `localStorage`; HttpOnly session pattern can be adopted later
 - Advanced DB row locking for high-concurrency stock consumption is not implemented yet
 

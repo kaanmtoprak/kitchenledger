@@ -545,7 +545,9 @@ export class ProductionsService {
     );
 
     if (production.status === ProductionStatus.CANCELLED) {
-      throw new BadRequestException('This production has already been cancelled');
+      throw new BadRequestException(
+        'This production has already been cancelled',
+      );
     }
 
     if (production.stockMovements.length === 0) {
@@ -577,7 +579,9 @@ export class ProductionsService {
         }
 
         const batch = movement.stockBatch;
-        const newRemainingQuantity = batch.remainingQuantity.add(movement.quantity);
+        const newRemainingQuantity = batch.remainingQuantity.add(
+          movement.quantity,
+        );
 
         if (newRemainingQuantity.gt(batch.initialQuantity)) {
           throw new ConflictException(

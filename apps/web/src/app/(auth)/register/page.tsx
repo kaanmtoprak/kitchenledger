@@ -6,7 +6,9 @@ export default function RegisterPage() {
     <Card className="shadow-card-hover">
       <CardHeader className="space-y-2 pb-2">
         <div className="space-y-1">
-          <p className="text-xs font-semibold uppercase tracking-wider text-primary">KitchenLedger</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-primary">
+            KitchenLedger
+          </p>
           <CardTitle className="text-2xl font-bold tracking-tight">Hesap Oluştur</CardTitle>
         </div>
         <CardDescription className="text-[13px] leading-relaxed">

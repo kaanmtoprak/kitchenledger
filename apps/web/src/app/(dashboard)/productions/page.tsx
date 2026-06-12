@@ -102,8 +102,10 @@ export default function ProductionsPage() {
       queryClient.invalidateQueries({ queryKey: ['inventory'] }),
       queryClient.invalidateQueries({ queryKey: ['dashboard'] }),
       queryClient.invalidateQueries({ queryKey: ['reports', 'productions'] }),
+      queryClient.invalidateQueries({ queryKey: ['reports', 'movements'] }),
       queryClient.invalidateQueries({ queryKey: ['products'] }),
       queryClient.invalidateQueries({ queryKey: ['recipes'] }),
+      queryClient.invalidateQueries({ queryKey: ['audit-logs'] }),
     ]);
   };
 

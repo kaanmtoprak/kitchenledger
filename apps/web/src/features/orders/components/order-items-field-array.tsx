@@ -41,7 +41,8 @@ export function OrderItemsFieldArray({ form, products }: OrderItemsFieldArrayPro
     name: 'items',
   });
 
-  const watchedItems = useWatch({ control: form.control, name: 'items' }) ?? defaultOrderFormValues.items;
+  const watchedItems =
+    useWatch({ control: form.control, name: 'items' }) ?? defaultOrderFormValues.items;
 
   const getSelectedProductIds = (currentIndex: number) =>
     watchedItems

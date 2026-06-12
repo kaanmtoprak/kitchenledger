@@ -41,7 +41,10 @@ export type ProductionConsumption = {
   batches: ProductionConsumptionBatch[];
 };
 
-export type ProductionDetail = Omit<ProductionListItem, 'branchName' | 'productName' | 'productSku'> & {
+export type ProductionDetail = Omit<
+  ProductionListItem,
+  'branchName' | 'productName' | 'productSku'
+> & {
   branch: {
     id: string;
     name: string;

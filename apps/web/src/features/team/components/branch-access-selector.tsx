@@ -2,10 +2,7 @@
 
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import {
-  hasOrgWideBranchAccess,
-  requiresBranchSelection,
-} from '@/lib/auth/role-labels';
+import { hasOrgWideBranchAccess, requiresBranchSelection } from '@/lib/auth/role-labels';
 import type { Branch } from '@/features/branches/types/branch.types';
 
 type BranchAccessSelectorProps = {

@@ -1,12 +1,6 @@
 import { z } from 'zod';
 
-const roleSchema = z.enum([
-  'OWNER',
-  'ADMIN',
-  'BRANCH_MANAGER',
-  'STAFF',
-  'VIEWER',
-]);
+const roleSchema = z.enum(['OWNER', 'ADMIN', 'BRANCH_MANAGER', 'STAFF', 'VIEWER']);
 
 export const teamCreateSchema = z.object({
   firstName: z.string().trim().min(1, 'Ad zorunludur'),

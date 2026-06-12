@@ -28,9 +28,7 @@ export default function TeamPage() {
   const permissions = usePermissions();
 
   const actorMembershipId = useMemo(
-    () =>
-      memberships.find((item) => item.organizationId === selectedOrganizationId)
-        ?.membershipId,
+    () => memberships.find((item) => item.organizationId === selectedOrganizationId)?.membershipId,
     [memberships, selectedOrganizationId],
   );
 
@@ -57,7 +55,10 @@ export default function TeamPage() {
   const createMutation = useMutation({
     mutationFn: teamApi.create,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['team', selectedOrganizationId] });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['team', selectedOrganizationId] }),
+        queryClient.invalidateQueries({ queryKey: ['audit-logs'] }),
+      ]);
     },
   });
 
@@ -70,7 +71,10 @@ export default function TeamPage() {
       payload: Parameters<typeof teamApi.update>[1];
     }) => teamApi.update(membershipId, payload),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['team', selectedOrganizationId] });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['team', selectedOrganizationId] }),
+        queryClient.invalidateQueries({ queryKey: ['audit-logs'] }),
+      ]);
     },
   });
 

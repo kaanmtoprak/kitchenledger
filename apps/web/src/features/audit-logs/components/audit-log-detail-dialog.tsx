@@ -1,16 +1,8 @@
 'use client';
 
 import { Badge } from '@/components/ui/badge';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import {
-  formatAuditAction,
-  formatAuditEntityType,
-} from '@/lib/audit/audit-labels';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { formatAuditAction, formatAuditEntityType } from '@/lib/audit/audit-labels';
 import { formatDateTime } from '@/lib/utils/display';
 import type { AuditLog } from '../types/audit-log.types';
 
@@ -32,11 +24,7 @@ function JsonBlock({ value }: { value: unknown }) {
   );
 }
 
-export function AuditLogDetailDialog({
-  open,
-  onOpenChange,
-  log,
-}: AuditLogDetailDialogProps) {
+export function AuditLogDetailDialog({ open, onOpenChange, log }: AuditLogDetailDialogProps) {
   if (!log) {
     return null;
   }

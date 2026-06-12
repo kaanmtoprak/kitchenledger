@@ -1,8 +1,5 @@
 import { apiClient } from '@/lib/api/api-client';
-import type {
-  ListAuditLogsParams,
-  ListAuditLogsResponse,
-} from '../types/audit-log.types';
+import type { ListAuditLogsParams, ListAuditLogsResponse } from '../types/audit-log.types';
 
 function buildQueryString(params?: ListAuditLogsParams): string {
   if (!params) {

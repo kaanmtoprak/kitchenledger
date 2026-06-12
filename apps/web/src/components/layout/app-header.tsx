@@ -37,8 +37,12 @@ export function AppHeader() {
           </SheetTrigger>
           <SheetContent side="left" className="w-72 border-slate-200 bg-surface-sidebar p-0">
             <div className="flex h-[4.5rem] flex-col justify-center border-b border-slate-200 px-6">
-              <span className="text-lg font-bold tracking-tight text-foreground">KitchenLedger</span>
-              <span className="text-[11px] font-medium text-muted-foreground">Operasyon Paneli</span>
+              <span className="text-lg font-bold tracking-tight text-foreground">
+                KitchenLedger
+              </span>
+              <span className="text-[11px] font-medium text-muted-foreground">
+                Operasyon Paneli
+              </span>
             </div>
             <div className="p-4">
               <AppSidebarNav

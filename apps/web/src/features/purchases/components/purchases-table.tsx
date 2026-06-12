@@ -105,10 +105,7 @@ export function PurchasesTable({
             const isCancelled = !isPurchaseActive(purchase.status);
 
             return (
-              <TableRow
-                key={purchase.id}
-                className={cn(isCancelled && 'opacity-60')}
-              >
+              <TableRow key={purchase.id} className={cn(isCancelled && 'opacity-60')}>
                 <TableCell className="whitespace-nowrap">
                   {formatDateTime(purchase.purchasedAt)}
                 </TableCell>

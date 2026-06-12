@@ -410,7 +410,8 @@ export class DashboardService {
         branchId: production.branchId,
         branchName: production.branch.name,
         createdAt:
-          production.status === ProductionStatus.CANCELLED && production.cancelledAt
+          production.status === ProductionStatus.CANCELLED &&
+          production.cancelledAt
             ? production.cancelledAt
             : production.createdAt,
       })),

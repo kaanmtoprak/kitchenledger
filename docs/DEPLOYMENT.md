@@ -6,10 +6,10 @@ Related docs: [README](../README.md) · [QA_CHECKLIST.md](QA_CHECKLIST.md) · [A
 
 ## Recommended Stack
 
-| Component     | Provider                                                       |
-| ------------- | -------------------------------------------------------------- |
-| Web (Next.js) | [Vercel](https://vercel.com)                                   |
-| API (NestJS)  | [Railway](https://railway.app) or [Render](https://render.com) |
+| Component     | Provider                                                                                                  |
+| ------------- | --------------------------------------------------------------------------------------------------------- |
+| Web (Next.js) | [Vercel](https://vercel.com)                                                                              |
+| API (NestJS)  | [Railway](https://railway.app) or [Render](https://render.com)                                            |
 | PostgreSQL    | [Neon](https://neon.tech), [Supabase](https://supabase.com) (Postgres only), Railway Postgres, or similar |
 
 **Note:** Supabase is used here only as a managed PostgreSQL host. KitchenLedger does **not** use Supabase Auth, Supabase SDK, or Row Level Security — auth and tenancy are handled by the NestJS API.
@@ -127,14 +127,14 @@ pnpm db:deploy && pnpm --filter @kitchenledger/api start:prod
 
 Recommended Vercel project settings (monorepo):
 
-| Setting            | Value                                      |
-| ------------------ | ------------------------------------------ |
-| Framework Preset   | Next.js                                    |
-| Root Directory     | `apps/web` (or repo root — see below)      |
-| Install Command    | `pnpm install` (from repo root)            |
-| Build Command      | `cd ../.. && pnpm --filter @kitchenledger/web build` if Root = `apps/web`; otherwise `pnpm --filter @kitchenledger/web build` |
-| Output Directory   | `.next` (default; Vercel auto-detects)     |
-| Node.js Version    | 20.x                                       |
+| Setting          | Value                                                                                                                         |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| Framework Preset | Next.js                                                                                                                       |
+| Root Directory   | `apps/web` (or repo root — see below)                                                                                         |
+| Install Command  | `pnpm install` (from repo root)                                                                                               |
+| Build Command    | `cd ../.. && pnpm --filter @kitchenledger/web build` if Root = `apps/web`; otherwise `pnpm --filter @kitchenledger/web build` |
+| Output Directory | `.next` (default; Vercel auto-detects)                                                                                        |
+| Node.js Version  | 20.x                                                                                                                          |
 
 **Environment variable (Vercel):**
 
@@ -144,9 +144,9 @@ NEXT_PUBLIC_API_URL=https://your-api-domain.com
 
 If the Vercel project root is the **repository root** instead of `apps/web`:
 
-| Setting       | Value                                |
-| ------------- | ------------------------------------ |
-| Root Directory | `.` (default)                       |
+| Setting        | Value                                    |
+| -------------- | ---------------------------------------- |
+| Root Directory | `.` (default)                            |
 | Build Command  | `pnpm --filter @kitchenledger/web build` |
 
 ## Cookie / CORS Notes

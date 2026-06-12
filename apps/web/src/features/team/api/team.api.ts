@@ -7,8 +7,7 @@ import type {
 
 export const teamApi = {
   list: () => apiClient.get<TeamMember[]>('/team'),
-  create: (payload: CreateTeamMemberPayload) =>
-    apiClient.post<TeamMember>('/team', payload),
+  create: (payload: CreateTeamMemberPayload) => apiClient.post<TeamMember>('/team', payload),
   update: (membershipId: string, payload: UpdateTeamMemberPayload) =>
     apiClient.patch<TeamMember>(`/team/${membershipId}`, payload),
 };

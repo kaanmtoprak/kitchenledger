@@ -13,10 +13,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { EmptyState } from '@/components/common/empty-state';
-import {
-  formatAuditAction,
-  formatAuditEntityType,
-} from '@/lib/audit/audit-labels';
+import { formatAuditAction, formatAuditEntityType } from '@/lib/audit/audit-labels';
 import { formatDateTime } from '@/lib/utils/display';
 import type { AuditLog } from '../types/audit-log.types';
 
@@ -63,9 +60,7 @@ export function AuditLogsTable({ logs, isLoading, onViewDetail }: AuditLogsTable
       <TableBody>
         {logs.map((log) => (
           <TableRow key={log.id}>
-            <TableCell className="whitespace-nowrap">
-              {formatDateTime(log.createdAt)}
-            </TableCell>
+            <TableCell className="whitespace-nowrap">{formatDateTime(log.createdAt)}</TableCell>
             <TableCell>{log.actorEmail ?? '—'}</TableCell>
             <TableCell>
               <Badge variant="secondary">{formatAuditAction(log.action)}</Badge>
@@ -77,12 +72,7 @@ export function AuditLogsTable({ logs, isLoading, onViewDetail }: AuditLogsTable
             <TableCell>{log.branch?.name ?? '—'}</TableCell>
             <TableCell className="max-w-[200px] truncate">{log.summary}</TableCell>
             <TableCell className="text-right">
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => onViewDetail(log)}
-              >
+              <Button type="button" variant="ghost" size="sm" onClick={() => onViewDetail(log)}>
                 <Eye className="mr-1 h-4 w-4" />
                 Detay
               </Button>

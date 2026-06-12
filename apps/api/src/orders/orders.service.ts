@@ -469,7 +469,10 @@ export class OrdersService {
       throw new NotFoundException('Order not found');
     }
 
-    await this.branchAccessService.ensureBranchAccess(tenant, existing.branchId);
+    await this.branchAccessService.ensureBranchAccess(
+      tenant,
+      existing.branchId,
+    );
 
     if (
       existing.status === OrderStatus.DELIVERED ||
