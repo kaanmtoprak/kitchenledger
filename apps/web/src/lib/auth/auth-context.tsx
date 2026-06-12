@@ -97,6 +97,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async (payload: LoginPayload) => {
       const response = await authApi.login(payload);
       setAccessToken(response.accessToken);
+      clearSelectedOrganizationId();
+      setSelectedOrganizationIdState(null);
       await loadMe();
       router.replace('/dashboard');
     },

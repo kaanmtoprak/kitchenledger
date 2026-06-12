@@ -2,7 +2,7 @@
 
 import { Plus, Trash2 } from 'lucide-react';
 import type { UseFormReturn } from 'react-hook-form';
-import { useFieldArray } from 'react-hook-form';
+import { useFieldArray, useWatch } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -15,7 +15,11 @@ import {
 } from '@/components/ui/select';
 import type { Product } from '@/features/products/types/product.types';
 import { formatCurrency } from '@/lib/utils/display';
-import { defaultOrderItem, type OrderFormValues } from '../schemas/order.schemas';
+import {
+  defaultOrderFormValues,
+  defaultOrderItem,
+  type OrderFormValues,
+} from '../schemas/order.schemas';
 
 type OrderItemsFieldArrayProps = {
   form: UseFormReturn<OrderFormValues>;
@@ -37,7 +41,7 @@ export function OrderItemsFieldArray({ form, products }: OrderItemsFieldArrayPro
     name: 'items',
   });
 
-  const watchedItems = form.watch('items');
+  const watchedItems = useWatch({ control: form.control, name: 'items' }) ?? defaultOrderFormValues.items;
 
   const getSelectedProductIds = (currentIndex: number) =>
     watchedItems

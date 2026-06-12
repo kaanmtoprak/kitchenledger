@@ -5,7 +5,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Prisma, Role } from '@kitchenledger/db';
+import { AuditAction, Prisma, Role } from '@kitchenledger/db';
+import { AuditService } from '../audit/audit.service';
 import { hashPassword, normalizeEmail } from '../auth/auth.helpers';
 import { PrismaService } from '../prisma/prisma.service';
 import { TenantContext } from '../common/types/tenant-context.type';
@@ -46,7 +47,10 @@ type MembershipWithUser = Prisma.OrganizationMemberGetPayload<{
 
 @Injectable()
 export class TeamService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly auditService: AuditService,
+  ) {}
 
   async list(tenant: TenantContext) {
     const memberships = await this.prisma.organizationMember.findMany({
@@ -104,6 +108,16 @@ export class TeamService {
             'User is already a member of this organization',
           );
         }
+
+        const passwordHash = await hashPassword(dto.password);
+        user = await tx.user.update({
+          where: { id: user.id },
+          data: {
+            passwordHash,
+            firstName: dto.firstName.trim(),
+            lastName: dto.lastName.trim(),
+          },
+        });
       } else {
         const passwordHash = await hashPassword(dto.password);
         user = await tx.user.create({
@@ -175,6 +189,18 @@ export class TeamService {
         },
       });
 
+      await this.auditService.logFromTenant(
+        tenant,
+        {
+          action: AuditAction.CREATE,
+          entityType: 'TeamMember',
+          entityId: refreshed.id,
+          entityLabel: refreshed.user.email,
+          after: this.teamMemberAuditSnapshot(refreshed),
+        },
+        tx,
+      );
+
       return refreshed;
     });
 
@@ -232,6 +258,7 @@ export class TeamService {
       assertActorCanAssignRole(tenant.role, dto.role);
     }
 
+    const beforeSnapshot = this.teamMemberAuditSnapshot(membership);
     const effectiveRole = dto.role ?? membership.role;
     const shouldSyncBranches =
       dto.branchIds !== undefined || dto.role !== undefined;
@@ -276,7 +303,7 @@ export class TeamService {
         );
       }
 
-      return tx.organizationMember.findUniqueOrThrow({
+      const refreshed = await tx.organizationMember.findUniqueOrThrow({
         where: { id: membership.id },
         include: {
           user: {
@@ -298,9 +325,47 @@ export class TeamService {
           },
         },
       });
+
+      const afterSnapshot = this.teamMemberAuditSnapshot(refreshed);
+      let action: AuditAction = AuditAction.UPDATE;
+      if (dto.isActive === false && membership.isActive) {
+        action = AuditAction.DEACTIVATE;
+      } else if (dto.isActive === true && !membership.isActive) {
+        action = AuditAction.ACTIVATE;
+      }
+
+      await this.auditService.logFromTenant(
+        tenant,
+        {
+          action,
+          entityType: 'TeamMember',
+          entityId: refreshed.id,
+          entityLabel: refreshed.user.email,
+          before: beforeSnapshot,
+          after: afterSnapshot,
+        },
+        tx,
+      );
+
+      return refreshed;
     });
 
     return this.mapMember(updated);
+  }
+
+  private teamMemberAuditSnapshot(
+    membership: Pick<MembershipWithUser, 'role' | 'isActive'> & {
+      user: MembershipWithUser['user'];
+    },
+  ) {
+    return this.auditService.sanitizeBeforeAfter({
+      email: membership.user.email,
+      firstName: membership.user.firstName,
+      lastName: membership.user.lastName,
+      role: membership.role,
+      isActive: membership.isActive,
+      branchIds: membership.user.branchMembers.map((item) => item.branch.id),
+    });
   }
 
   private mapMember(membership: MembershipWithUser) {

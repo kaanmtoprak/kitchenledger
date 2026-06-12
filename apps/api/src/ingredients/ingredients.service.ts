@@ -3,7 +3,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Prisma } from '@kitchenledger/db';
+import { AuditAction, Prisma } from '@kitchenledger/db';
+import { AuditService } from '../audit/audit.service';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   buildPaginatedResponse,
@@ -33,7 +34,10 @@ type IngredientRow = Prisma.IngredientGetPayload<{
 
 @Injectable()
 export class IngredientsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly auditService: AuditService,
+  ) {}
 
   async list(tenant: TenantContext, query: ListIngredientsQueryDto) {
     const pagination = parsePagination(query);
@@ -103,13 +107,22 @@ export class IngredientsService {
       select: ingredientSelect,
     });
 
-    return this.mapIngredient(ingredient);
+    const mapped = this.mapIngredient(ingredient);
+    await this.auditService.logFromTenant(tenant, {
+      action: AuditAction.CREATE,
+      entityType: 'Ingredient',
+      entityId: mapped.id,
+      entityLabel: mapped.name,
+      after: mapped,
+    });
+
+    return mapped;
   }
 
   async update(tenant: TenantContext, id: string, dto: UpdateIngredientDto) {
     const existing = await this.prisma.ingredient.findFirst({
       where: { id, organizationId: tenant.organizationId },
-      select: { id: true, name: true, sku: true },
+      select: ingredientSelect,
     });
 
     if (!existing) {
@@ -155,13 +168,31 @@ export class IngredientsService {
       select: ingredientSelect,
     });
 
-    return this.mapIngredient(ingredient);
+    const before = this.mapIngredient(existing);
+    const after = this.mapIngredient(ingredient);
+    let action: AuditAction = AuditAction.UPDATE;
+    if (dto.isActive === false && existing.isActive) {
+      action = AuditAction.DEACTIVATE;
+    } else if (dto.isActive === true && !existing.isActive) {
+      action = AuditAction.ACTIVATE;
+    }
+
+    await this.auditService.logFromTenant(tenant, {
+      action,
+      entityType: 'Ingredient',
+      entityId: after.id,
+      entityLabel: after.name,
+      before,
+      after,
+    });
+
+    return after;
   }
 
   async softDelete(tenant: TenantContext, id: string) {
     const existing = await this.prisma.ingredient.findFirst({
       where: { id, organizationId: tenant.organizationId },
-      select: { id: true },
+      select: ingredientSelect,
     });
 
     if (!existing) {
@@ -171,6 +202,15 @@ export class IngredientsService {
     await this.prisma.ingredient.update({
       where: { id: existing.id },
       data: { isActive: false },
+    });
+
+    await this.auditService.logFromTenant(tenant, {
+      action: AuditAction.DEACTIVATE,
+      entityType: 'Ingredient',
+      entityId: existing.id,
+      entityLabel: existing.name,
+      before: { isActive: true },
+      after: { isActive: false },
     });
 
     return { success: true };

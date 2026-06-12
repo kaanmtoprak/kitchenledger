@@ -41,7 +41,10 @@ export function AppHeader() {
               <span className="text-[11px] font-medium text-muted-foreground">Operasyon Paneli</span>
             </div>
             <div className="p-4">
-              <AppSidebarNav canManageTeam={permissions.canManageTeam} />
+              <AppSidebarNav
+                canManageTeam={permissions.canManageTeam}
+                canViewAuditLogs={permissions.canViewAuditLogs}
+              />
             </div>
           </SheetContent>
         </Sheet>

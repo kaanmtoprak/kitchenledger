@@ -3,7 +3,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Prisma } from '@kitchenledger/db';
+import { AuditAction, Prisma } from '@kitchenledger/db';
+import { AuditService } from '../audit/audit.service';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   buildPaginatedResponse,
@@ -26,7 +27,10 @@ const branchSelect = {
 
 @Injectable()
 export class BranchesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly auditService: AuditService,
+  ) {}
 
   async list(tenant: TenantContext, query: ListBranchesQueryDto) {
     const pagination = parsePagination(query);
@@ -101,6 +105,19 @@ export class BranchesService {
         },
       });
 
+      await this.auditService.logFromTenant(
+        tenant,
+        {
+          action: AuditAction.CREATE,
+          entityType: 'Branch',
+          entityId: created.id,
+          entityLabel: created.name,
+          branchId: created.id,
+          after: created,
+        },
+        tx,
+      );
+
       return created;
     });
 
@@ -110,7 +127,7 @@ export class BranchesService {
   async update(tenant: TenantContext, id: string, dto: UpdateBranchDto) {
     const existing = await this.prisma.branch.findFirst({
       where: { id, organizationId: tenant.organizationId },
-      select: { id: true, code: true },
+      select: branchSelect,
     });
 
     if (!existing) {
@@ -135,17 +152,36 @@ export class BranchesService {
       data.isActive = dto.isActive;
     }
 
-    return this.prisma.branch.update({
+    const updated = await this.prisma.branch.update({
       where: { id: existing.id },
       data,
       select: branchSelect,
     });
+
+    let action: AuditAction = AuditAction.UPDATE;
+    if (dto.isActive === false && existing.isActive) {
+      action = AuditAction.DEACTIVATE;
+    } else if (dto.isActive === true && !existing.isActive) {
+      action = AuditAction.ACTIVATE;
+    }
+
+    await this.auditService.logFromTenant(tenant, {
+      action,
+      entityType: 'Branch',
+      entityId: updated.id,
+      entityLabel: updated.name,
+      branchId: updated.id,
+      before: existing,
+      after: updated,
+    });
+
+    return updated;
   }
 
   async softDelete(tenant: TenantContext, id: string) {
     const existing = await this.prisma.branch.findFirst({
       where: { id, organizationId: tenant.organizationId },
-      select: { id: true },
+      select: branchSelect,
     });
 
     if (!existing) {
@@ -155,6 +191,16 @@ export class BranchesService {
     await this.prisma.branch.update({
       where: { id: existing.id },
       data: { isActive: false },
+    });
+
+    await this.auditService.logFromTenant(tenant, {
+      action: AuditAction.DEACTIVATE,
+      entityType: 'Branch',
+      entityId: existing.id,
+      entityLabel: existing.name,
+      branchId: existing.id,
+      before: { isActive: true },
+      after: { isActive: false },
     });
 
     return { success: true };

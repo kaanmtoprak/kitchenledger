@@ -172,6 +172,12 @@ export function getApiErrorMessage(
       return 'Bu işlem için yetkiniz yok.';
     }
     if (error.status === 401) {
+      if (error.message) {
+        const translated = translateBackendMessage(error.message, error);
+        if (translated !== error.message) {
+          return translated;
+        }
+      }
       return 'Oturum süreniz dolmuş olabilir. Lütfen tekrar giriş yapın.';
     }
     if (error.status === 404) {

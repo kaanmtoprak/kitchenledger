@@ -3,7 +3,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Prisma } from '@kitchenledger/db';
+import { AuditAction, Prisma } from '@kitchenledger/db';
+import { AuditService } from '../audit/audit.service';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   buildPaginatedResponse,
@@ -32,6 +33,7 @@ export class ProductsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly recipeCostService: RecipeCostService,
+    private readonly auditService: AuditService,
   ) {}
 
   async list(tenant: TenantContext, query: ListProductsQueryDto) {
@@ -123,13 +125,22 @@ export class ProductsService {
       select: productSelect,
     });
 
-    return this.mapProduct(product);
+    const mapped = this.mapProduct(product);
+    await this.auditService.logFromTenant(tenant, {
+      action: AuditAction.CREATE,
+      entityType: 'Product',
+      entityId: mapped.id,
+      entityLabel: mapped.name,
+      after: mapped,
+    });
+
+    return mapped;
   }
 
   async update(tenant: TenantContext, id: string, dto: UpdateProductDto) {
     const existing = await this.prisma.product.findFirst({
       where: { id, organizationId: tenant.organizationId },
-      select: { id: true, sku: true },
+      select: productSelect,
     });
 
     if (!existing) {
@@ -168,13 +179,31 @@ export class ProductsService {
       select: productSelect,
     });
 
-    return this.mapProduct(product);
+    const before = this.mapProduct(existing);
+    const after = this.mapProduct(product);
+    let action: AuditAction = AuditAction.UPDATE;
+    if (dto.isActive === false && existing.isActive) {
+      action = AuditAction.DEACTIVATE;
+    } else if (dto.isActive === true && !existing.isActive) {
+      action = AuditAction.ACTIVATE;
+    }
+
+    await this.auditService.logFromTenant(tenant, {
+      action,
+      entityType: 'Product',
+      entityId: after.id,
+      entityLabel: after.name,
+      before,
+      after,
+    });
+
+    return after;
   }
 
   async softDelete(tenant: TenantContext, id: string) {
     const existing = await this.prisma.product.findFirst({
       where: { id, organizationId: tenant.organizationId },
-      select: { id: true },
+      select: productSelect,
     });
 
     if (!existing) {
@@ -184,6 +213,15 @@ export class ProductsService {
     await this.prisma.product.update({
       where: { id: existing.id },
       data: { isActive: false },
+    });
+
+    await this.auditService.logFromTenant(tenant, {
+      action: AuditAction.DEACTIVATE,
+      entityType: 'Product',
+      entityId: existing.id,
+      entityLabel: existing.name,
+      before: { isActive: true },
+      after: { isActive: false },
     });
 
     return { success: true };

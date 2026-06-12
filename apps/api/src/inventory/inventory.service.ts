@@ -3,7 +3,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { BaseUnit, Prisma, StockMovementType } from '@kitchenledger/db';
+import { AuditAction, BaseUnit, Prisma, StockMovementType } from '@kitchenledger/db';
+import { AuditService } from '../audit/audit.service';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   buildPaginatedResponse,
@@ -46,6 +47,7 @@ export class InventoryService {
     private readonly branchAccessService: BranchAccessService,
     private readonly stockConsumptionService: StockConsumptionService,
     private readonly ingredientCostService: IngredientCostService,
+    private readonly auditService: AuditService,
   ) {}
 
   private async resolveUnitCost(
@@ -348,7 +350,7 @@ export class InventoryService {
           reason,
         });
 
-        return {
+        const result = {
           type: dto.type,
           branchId: dto.branchId,
           ingredientId: ingredient.id,
@@ -356,6 +358,29 @@ export class InventoryService {
           unit: ingredient.baseUnit,
           movements,
         };
+
+        await this.auditService.logFromTenant(
+          tenant,
+          {
+            action: AuditAction.STOCK_ADJUSTMENT,
+            entityType: 'InventoryAdjustment',
+            entityId: movements[0]?.id ?? null,
+            entityLabel: ingredient.name,
+            branchId: dto.branchId,
+            metadata: {
+              type: dto.type,
+              quantity: result.quantity,
+              reason,
+              ingredientName: ingredient.name,
+              unit: ingredient.baseUnit,
+              stockBatchId: dto.stockBatchId ?? null,
+              movements,
+            },
+          },
+          tx,
+        );
+
+        return result;
       }
 
       const unitCost = await this.resolveUnitCost(
@@ -375,7 +400,7 @@ export class InventoryService {
         reason,
       });
 
-      return {
+      const response = {
         type: dto.type,
         branchId: dto.branchId,
         ingredientId: ingredient.id,
@@ -385,6 +410,29 @@ export class InventoryService {
         stockBatchId: result.stockBatchId,
         movements: result.movements,
       };
+
+      await this.auditService.logFromTenant(
+        tenant,
+        {
+          action: AuditAction.STOCK_ADJUSTMENT,
+          entityType: 'InventoryAdjustment',
+          entityId: result.movements[0]?.id ?? null,
+          entityLabel: ingredient.name,
+          branchId: dto.branchId,
+          metadata: {
+            type: dto.type,
+            quantity: response.quantity,
+            reason,
+            ingredientName: ingredient.name,
+            unit: ingredient.baseUnit,
+            stockBatchId: result.stockBatchId,
+            movements: result.movements,
+          },
+        },
+        tx,
+      );
+
+      return response;
     });
   }
 

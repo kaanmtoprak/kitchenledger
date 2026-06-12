@@ -3,7 +3,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { OrderStatus, Prisma } from '@kitchenledger/db';
+import { AuditAction, OrderStatus, Prisma } from '@kitchenledger/db';
+import { AuditService } from '../audit/audit.service';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   buildPaginatedResponse,
@@ -24,6 +25,7 @@ export class OrdersService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly branchAccessService: BranchAccessService,
+    private readonly auditService: AuditService,
   ) {}
 
   private async generateOrderNumber(
@@ -206,7 +208,7 @@ export class OrdersService {
         },
       });
 
-      return {
+      const result = {
         id: order.id,
         orderNumber: order.orderNumber,
         branchId: order.branchId,
@@ -221,6 +223,27 @@ export class OrdersService {
         branch: order.branch,
         items: order.items.map((item) => this.mapOrderItem(item)),
       };
+
+      await this.auditService.logFromTenant(
+        tenant,
+        {
+          action: AuditAction.CREATE,
+          entityType: 'Order',
+          entityId: order.id,
+          entityLabel: order.orderNumber,
+          branchId: order.branchId,
+          after: result,
+          metadata: {
+            orderNumber: order.orderNumber,
+            status: order.status,
+            totalAmount: result.totalAmount,
+            itemCount: order.items.length,
+          },
+        },
+        tx,
+      );
+
+      return result;
     });
   }
 
@@ -384,7 +407,7 @@ export class OrdersService {
   ) {
     const order = await this.prisma.order.findFirst({
       where: { id, organizationId: tenant.organizationId },
-      select: { id: true, branchId: true },
+      select: { id: true, branchId: true, orderNumber: true, status: true },
     });
 
     if (!order) {
@@ -393,6 +416,7 @@ export class OrdersService {
 
     await this.branchAccessService.ensureBranchAccess(tenant, order.branchId);
 
+    const previousStatus = order.status;
     const updated = await this.prisma.order.update({
       where: { id: order.id },
       data: { status: dto.status },
@@ -409,7 +433,7 @@ export class OrdersService {
       },
     });
 
-    return {
+    const result = {
       id: updated.id,
       orderNumber: updated.orderNumber,
       branchId: updated.branchId,
@@ -424,5 +448,18 @@ export class OrdersService {
       branch: updated.branch,
       items: updated.items.map((item) => this.mapOrderItem(item)),
     };
+
+    await this.auditService.logFromTenant(tenant, {
+      action: AuditAction.STATUS_CHANGE,
+      entityType: 'Order',
+      entityId: updated.id,
+      entityLabel: updated.orderNumber,
+      branchId: updated.branchId,
+      before: { status: previousStatus },
+      after: { status: updated.status },
+      metadata: { orderNumber: updated.orderNumber },
+    });
+
+    return result;
   }
 }

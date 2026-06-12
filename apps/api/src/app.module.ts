@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { AuditModule } from './audit/audit.module';
 import { AuthModule } from './auth/auth.module';
 import { BranchesModule } from './branches/branches.module';
 import { CommonModule } from './common/common.module';
@@ -37,6 +38,7 @@ const devOnlyModules = env.isProduction ? [] : [DebugModule];
     ProductionsModule,
     DashboardModule,
     TeamModule,
+    AuditModule,
   ],
 })
 export class AppModule {}

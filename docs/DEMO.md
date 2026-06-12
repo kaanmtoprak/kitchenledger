@@ -70,6 +70,15 @@ All demo users share the password **`Password123!`**.
 - Can open **Kullanıcılar** (`/team`) to create users and manage roles / branch access
 - Full MVP management actions visible in UI
 
+## Audit Logs Demo Flow (Owner only)
+
+1. Login as `owner@kitchenledger.app`
+2. Open **Genel → İşlem Kayıtları** (`/audit-logs`)
+3. Create an ingredient, update a product, change an order status, run a stock adjustment, create a team user
+4. Refresh audit logs — verify entries, filters, and detail dialog (`before` / `after` / `metadata`)
+5. Confirm no `password` / `passwordHash` in team user create detail
+6. Login as `admin@kitchenledger.app` — menu hidden; `/audit-logs` shows access denied / API 403
+
 ## Team Management Demo Flow
 
 1. Login as `owner@kitchenledger.app`

@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { useQuery } from '@tanstack/react-query';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -99,9 +99,16 @@ export function RecipeFormDialog({
     values: open && (!isEdit || recipeQuery.data) ? formValues : defaultRecipeFormValues,
   });
 
-  const watchedProductId = form.watch('productId');
-  const watchedItems = form.watch('items');
+  const watchedProductId = useWatch({ control: form.control, name: 'productId' });
+  const watchedItems = useWatch({ control: form.control, name: 'items' });
+  const watchedYieldQuantity = useWatch({ control: form.control, name: 'yieldQuantity' });
+  const watchedYieldUnit = useWatch({ control: form.control, name: 'yieldUnit' });
   const selectedProduct = products.find((product) => product.id === watchedProductId);
+
+  const filledItemCount = useMemo(() => {
+    const items = watchedItems ?? defaultRecipeFormValues.items;
+    return items.filter((item) => item.ingredientId).length;
+  }, [watchedItems]);
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
@@ -257,11 +264,12 @@ export function RecipeFormDialog({
 
               <div className="rounded-lg border bg-muted/40 p-3 text-sm">
                 <p>
-                  <span className="text-muted-foreground">Kalemler:</span> {watchedItems.length}
+                  <span className="text-muted-foreground">Kalemler:</span> {filledItemCount}
                 </p>
                 <p>
                   <span className="text-muted-foreground">Verim:</span>{' '}
-                  {form.watch('yieldQuantity') || '—'} {formatBaseUnit(form.watch('yieldUnit'))}
+                  {watchedYieldQuantity || '—'}{' '}
+                  {watchedYieldUnit ? formatBaseUnit(watchedYieldUnit) : ''}
                 </p>
                 {selectedProduct ? (
                   <p>

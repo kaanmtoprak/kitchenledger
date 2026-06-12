@@ -40,6 +40,18 @@ enum OrderStatus {
   CANCELLED
 }
 
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  DEACTIVATE
+  ACTIVATE
+  STATUS_CHANGE
+  STOCK_ADJUSTMENT
+  LOGIN
+  LOGOUT
+}
+
 model User {
   id               String    @id @default(cuid())
   email            String    @unique
@@ -54,6 +66,7 @@ model User {
 
   memberships   OrganizationMember[]
   branchMembers BranchMember[]
+  auditLogs     AuditLog[]
 
   @@index([createdAt])
 }
@@ -78,6 +91,7 @@ model Organization {
   customers      Customer[]
   orders         Order[]
   branchMembers  BranchMember[]
+  auditLogs      AuditLog[]
 
   @@index([createdAt])
 }
@@ -115,6 +129,7 @@ model Branch {
   productions    Production[]
   orders         Order[]
   members        BranchMember[]
+  auditLogs      AuditLog[]
 
   @@unique([organizationId, code])
   @@index([organizationId])
@@ -413,4 +428,30 @@ model OrderItem {
 
   @@index([orderId])
   @@index([productId])
+}
+
+model AuditLog {
+  id             String      @id @default(cuid())
+  organizationId String
+  actorUserId    String?
+  actorEmail     String?
+  action         AuditAction
+  entityType     String
+  entityId       String?
+  entityLabel    String?
+  branchId       String?
+  before         Json?
+  after          Json?
+  metadata       Json?
+  createdAt      DateTime    @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  actor        User?        @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+  branch       Branch?      @relation(fields: [branchId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, createdAt])
+  @@index([organizationId, entityType])
+  @@index([organizationId, actorUserId])
+  @@index([organizationId, action])
+  @@index([organizationId, branchId])
 }

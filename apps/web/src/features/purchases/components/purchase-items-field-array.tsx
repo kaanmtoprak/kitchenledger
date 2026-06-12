@@ -2,7 +2,7 @@
 
 import { Plus, Trash2 } from 'lucide-react';
 import type { UseFormReturn } from 'react-hook-form';
-import { useFieldArray } from 'react-hook-form';
+import { useFieldArray, useWatch } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -15,7 +15,11 @@ import {
 } from '@/components/ui/select';
 import type { Ingredient } from '@/features/ingredients/types/ingredient.types';
 import { formatBaseUnit, formatCurrency } from '@/lib/utils/display';
-import { defaultPurchaseItem, type PurchaseFormValues } from '../schemas/purchase.schemas';
+import {
+  defaultPurchaseFormValues,
+  defaultPurchaseItem,
+  type PurchaseFormValues,
+} from '../schemas/purchase.schemas';
 import { calculateUnitCost } from '../types/purchase.types';
 
 type PurchaseItemsFieldArrayProps = {
@@ -29,7 +33,7 @@ export function PurchaseItemsFieldArray({ form, ingredients }: PurchaseItemsFiel
     name: 'items',
   });
 
-  const watchedItems = form.watch('items');
+  const watchedItems = useWatch({ control: form.control, name: 'items' }) ?? defaultPurchaseFormValues.items;
 
   const getIngredientLabel = (ingredient: Ingredient) =>
     `${ingredient.name} (${ingredient.sku}) — ${formatBaseUnit(ingredient.baseUnit)}`;

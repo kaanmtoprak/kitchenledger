@@ -2,7 +2,7 @@
 
 import { Plus, Trash2 } from 'lucide-react';
 import type { UseFormReturn } from 'react-hook-form';
-import { useFieldArray } from 'react-hook-form';
+import { useFieldArray, useWatch } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -15,7 +15,11 @@ import {
 } from '@/components/ui/select';
 import type { Ingredient } from '@/features/ingredients/types/ingredient.types';
 import { formatBaseUnit } from '@/lib/utils/display';
-import { defaultRecipeItem, type RecipeFormValues } from '../schemas/recipe.schemas';
+import {
+  defaultRecipeFormValues,
+  defaultRecipeItem,
+  type RecipeFormValues,
+} from '../schemas/recipe.schemas';
 
 type RecipeItemsFieldArrayProps = {
   form: UseFormReturn<RecipeFormValues>;
@@ -28,7 +32,7 @@ export function RecipeItemsFieldArray({ form, ingredients }: RecipeItemsFieldArr
     name: 'items',
   });
 
-  const watchedItems = form.watch('items');
+  const watchedItems = useWatch({ control: form.control, name: 'items' }) ?? defaultRecipeFormValues.items;
 
   const getIngredientLabel = (ingredient: Ingredient) =>
     `${ingredient.name} (${ingredient.sku}) — ${formatBaseUnit(ingredient.baseUnit)}`;

@@ -65,6 +65,16 @@ Guards applied per route:
 - **RolesGuard** — enforces `@Roles(...)` decorator when present
 - **BranchAccessGuard** — ensures the user can access the requested branch
 
+### Audit logs
+
+`AuditModule` records critical write operations to `AuditLog`:
+
+- Actor (`actorUserId`, `actorEmail`), action, entity type/id/label, optional `branchId`
+- `before` / `after` / `metadata` JSON snapshots
+- Sensitive fields (`passwordHash`, tokens, secrets) stripped before persistence
+- Logs written in the same Prisma transaction as the mutation when applicable
+- `GET /audit-logs` is **OWNER-only**
+
 ### Team management
 
 `TeamModule` (`/team`) lets OWNER and ADMIN manage organization members:

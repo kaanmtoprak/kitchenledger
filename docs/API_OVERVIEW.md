@@ -32,6 +32,18 @@ Quick REST reference for KitchenLedger. Not a full Swagger spec — intended for
 
 ---
 
+## Audit Logs
+
+OWNER only (`JwtAuthGuard` + `TenantGuard` + `RolesGuard`).
+
+| Method | Endpoint      | Description                                      |
+| ------ | ------------- | ------------------------------------------------ |
+| GET    | `/audit-logs` | Paginated audit trail with filters and search    |
+
+Query: `page`, `limit`, `action`, `entityType`, `actorUserId`, `branchId`, `from`, `to`, `search`
+
+---
+
 ## Team
 
 OWNER and ADMIN only (`JwtAuthGuard` + `TenantGuard` + `RolesGuard`).

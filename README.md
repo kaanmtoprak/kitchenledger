@@ -28,6 +28,7 @@ KitchenLedger connects purchasing, inventory, recipe costing and production into
 - Multi-tenant organization and branch management
 - Role-based access control (OWNER, ADMIN, BRANCH_MANAGER, STAFF, VIEWER)
 - Team / user management (OWNER and ADMIN can invite users, assign roles and branch access)
+- Owner-only audit logs for critical mutations (create, update, status, stock adjustments)
 - Ingredient and supplier management with minimum stock levels
 - Purchase-based stock batch creation
 - Inventory stock summary, movement history and stock adjustments (waste, return, manual)

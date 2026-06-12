@@ -1,8 +1,8 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useState } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -59,13 +59,11 @@ export function ProductionFormDialog({
     defaultValues: defaultProductionFormValues,
   });
 
-  const watchedBranchId = form.watch('branchId');
-  const watchedProductId = form.watch('productId');
-  const watchedQuantity = form.watch('quantityProduced');
+  const watchedBranchId = useWatch({ control: form.control, name: 'branchId' }) ?? '';
+  const watchedProductId = useWatch({ control: form.control, name: 'productId' }) ?? '';
+  const watchedQuantity = useWatch({ control: form.control, name: 'quantityProduced' }) ?? '';
 
-  useEffect(() => {
-    setError(null);
-  }, [watchedBranchId, watchedProductId, watchedQuantity]);
+  const clearError = () => setError(null);
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (nextOpen) {
@@ -114,7 +112,10 @@ export function ProductionFormDialog({
                     <BranchFormSelect
                       value={field.value}
                       branches={branches}
-                      onChange={field.onChange}
+                      onChange={(value) => {
+                        clearError();
+                        field.onChange(value);
+                      }}
                     />
                   </FormControl>
                   <FormDescription>Stok tüketimi bu şubedeki partilerden yapılır.</FormDescription>
@@ -129,7 +130,13 @@ export function ProductionFormDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Ürün</FormLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
+                  <Select
+                    value={field.value}
+                    onValueChange={(value) => {
+                      clearError();
+                      field.onChange(value);
+                    }}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Ürün seçin" />
@@ -156,7 +163,15 @@ export function ProductionFormDialog({
                 <FormItem>
                   <FormLabel>Üretilen Miktar</FormLabel>
                   <FormControl>
-                    <Input {...field} inputMode="decimal" placeholder="1" />
+                    <Input
+                      {...field}
+                      inputMode="decimal"
+                      placeholder="1"
+                      onChange={(event) => {
+                        clearError();
+                        field.onChange(event);
+                      }}
+                    />
                   </FormControl>
                   <FormDescription>
                     Üretilen miktara göre reçete malzemeleri ölçeklenir.

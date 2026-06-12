@@ -8,6 +8,7 @@ import {
   ClipboardList,
   Factory,
   FileSpreadsheet,
+  History,
   LayoutDashboard,
   Package,
   ShoppingCart,
@@ -25,6 +26,7 @@ type NavItem = {
   href: string;
   icon: LucideIcon;
   requiresManageTeam?: boolean;
+  requiresViewAuditLogs?: boolean;
 };
 
 type NavGroup = {
@@ -43,6 +45,12 @@ const navGroups: NavGroup[] = [
         href: '/team',
         icon: Users,
         requiresManageTeam: true,
+      },
+      {
+        label: 'İşlem Kayıtları',
+        href: '/audit-logs',
+        icon: History,
+        requiresViewAuditLogs: true,
       },
     ],
   },
@@ -70,9 +78,11 @@ const navGroups: NavGroup[] = [
 export function AppSidebarNav({
   className,
   canManageTeam = false,
+  canViewAuditLogs = false,
 }: {
   className?: string;
   canManageTeam?: boolean;
+  canViewAuditLogs?: boolean;
 }) {
   const pathname = usePathname();
 
@@ -84,7 +94,11 @@ export function AppSidebarNav({
             {group.label}
           </p>
           {group.items
-            .filter((item) => !item.requiresManageTeam || canManageTeam)
+            .filter(
+              (item) =>
+                (!item.requiresManageTeam || canManageTeam) &&
+                (!item.requiresViewAuditLogs || canViewAuditLogs),
+            )
             .map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
@@ -124,7 +138,10 @@ export function AppSidebar() {
         <p className="text-[11px] font-medium text-muted-foreground">Operasyon Paneli</p>
       </div>
       <div className="flex-1 overflow-y-auto p-4">
-        <AppSidebarNav canManageTeam={permissions.canManageTeam} />
+        <AppSidebarNav
+          canManageTeam={permissions.canManageTeam}
+          canViewAuditLogs={permissions.canViewAuditLogs}
+        />
       </div>
     </aside>
   );

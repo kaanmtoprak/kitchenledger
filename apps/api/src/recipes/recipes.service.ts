@@ -4,7 +4,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Prisma } from '@kitchenledger/db';
+import { AuditAction, Prisma } from '@kitchenledger/db';
+import { AuditService } from '../audit/audit.service';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   buildPaginatedResponse,
@@ -39,6 +40,7 @@ export class RecipesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly recipeCostService: RecipeCostService,
+    private readonly auditService: AuditService,
   ) {}
 
   async list(tenant: TenantContext, query: ListRecipesQueryDto) {
@@ -216,19 +218,55 @@ export class RecipesService {
         },
       });
 
-      return this.mapRecipeDetail(recipe);
+      const mapped = this.mapRecipeDetail(recipe);
+      await this.auditService.logFromTenant(
+        tenant,
+        {
+          action: AuditAction.CREATE,
+          entityType: 'Recipe',
+          entityId: mapped.id,
+          entityLabel: mapped.name,
+          after: mapped,
+        },
+        tx,
+      );
+
+      return mapped;
     });
   }
 
   async update(tenant: TenantContext, id: string, dto: UpdateRecipeDto) {
-    const existing = await this.prisma.recipe.findFirst({
+    const beforeRecipe = await this.prisma.recipe.findFirst({
       where: { id, organizationId: tenant.organizationId },
-      select: { id: true },
+      include: {
+        product: {
+          select: {
+            id: true,
+            name: true,
+            sku: true,
+            defaultServingCount: true,
+          },
+        },
+        items: {
+          select: {
+            id: true,
+            ingredientId: true,
+            quantity: true,
+            unit: true,
+            ingredient: {
+              select: { id: true, name: true, sku: true, baseUnit: true },
+            },
+          },
+          orderBy: { createdAt: 'asc' },
+        },
+      },
     });
 
-    if (!existing) {
+    if (!beforeRecipe) {
       throw new NotFoundException('Recipe not found');
     }
+
+    const existing = beforeRecipe;
 
     if (dto.yieldQuantity !== undefined) {
       RecipeCostService.validateYieldQuantity(dto.yieldQuantity);
@@ -297,7 +335,21 @@ export class RecipesService {
         },
       });
 
-      return this.mapRecipeDetail(recipe);
+      const mapped = this.mapRecipeDetail(recipe);
+      await this.auditService.logFromTenant(
+        tenant,
+        {
+          action: AuditAction.UPDATE,
+          entityType: 'Recipe',
+          entityId: mapped.id,
+          entityLabel: mapped.name,
+          before: this.mapRecipeDetail(beforeRecipe),
+          after: mapped,
+        },
+        tx,
+      );
+
+      return mapped;
     });
   }
 

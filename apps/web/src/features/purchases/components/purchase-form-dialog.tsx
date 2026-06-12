@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -64,17 +64,15 @@ export function PurchaseFormDialog({
     defaultValues: defaultPurchaseFormValues,
   });
 
-  const watchedItems = form.watch('items');
+  const watchedItems = useWatch({ control: form.control, name: 'items' });
 
-  const summary = useMemo(
-    () => ({
-      itemCount: watchedItems.filter((item) => item.ingredientId).length,
-      totalCost: calculateItemsTotal(
-        watchedItems.filter((item) => item.ingredientId && item.totalPrice),
-      ),
-    }),
-    [watchedItems],
-  );
+  const summary = useMemo(() => {
+    const items = watchedItems ?? defaultPurchaseFormValues.items;
+    return {
+      itemCount: items.filter((item) => item.ingredientId).length,
+      totalCost: calculateItemsTotal(items),
+    };
+  }, [watchedItems]);
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (nextOpen) {

@@ -3,7 +3,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Prisma } from '@kitchenledger/db';
+import { AuditAction, Prisma } from '@kitchenledger/db';
+import { AuditService } from '../audit/audit.service';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   buildPaginatedResponse,
@@ -29,7 +30,10 @@ const supplierSelect = {
 
 @Injectable()
 export class SuppliersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly auditService: AuditService,
+  ) {}
 
   async list(tenant: TenantContext, query: ListSuppliersQueryDto) {
     const pagination = parsePagination(query);
@@ -79,7 +83,7 @@ export class SuppliersService {
     const name = normalizeName(dto.name);
     await this.assertNameAvailable(tenant.organizationId, name);
 
-    return this.prisma.supplier.create({
+    const supplier = await this.prisma.supplier.create({
       data: {
         organizationId: tenant.organizationId,
         name,
@@ -90,12 +94,22 @@ export class SuppliersService {
       },
       select: supplierSelect,
     });
+
+    await this.auditService.logFromTenant(tenant, {
+      action: AuditAction.CREATE,
+      entityType: 'Supplier',
+      entityId: supplier.id,
+      entityLabel: supplier.name,
+      after: supplier,
+    });
+
+    return supplier;
   }
 
   async update(tenant: TenantContext, id: string, dto: UpdateSupplierDto) {
     const existing = await this.prisma.supplier.findFirst({
       where: { id, organizationId: tenant.organizationId },
-      select: { id: true, name: true },
+      select: supplierSelect,
     });
 
     if (!existing) {
@@ -132,17 +146,35 @@ export class SuppliersService {
       data.isActive = dto.isActive;
     }
 
-    return this.prisma.supplier.update({
+    const supplier = await this.prisma.supplier.update({
       where: { id: existing.id },
       data,
       select: supplierSelect,
     });
+
+    let action: AuditAction = AuditAction.UPDATE;
+    if (dto.isActive === false && existing.isActive) {
+      action = AuditAction.DEACTIVATE;
+    } else if (dto.isActive === true && !existing.isActive) {
+      action = AuditAction.ACTIVATE;
+    }
+
+    await this.auditService.logFromTenant(tenant, {
+      action,
+      entityType: 'Supplier',
+      entityId: supplier.id,
+      entityLabel: supplier.name,
+      before: existing,
+      after: supplier,
+    });
+
+    return supplier;
   }
 
   async softDelete(tenant: TenantContext, id: string) {
     const existing = await this.prisma.supplier.findFirst({
       where: { id, organizationId: tenant.organizationId },
-      select: { id: true },
+      select: supplierSelect,
     });
 
     if (!existing) {
@@ -152,6 +184,15 @@ export class SuppliersService {
     await this.prisma.supplier.update({
       where: { id: existing.id },
       data: { isActive: false },
+    });
+
+    await this.auditService.logFromTenant(tenant, {
+      action: AuditAction.DEACTIVATE,
+      entityType: 'Supplier',
+      entityId: existing.id,
+      entityLabel: existing.name,
+      before: { isActive: true },
+      after: { isActive: false },
     });
 
     return { success: true };

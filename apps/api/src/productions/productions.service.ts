@@ -3,7 +3,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { BaseUnit, Prisma, StockMovementType } from '@kitchenledger/db';
+import { AuditAction, BaseUnit, Prisma, StockMovementType } from '@kitchenledger/db';
+import { AuditService } from '../audit/audit.service';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   buildPaginatedResponse,
@@ -28,6 +29,7 @@ export class ProductionsService {
     private readonly prisma: PrismaService,
     private readonly branchAccessService: BranchAccessService,
     private readonly stockConsumptionService: StockConsumptionService,
+    private readonly auditService: AuditService,
   ) {}
 
   async create(tenant: TenantContext, dto: CreateProductionDto) {
@@ -48,7 +50,7 @@ export class ProductionsService {
         organizationId: tenant.organizationId,
         isActive: true,
       },
-      select: { id: true },
+      select: { id: true, name: true },
     });
 
     if (!product) {
@@ -218,7 +220,7 @@ export class ProductionsService {
         }
       }
 
-      return {
+      const result = {
         id: production.id,
         branchId: production.branchId,
         productId: production.productId,
@@ -242,6 +244,26 @@ export class ProductionsService {
           })),
         })),
       };
+
+      await this.auditService.logFromTenant(
+        tenant,
+        {
+          action: AuditAction.CREATE,
+          entityType: 'Production',
+          entityId: production.id,
+          entityLabel: product.name,
+          branchId: production.branchId,
+          after: result,
+          metadata: {
+            productName: product.name,
+            quantityProduced: result.quantityProduced,
+            totalCostSnapshot: result.totalCostSnapshot,
+          },
+        },
+        tx,
+      );
+
+      return result;
     });
   }
 

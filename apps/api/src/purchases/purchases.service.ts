@@ -3,7 +3,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { BaseUnit, Prisma, StockMovementType } from '@kitchenledger/db';
+import { AuditAction, BaseUnit, Prisma, StockMovementType } from '@kitchenledger/db';
+import { AuditService } from '../audit/audit.service';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   buildPaginatedResponse,
@@ -23,6 +24,7 @@ export class PurchasesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly branchAccessService: BranchAccessService,
+    private readonly auditService: AuditService,
   ) {}
 
   async create(tenant: TenantContext, dto: CreatePurchaseDto) {
@@ -161,7 +163,7 @@ export class PurchasesService {
         });
       }
 
-      return {
+      const result = {
         id: purchase.id,
         branchId: purchase.branchId,
         supplierId: purchase.supplierId,
@@ -170,6 +172,31 @@ export class PurchasesService {
         notes: purchase.notes,
         items: responseItems,
       };
+
+      const totalCost = responseItems.reduce(
+        (sum, item) => sum.add(toDecimal(item.totalPrice)),
+        toDecimal('0'),
+      );
+
+      await this.auditService.logFromTenant(
+        tenant,
+        {
+          action: AuditAction.CREATE,
+          entityType: 'Purchase',
+          entityId: purchase.id,
+          entityLabel: purchase.invoiceNumber ?? purchase.id,
+          branchId: purchase.branchId,
+          after: result,
+          metadata: {
+            invoiceNumber: purchase.invoiceNumber,
+            totalCost: serializeDecimal(totalCost),
+            itemCount: responseItems.length,
+          },
+        },
+        tx,
+      );
+
+      return result;
     });
   }
 

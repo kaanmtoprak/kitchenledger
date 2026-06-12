@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useMemo, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { useQuery } from '@tanstack/react-query';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -83,10 +83,10 @@ export function StockAdjustmentDialog({
     defaultValues: defaultStockAdjustmentValues,
   });
 
-  const watchedBranchId = form.watch('branchId');
-  const watchedIngredientId = form.watch('ingredientId');
-  const watchedType = form.watch('type');
-  const watchedDirection = form.watch('adjustmentDirection');
+  const watchedBranchId = useWatch({ control: form.control, name: 'branchId' }) ?? '';
+  const watchedIngredientId = useWatch({ control: form.control, name: 'ingredientId' }) ?? '';
+  const watchedType = useWatch({ control: form.control, name: 'type' });
+  const watchedDirection = useWatch({ control: form.control, name: 'adjustmentDirection' });
 
   const selectedIngredient = ingredients.find(
     (ingredient) => ingredient.id === watchedIngredientId,
