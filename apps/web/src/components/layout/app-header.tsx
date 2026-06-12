@@ -24,7 +24,7 @@ export function AppHeader() {
   const { user, logout } = useAuth();
 
   return (
-    <header className="flex h-16 items-center justify-between border-b bg-card px-4 md:px-6">
+    <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-slate-200 bg-white/95 px-4 shadow-[0_1px_3px_0_rgb(15_23_42/0.05)] backdrop-blur-md md:px-6">
       <div className="flex items-center gap-3">
         <Sheet>
           <SheetTrigger asChild>
@@ -33,16 +33,19 @@ export function AppHeader() {
               <span className="sr-only">Menüyü aç</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-72 p-0">
-            <div className="flex h-16 items-center border-b px-6">
-              <span className="text-lg font-semibold">KitchenLedger</span>
+          <SheetContent side="left" className="w-72 border-slate-200 bg-surface-sidebar p-0">
+            <div className="flex h-[4.5rem] flex-col justify-center border-b border-slate-200 px-6">
+              <span className="text-lg font-bold tracking-tight text-foreground">KitchenLedger</span>
+              <span className="text-[11px] font-medium text-muted-foreground">Operasyon Paneli</span>
             </div>
             <div className="p-4">
               <AppSidebarNav />
             </div>
           </SheetContent>
         </Sheet>
-        <div className="text-lg font-semibold md:hidden">KitchenLedger</div>
+        <div className="md:hidden">
+          <p className="text-base font-bold tracking-tight text-foreground">KitchenLedger</p>
+        </div>
       </div>
 
       <div className="flex items-center gap-3">
@@ -50,9 +53,9 @@ export function AppHeader() {
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-9 w-9 rounded-full">
-              <Avatar className="h-9 w-9">
-                <AvatarFallback>
+            <Button variant="ghost" className="relative h-9 w-9 rounded-full hover:bg-slate-100">
+              <Avatar className="h-9 w-9 ring-2 ring-slate-100">
+                <AvatarFallback className="bg-blue-50 text-xs font-semibold text-blue-700">
                   {user ? getInitials(user.firstName, user.lastName) : 'KL'}
                 </AvatarFallback>
               </Avatar>
@@ -61,7 +64,7 @@ export function AppHeader() {
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium">
+                <p className="text-sm font-medium text-foreground">
                   {user ? `${user.firstName} ${user.lastName}` : 'Kullanıcı'}
                 </p>
                 <p className="text-xs text-muted-foreground">{user?.email}</p>

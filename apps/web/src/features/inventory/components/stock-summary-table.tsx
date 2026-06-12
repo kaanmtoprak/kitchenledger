@@ -25,9 +25,9 @@ function getStockStatus(item: StockSummaryItem) {
     return { label: 'Stokta yok', variant: 'destructive' as const };
   }
   if (item.isLowStock) {
-    return { label: 'Düşük stok', variant: 'outline' as const };
+    return { label: 'Düşük stok', variant: 'warning' as const };
   }
-  return { label: 'Stokta Var', variant: 'secondary' as const };
+  return { label: 'Stokta Var', variant: 'success' as const };
 }
 
 export function StockSummaryTable({ items, isLoading }: StockSummaryTableProps) {

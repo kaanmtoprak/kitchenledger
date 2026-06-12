@@ -17,7 +17,25 @@ import {
   formatQuantityDisplay,
   formatUnit,
 } from '@/lib/utils/display';
-import type { StockMovementItem } from '../types/inventory.types';
+import type { BadgeProps } from '@/components/ui/badge';
+import type { StockMovementItem, StockMovementType } from '../types/inventory.types';
+
+function getMovementBadgeVariant(type: StockMovementType): NonNullable<BadgeProps['variant']> {
+  switch (type) {
+    case 'PURCHASE':
+      return 'info';
+    case 'PRODUCTION_CONSUMPTION':
+      return 'warning';
+    case 'MANUAL_ADJUSTMENT':
+      return 'muted';
+    case 'WASTE':
+      return 'destructive';
+    case 'RETURN':
+      return 'success';
+    default:
+      return 'outline';
+  }
+}
 
 type StockMovementsTableProps = {
   items: StockMovementItem[];
@@ -62,7 +80,9 @@ export function StockMovementsTable({ items, isLoading }: StockMovementsTablePro
           {items.map((item) => (
             <TableRow key={item.id}>
               <TableCell className="whitespace-nowrap">
-                <Badge variant="outline">{formatMovementType(item.type)}</Badge>
+                <Badge variant={getMovementBadgeVariant(item.type)}>
+                  {formatMovementType(item.type)}
+                </Badge>
               </TableCell>
               <TableCell className="max-w-[140px] truncate font-medium">
                 {item.ingredient.name}

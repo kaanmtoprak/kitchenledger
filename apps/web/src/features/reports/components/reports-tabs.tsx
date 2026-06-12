@@ -1,6 +1,5 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { ReportTabId } from '../types/reports.types';
 
@@ -18,18 +17,21 @@ type ReportsTabsProps = {
 
 export function ReportsTabs({ activeTab, onChange }: ReportsTabsProps) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="inline-flex max-w-full flex-wrap gap-1 rounded-xl border border-slate-200 bg-slate-100/60 p-1">
       {tabs.map((tab) => (
-        <Button
+        <button
           key={tab.id}
           type="button"
-          size="sm"
-          variant={activeTab === tab.id ? 'default' : 'outline'}
-          className={cn(activeTab === tab.id && 'pointer-events-none')}
+          className={cn(
+            'rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-150',
+            activeTab === tab.id
+              ? 'bg-primary text-primary-foreground shadow-sm'
+              : 'bg-white text-muted-foreground shadow-sm hover:text-foreground',
+          )}
           onClick={() => onChange(tab.id)}
         >
           {tab.label}
-        </Button>
+        </button>
       ))}
     </div>
   );

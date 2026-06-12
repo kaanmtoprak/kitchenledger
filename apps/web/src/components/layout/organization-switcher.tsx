@@ -24,7 +24,10 @@ export function OrganizationSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="max-w-[220px] justify-between gap-2">
+        <Button
+          variant="outline"
+          className="max-w-[220px] justify-between gap-2 border-slate-200 bg-white shadow-sm hover:bg-slate-50"
+        >
           <span className="flex items-center gap-2 truncate">
             <Building2 className="h-4 w-4 shrink-0" />
             <span className="truncate">{organization?.name ?? 'İşletme seçin'}</span>

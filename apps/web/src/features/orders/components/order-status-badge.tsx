@@ -1,4 +1,4 @@
-import { Badge } from '@/components/ui/badge';
+import { Badge, type BadgeProps } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { formatOrderStatus } from '@/lib/utils/display';
 import type { OrderStatus } from '../types/order.types';
@@ -8,36 +8,28 @@ type OrderStatusBadgeProps = {
   className?: string;
 };
 
-function getVariant(status: OrderStatus): 'default' | 'secondary' | 'destructive' | 'outline' {
+function getVariant(status: OrderStatus): NonNullable<BadgeProps['variant']> {
   switch (status) {
     case 'PENDING':
-      return 'secondary';
+      return 'warning';
     case 'CONFIRMED':
-      return 'default';
+      return 'info';
     case 'IN_PRODUCTION':
+      return 'info';
     case 'READY':
-      return 'outline';
+      return 'success';
     case 'DELIVERED':
-      return 'default';
+      return 'success';
     case 'CANCELLED':
       return 'destructive';
     default:
-      return 'secondary';
+      return 'muted';
   }
 }
 
 export function OrderStatusBadge({ status, className }: OrderStatusBadgeProps) {
-  const variant = getVariant(status);
-
   return (
-    <Badge
-      variant={variant}
-      className={cn(
-        status === 'DELIVERED' &&
-          'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-100',
-        className,
-      )}
-    >
+    <Badge variant={getVariant(status)} className={cn(className)}>
       {formatOrderStatus(status)}
     </Badge>
   );

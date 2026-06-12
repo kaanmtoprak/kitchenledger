@@ -76,7 +76,7 @@ export function ProductionCostPreview({
   );
 
   return (
-    <div className="space-y-3 rounded-lg border bg-muted/30 p-4">
+    <div className="space-y-3 rounded-lg border bg-muted p-4">
       <div>
         <p className="text-sm font-medium">Tahmini maliyet önizlemesi</p>
         <p className="text-xs text-muted-foreground">

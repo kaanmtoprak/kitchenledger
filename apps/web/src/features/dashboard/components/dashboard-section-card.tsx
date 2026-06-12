@@ -33,12 +33,12 @@ export function DashboardSectionCard({
   contentClassName,
 }: DashboardSectionCardProps) {
   return (
-    <Card className={cn('h-full', className)}>
-      <CardHeader>
+    <Card className={cn('h-full overflow-hidden', className)}>
+      <CardHeader className="border-b border-slate-100 bg-slate-50/80">
         <CardTitle className="text-base">{title}</CardTitle>
         {description ? <CardDescription>{description}</CardDescription> : null}
       </CardHeader>
-      <CardContent className={contentClassName}>
+      <CardContent className={cn('bg-white', contentClassName)}>
         {isLoading ? (
           <div className="space-y-3">
             <Skeleton className="h-4 w-full" />
@@ -51,7 +51,7 @@ export function DashboardSectionCard({
             <AlertDescription>{errorMessage}</AlertDescription>
           </Alert>
         ) : isEmpty ? (
-          <div className="rounded-md border border-dashed bg-muted/20 px-4 py-8 text-center">
+          <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50/80 px-4 py-8 text-center">
             <p className="text-sm text-muted-foreground">{emptyMessage}</p>
           </div>
         ) : (

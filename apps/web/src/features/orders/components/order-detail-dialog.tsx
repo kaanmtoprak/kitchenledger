@@ -191,7 +191,7 @@ export function OrderDetailDialog({
               </div>
             </div>
 
-            <div className="flex justify-end rounded-lg border bg-muted/30 p-4">
+            <div className="flex justify-end rounded-lg border bg-muted p-4">
               <p className="text-sm">
                 <span className="text-muted-foreground">Genel toplam: </span>
                 <span className="text-lg font-semibold">{formatCurrency(order.totalAmount)}</span>

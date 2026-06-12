@@ -99,7 +99,7 @@ export function SuppliersTable({
             <TableCell>{displayValue(supplier.phone)}</TableCell>
             <TableCell>{displayValue(supplier.email)}</TableCell>
             <TableCell>
-              <Badge variant={supplier.isActive ? 'secondary' : 'outline'}>
+              <Badge variant={supplier.isActive ? 'success' : 'muted'}>
                 {supplier.isActive ? 'Aktif' : 'Pasif'}
               </Badge>
             </TableCell>

@@ -29,6 +29,7 @@ export function ReportsToolbar({
         <Button
           type="button"
           size="sm"
+          className="shadow-sm"
           onClick={onExport}
           disabled={isExportDisabled || isExporting}
         >

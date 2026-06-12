@@ -87,7 +87,7 @@ export function BranchesTable({
             <TableCell className="font-medium">{branch.name}</TableCell>
             <TableCell>{branch.code}</TableCell>
             <TableCell>
-              <Badge variant={branch.isActive ? 'secondary' : 'outline'}>
+              <Badge variant={branch.isActive ? 'success' : 'muted'}>
                 {branch.isActive ? 'Aktif' : 'Pasif'}
               </Badge>
             </TableCell>

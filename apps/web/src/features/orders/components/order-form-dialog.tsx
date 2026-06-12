@@ -214,7 +214,7 @@ export function OrderFormDialog({
               <OrderItemsFieldArray form={form} products={products} />
             </div>
 
-            <div className="rounded-lg border bg-muted/30 p-4">
+            <div className="rounded-lg border bg-muted p-4">
               <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
                 <span>{summary.itemCount} kalem</span>
                 <span className="font-medium">Genel toplam: {formatCurrency(summary.total)}</span>

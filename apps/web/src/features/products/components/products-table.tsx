@@ -93,7 +93,7 @@ export function ProductsTable({
             <TableCell>{product.sku}</TableCell>
             <TableCell>{formatQuantityDisplay(product.defaultServingCount)}</TableCell>
             <TableCell>
-              <Badge variant={product.isActive ? 'secondary' : 'outline'}>
+              <Badge variant={product.isActive ? 'success' : 'muted'}>
                 {product.isActive ? 'Aktif' : 'Pasif'}
               </Badge>
             </TableCell>

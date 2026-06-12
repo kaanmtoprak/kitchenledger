@@ -234,6 +234,8 @@ export function OrdersReportTab() {
             title: 'Durum Dağılımı',
             value: statusSummary || '—',
             icon: PieChart,
+            valueClassName: 'text-sm font-normal leading-relaxed text-muted-foreground',
+            className: 'sm:col-span-2 xl:col-span-1',
           },
         ]}
       />

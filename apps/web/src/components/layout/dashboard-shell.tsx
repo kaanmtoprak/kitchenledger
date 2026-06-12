@@ -6,11 +6,11 @@ import { AppSidebar } from '@/components/layout/app-sidebar';
 
 export function DashboardShell({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen">
       <AppSidebar />
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col bg-surface-page">
         <AppHeader />
-        <main className="flex-1 p-4 md:p-6">{children}</main>
+        <main className="flex-1 bg-surface-page p-4 md:p-6 lg:p-8">{children}</main>
       </div>
     </div>
   );

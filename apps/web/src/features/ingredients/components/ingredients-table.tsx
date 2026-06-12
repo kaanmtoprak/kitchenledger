@@ -95,7 +95,7 @@ export function IngredientsTable({
             <TableCell>{formatBaseUnit(ingredient.baseUnit)}</TableCell>
             <TableCell>{formatQuantityDisplay(ingredient.minimumStockLevel)}</TableCell>
             <TableCell>
-              <Badge variant={ingredient.isActive ? 'secondary' : 'outline'}>
+              <Badge variant={ingredient.isActive ? 'success' : 'muted'}>
                 {ingredient.isActive ? 'Aktif' : 'Pasif'}
               </Badge>
             </TableCell>

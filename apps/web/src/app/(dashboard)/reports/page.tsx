@@ -20,7 +20,7 @@ export default function ReportsPage() {
         description="Satın alma, üretim, stok hareketleri ve sipariş verilerini filtreleyin ve CSV olarak dışa aktarın."
       />
 
-      <Card className="shadow-sm">
+      <Card>
         <CardContent className="space-y-6 pt-6">
           <ReportsTabs activeTab={activeTab} onChange={setActiveTab} />
 
