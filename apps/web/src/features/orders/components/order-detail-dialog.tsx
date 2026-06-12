@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Pencil } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -19,13 +21,15 @@ import { formatCurrency, formatDateTime, formatQuantityDisplay } from '@/lib/uti
 import { ordersApi } from '../api/orders.api';
 import { OrderStatusBadge } from './order-status-badge';
 import { OrderStatusSelect } from './order-status-select';
-import type { OrderStatus } from '../types/order.types';
+import { isOrderEditable, type OrderDetail, type OrderStatus } from '../types/order.types';
 
 type OrderDetailDialogProps = {
   orderId: string | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  canEdit?: boolean;
   canUpdateStatus?: boolean;
+  onEdit?: (order: OrderDetail) => void;
   onStatusUpdated?: () => void;
 };
 
@@ -33,7 +37,9 @@ export function OrderDetailDialog({
   orderId,
   open,
   onOpenChange,
+  canEdit = false,
   canUpdateStatus = false,
+  onEdit,
   onStatusUpdated,
 }: OrderDetailDialogProps) {
   const queryClient = useQueryClient();
@@ -79,7 +85,7 @@ export function OrderDetailDialog({
       }}
     >
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
-        <DialogHeader>
+        <DialogHeader className="space-y-0 pr-10">
           <DialogTitle>Sipariş Detayı</DialogTitle>
         </DialogHeader>
 
@@ -106,18 +112,32 @@ export function OrderDetailDialog({
                 <p className="text-sm text-muted-foreground">Sipariş no</p>
                 <p className="text-lg font-semibold">{order.orderNumber}</p>
               </div>
-              {canUpdateStatus ? (
-                <div className="w-full max-w-[200px] space-y-2">
-                  <p className="text-sm text-muted-foreground">Durum</p>
-                  <OrderStatusSelect
-                    value={order.status}
-                    onChange={handleStatusChange}
-                    disabled={statusMutation.isPending}
-                  />
-                </div>
-              ) : (
-                <OrderStatusBadge status={order.status} />
-              )}
+              <div className="flex w-full flex-col items-stretch gap-3 sm:w-auto sm:items-end">
+                {canEdit && onEdit && isOrderEditable(order.status) ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="w-full sm:w-auto"
+                    onClick={() => onEdit(order)}
+                  >
+                    <Pencil className="mr-1 h-4 w-4" />
+                    Düzenle
+                  </Button>
+                ) : null}
+                {canUpdateStatus ? (
+                  <div className="w-full space-y-2 sm:w-[200px]">
+                    <p className="text-sm text-muted-foreground">Durum</p>
+                    <OrderStatusSelect
+                      value={order.status}
+                      onChange={handleStatusChange}
+                      disabled={statusMutation.isPending}
+                    />
+                  </div>
+                ) : (
+                  <OrderStatusBadge status={order.status} />
+                )}
+              </div>
             </div>
 
             {statusError ? (

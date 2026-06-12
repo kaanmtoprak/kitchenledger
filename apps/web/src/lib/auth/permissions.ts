@@ -11,6 +11,7 @@ export type Permissions = {
   canCreateProduction: boolean;
   canManageProductsAndRecipes: boolean;
   canCreateOrder: boolean;
+  canEditOrder: boolean;
   canUpdateOrderStatus: boolean;
   canCreateStockAdjustment: boolean;
 };
@@ -33,6 +34,7 @@ export function createPermissions(role: string | null | undefined): Permissions 
     canCreateProduction: canMutateReferenceData,
     canManageProductsAndRecipes: canMutateReferenceData,
     canCreateOrder: canMutateReferenceData,
+    canEditOrder: canMutateReferenceData,
     canUpdateOrderStatus: canMutateReferenceData,
     canCreateStockAdjustment: canMutateReferenceData,
   };

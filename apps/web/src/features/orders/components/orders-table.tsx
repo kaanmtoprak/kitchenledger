@@ -1,6 +1,6 @@
 'use client';
 
-import { Eye } from 'lucide-react';
+import { Eye, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -16,15 +16,17 @@ import { emptyListTitle, READ_ONLY_EMPTY_HINT } from '@/lib/utils/empty-state-me
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/utils/display';
 import { OrderStatusBadge } from './order-status-badge';
 import { OrderStatusSelect } from './order-status-select';
-import type { OrderListItem, OrderStatus } from '../types/order.types';
+import { isOrderEditable, type OrderListItem, type OrderStatus } from '../types/order.types';
 
 type OrdersTableProps = {
   orders: OrderListItem[];
   branchNameById: Record<string, string>;
   isLoading?: boolean;
   canCreate?: boolean;
+  canEdit?: boolean;
   canUpdateStatus?: boolean;
   onView: (order: OrderListItem) => void;
+  onEdit?: (order: OrderListItem) => void;
   onCreate?: () => void;
   onStatusChange?: (order: OrderListItem, status: OrderStatus) => void;
   updatingOrderId?: string | null;
@@ -35,8 +37,10 @@ export function OrdersTable({
   branchNameById,
   isLoading,
   canCreate = true,
+  canEdit = false,
   canUpdateStatus = false,
   onView,
+  onEdit,
   onCreate,
   onStatusChange,
   updatingOrderId,
@@ -84,7 +88,7 @@ export function OrdersTable({
             <TableHead className="text-right">Kalem</TableHead>
             <TableHead className="text-right">Toplam Tutar</TableHead>
             <TableHead>Teslim Tarihi</TableHead>
-            <TableHead className="w-12 text-right">İşlem</TableHead>
+            <TableHead className="w-24 text-right">İşlem</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -118,15 +122,28 @@ export function OrdersTable({
                 {order.dueAt ? formatDate(order.dueAt) : '—'}
               </TableCell>
               <TableCell className="text-right">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => onView(order)}
-                  aria-label="Sipariş detayını görüntüle"
-                >
-                  <Eye className="h-4 w-4" />
-                </Button>
+                <div className="flex justify-end gap-1">
+                  {canEdit && onEdit && isOrderEditable(order.status) ? (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onEdit(order)}
+                      aria-label="Siparişi düzenle"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  ) : null}
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onView(order)}
+                    aria-label="Sipariş detayını görüntüle"
+                  >
+                    <Eye className="h-4 w-4" />
+                  </Button>
+                </div>
               </TableCell>
             </TableRow>
           ))}

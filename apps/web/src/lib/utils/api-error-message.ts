@@ -42,6 +42,8 @@ const exactMessages: Record<string, string> = {
   'One or more ingredients not found': 'Bir veya daha fazla malzeme bulunamadı.',
   'Order not found': 'Sipariş bulunamadı.',
   'Duplicate product in order items': 'Aynı ürün birden fazla kez eklenemez.',
+  'Completed or cancelled orders cannot be edited':
+    'Tamamlanmış veya iptal edilmiş siparişler düzenlenemez.',
   'Invalid quantity or unit price': 'Miktar veya birim fiyat geçersiz.',
   'One or more products not found': 'Bir veya daha fazla ürün bulunamadı.',
   'Stock batch not found': 'Stok partisi bulunamadı.',

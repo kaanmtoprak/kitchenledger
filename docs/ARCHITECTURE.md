@@ -23,7 +23,7 @@ Shared config packages (`eslint-config`, `typescript-config`) keep lint and TS s
 | **Inventory**              | Stock summary, batches, movement audit trail, adjustments (waste/return/manual)                                     |
 | **Products / Recipes**     | Product catalog, recipe definitions, branch-specific cost preview                                                   |
 | **Productions**            | Production runs, FIFO consumption, immutable cost snapshots                                                         |
-| **Orders**                 | Customer orders with line items, status workflow; MVP creates customer per order (no stock/production side effects) |
+| **Orders**                 | Customer orders with line items, create/edit (except DELIVERED/CANCELLED), status workflow; no stock/production side effects |
 | **Dashboard**              | Aggregated analytics — summary, low stock, trends, recent activity                                                  |
 | **Health**                 | `/health` (DB readiness), `/health/live` (liveness)                                                                 |
 
@@ -121,6 +121,7 @@ This distinction is central to KitchenLedger’s costing model:
 
 - **No unit conversion in MVP** — `baseUnit` must match across purchases, recipes and production
 - **No production update/delete** — corrections require future reversal/adjustment flows
-- **No purchase update/delete** — same as above
+- **No purchase update/delete** — satın alma ve üretim kayıtları stok partisi, hareket ve maliyet ürettiği için doğrudan düzenlenmez; ileride iptal/düzeltme akışı planlanır
+- **Orders are editable** — customer, items and totals can be updated unless status is `DELIVERED` or `CANCELLED`; branch and `orderedAt` remain fixed
 - **Access token in localStorage** — simpler MVP auth; refresh token remains HttpOnly cookie
 - **Concurrency** — stock consumption uses transactions but not pessimistic row locking; sufficient for MVP demo scale, improvable for high-throughput scenarios

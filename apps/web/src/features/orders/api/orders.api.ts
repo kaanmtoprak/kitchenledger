@@ -4,6 +4,7 @@ import type {
   ListOrdersParams,
   OrderDetail,
   OrdersListResponse,
+  UpdateOrderPayload,
   UpdateOrderStatusPayload,
 } from '../types/order.types';
 
@@ -34,6 +35,9 @@ export const ordersApi = {
   getById: (id: string) => apiClient.get<OrderDetail>(`/orders/${id}`),
 
   create: (payload: CreateOrderPayload) => apiClient.post<OrderDetail>('/orders', payload),
+
+  update: (id: string, payload: UpdateOrderPayload) =>
+    apiClient.patch<OrderDetail>(`/orders/${id}`, payload),
 
   updateStatus: (id: string, payload: UpdateOrderStatusPayload) =>
     apiClient.patch<OrderDetail>(`/orders/${id}/status`, payload),

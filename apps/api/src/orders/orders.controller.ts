@@ -18,6 +18,7 @@ import { TenantGuard } from '../common/guards/tenant.guard';
 import type { TenantContext } from '../common/types/tenant-context.type';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { ListOrdersQueryDto } from './dto/list-orders-query.dto';
+import { UpdateOrderDto } from './dto/update-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { OrdersService } from './orders.service';
 
@@ -44,6 +45,17 @@ export class OrdersController {
   @Get(':id')
   findOne(@CurrentTenant() tenant: TenantContext, @Param('id') id: string) {
     return this.ordersService.findOne(tenant, id);
+  }
+
+  @Patch(':id')
+  @UseGuards(RolesGuard)
+  @Roles(Role.OWNER, Role.ADMIN, Role.BRANCH_MANAGER, Role.STAFF)
+  update(
+    @CurrentTenant() tenant: TenantContext,
+    @Param('id') id: string,
+    @Body() dto: UpdateOrderDto,
+  ) {
+    return this.ordersService.update(tenant, id, dto);
   }
 
   @Patch(':id/status')

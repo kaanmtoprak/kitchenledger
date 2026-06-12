@@ -50,6 +50,8 @@ export default function OrdersPage() {
     to: '',
   });
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [editOrderId, setEditOrderId] = useState<string | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [detailOrderId, setDetailOrderId] = useState<string | null>(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const [updatingOrderId, setUpdatingOrderId] = useState<string | null>(null);
@@ -92,10 +94,26 @@ export default function OrdersPage() {
     enabled: Boolean(selectedOrganizationId),
   });
 
+  const editOrderQuery = useQuery({
+    queryKey: ['orders', 'edit', selectedOrganizationId, editOrderId],
+    queryFn: () => ordersApi.getById(editOrderId!),
+    enabled: Boolean(editDialogOpen && editOrderId && selectedOrganizationId),
+  });
+
   const createMutation = useMutation({
     mutationFn: ordersApi.create,
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['orders'] });
+      await queryClient.invalidateQueries({ queryKey: ['reports', 'orders'] });
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: Parameters<typeof ordersApi.update>[1] }) =>
+      ordersApi.update(id, payload),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['orders'] });
+      await queryClient.invalidateQueries({ queryKey: ['reports', 'orders'] });
     },
   });
 
@@ -116,30 +134,61 @@ export default function OrdersPage() {
     return map;
   }, [branches]);
 
-  const handleCreateSubmit = async (values: OrderFormValues) => {
+  const buildOrderItemsPayload = (values: OrderFormValues) =>
+    values.items.map((item) => ({
+      productId: item.productId,
+      quantity: item.quantity.trim(),
+      unitPrice: item.unitPrice.trim(),
+    }));
+
+  const handleFormSubmit = async (values: OrderFormValues, mode: 'create' | 'edit') => {
     setSuccessMessage(null);
-    await createMutation.mutateAsync({
-      branchId: values.branchId,
-      customer: {
-        name: values.customerName.trim(),
-        phone: optionalField(values.customerPhone),
-        email: optionalField(values.customerEmail),
+
+    if (mode === 'create') {
+      await createMutation.mutateAsync({
+        branchId: values.branchId,
+        customer: {
+          name: values.customerName.trim(),
+          phone: optionalField(values.customerPhone),
+          email: optionalField(values.customerEmail),
+        },
+        orderedAt: values.orderedAt ? new Date(values.orderedAt).toISOString() : undefined,
+        dueAt: values.dueAt ? new Date(values.dueAt).toISOString() : undefined,
+        notes: optionalField(values.notes),
+        items: buildOrderItemsPayload(values),
+      });
+      setSuccessMessage('Sipariş oluşturuldu.');
+      return;
+    }
+
+    if (!editOrderId) {
+      return;
+    }
+
+    await updateMutation.mutateAsync({
+      id: editOrderId,
+      payload: {
+        customer: {
+          name: values.customerName.trim(),
+          phone: optionalField(values.customerPhone),
+          email: optionalField(values.customerEmail),
+        },
+        dueAt: values.dueAt ? new Date(values.dueAt).toISOString() : undefined,
+        notes: optionalField(values.notes),
+        items: buildOrderItemsPayload(values),
       },
-      orderedAt: values.orderedAt ? new Date(values.orderedAt).toISOString() : undefined,
-      dueAt: values.dueAt ? new Date(values.dueAt).toISOString() : undefined,
-      notes: optionalField(values.notes),
-      items: values.items.map((item) => ({
-        productId: item.productId,
-        quantity: item.quantity.trim(),
-        unitPrice: item.unitPrice.trim(),
-      })),
     });
-    setSuccessMessage('Sipariş oluşturuldu.');
+    setSuccessMessage('Sipariş güncellendi.');
   };
 
   const handleViewOrder = (order: OrderListItem) => {
     setDetailOrderId(order.id);
     setDetailDialogOpen(true);
+  };
+
+  const handleEditOrder = (order: OrderListItem) => {
+    setEditOrderId(order.id);
+    setEditDialogOpen(true);
   };
 
   const handleStatusChange = async (order: OrderListItem, status: OrderStatus) => {
@@ -205,8 +254,10 @@ export default function OrdersPage() {
             branchNameById={branchNameById}
             isLoading={ordersQuery.isLoading}
             canCreate={permissions.canCreateOrder}
+            canEdit={permissions.canEditOrder}
             canUpdateStatus={permissions.canUpdateOrderStatus}
             onView={handleViewOrder}
+            onEdit={permissions.canEditOrder ? handleEditOrder : undefined}
             onCreate={permissions.canCreateOrder ? () => setCreateDialogOpen(true) : undefined}
             onStatusChange={permissions.canUpdateOrderStatus ? handleStatusChange : undefined}
             updatingOrderId={updatingOrderId}
@@ -222,7 +273,25 @@ export default function OrdersPage() {
           onOpenChange={setCreateDialogOpen}
           branches={branches}
           products={productsQuery.data?.data ?? []}
-          onSubmit={handleCreateSubmit}
+          onSubmit={handleFormSubmit}
+        />
+      ) : null}
+
+      {permissions.canEditOrder ? (
+        <OrderFormDialog
+          mode="edit"
+          open={editDialogOpen}
+          onOpenChange={(open) => {
+            setEditDialogOpen(open);
+            if (!open) {
+              setEditOrderId(null);
+            }
+          }}
+          branches={branches}
+          products={productsQuery.data?.data ?? []}
+          order={editOrderQuery.data}
+          isLoading={editOrderQuery.isLoading}
+          onSubmit={handleFormSubmit}
         />
       ) : null}
 
@@ -235,7 +304,13 @@ export default function OrdersPage() {
             setDetailOrderId(null);
           }
         }}
+        canEdit={permissions.canEditOrder}
         canUpdateStatus={permissions.canUpdateOrderStatus}
+        onEdit={(order) => {
+          setDetailDialogOpen(false);
+          setDetailOrderId(null);
+          handleEditOrder(order);
+        }}
         onStatusUpdated={() => setSuccessMessage('Sipariş durumu güncellendi.')}
       />
     </div>

@@ -35,10 +35,12 @@ All demo users share the password **`Password123!`**.
 8. Record a **İade** (return) or **Manuel Düzeltme** increase; verify a new stock batch appears
 9. Open **Orders** and review seeded demo orders (Ayşe Yılmaz / Mert Demir)
 10. Create a new **Order** with product line items and verify total amount
-11. Update order **status** from the list or detail dialog
-12. Create a **Production** for a product with a recipe
-13. Confirm FIFO consumption in production detail and inventory movements
-14. Return to **Dashboard** and verify updated metrics
+11. **Edit** a PENDING or CONFIRMED order — change customer name, line quantities/prices, add/remove items; verify live total and saved detail
+12. Update order **status** from the list or detail dialog
+13. Mark an order **DELIVERED** or **CANCELLED** and confirm **Düzenle** is hidden; direct `PATCH /orders/:id` returns `400`
+14. Create a **Production** for a product with a recipe
+15. Confirm FIFO consumption in production detail and inventory movements
+16. Return to **Dashboard** and verify updated metrics
 
 ## Role Testing Checklist
 
@@ -139,10 +141,12 @@ Full walkthrough validated via local dev (`localhost:3000` + `localhost:3001`):
 ## Known MVP Limitations
 
 - Orders create a new customer per order; no customer management screen
+- Orders can be edited (customer, items, notes, due date) unless `DELIVERED` or `CANCELLED`; branch and order date stay fixed
 - Orders do not reduce stock or trigger production
 - No payment, invoice or delivery integration for orders
 - Return/manual stock increases create new batches; no approval workflow or document upload for adjustments
 - No unit conversion; recipe/purchase units must match ingredient `baseUnit`
+- Satın alma ve üretim kayıtları doğrudan düzenlenmez; stok partisi, hareket ve maliyet kaydı ürettikleri için ileride iptal/düzeltme akışıyla ele alınacaktır
 - No production update/delete; reversals would require future stock adjustment flows
 - No purchase update/delete; corrections would require stock adjustment/reversal
 - Access token is stored in `localStorage`; production-grade security can be improved later

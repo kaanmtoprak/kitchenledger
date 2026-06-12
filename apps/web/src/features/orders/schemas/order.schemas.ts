@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import type { OrderDetail } from '../types/order.types';
 
 const positiveNumberString = (label: string) =>
   z
@@ -71,3 +72,38 @@ export const defaultOrderFormValues: OrderFormValues = {
   notes: '',
   items: [defaultOrderItem],
 };
+
+function toDateTimeLocalValue(value: string | null | undefined): string {
+  if (!value) {
+    return '';
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return '';
+  }
+
+  const pad = (part: number) => String(part).padStart(2, '0');
+
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+export function getFormValuesFromOrder(order: OrderDetail): OrderFormValues {
+  return {
+    branchId: order.branchId,
+    customerName: order.customer?.name ?? '',
+    customerPhone: order.customer?.phone ?? '',
+    customerEmail: order.customer?.email ?? '',
+    orderedAt: toDateTimeLocalValue(order.orderedAt),
+    dueAt: toDateTimeLocalValue(order.dueAt),
+    notes: order.notes ?? '',
+    items:
+      order.items.length > 0
+        ? order.items.map((item) => ({
+            productId: item.productId,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+          }))
+        : [{ ...defaultOrderItem }],
+  };
+}

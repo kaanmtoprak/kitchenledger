@@ -89,6 +89,17 @@ export type UpdateOrderStatusPayload = {
   status: OrderStatus;
 };
 
+export type UpdateOrderPayload = {
+  customer: CreateOrderCustomerPayload;
+  dueAt?: string;
+  notes?: string;
+  items: CreateOrderItemPayload[];
+};
+
+export function isOrderEditable(status: OrderStatus): boolean {
+  return status !== 'DELIVERED' && status !== 'CANCELLED';
+}
+
 export function calculateOrderItemsTotal(
   items: Array<{ quantity: string; unitPrice: string }>,
 ): number {

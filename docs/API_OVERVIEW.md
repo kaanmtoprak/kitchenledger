@@ -115,11 +115,14 @@ OWNER and ADMIN only (`JwtAuthGuard` + `TenantGuard` + `RolesGuard`).
 | POST   | `/orders`            | Create customer order with line items   |
 | GET    | `/orders`            | List orders (branch-scoped, filterable) |
 | GET    | `/orders/:id`        | Get order detail                        |
+| PATCH  | `/orders/:id`        | Update order (customer, items, due date, notes) |
 | PATCH  | `/orders/:id/status` | Update order status                     |
 
 **List query params:** `page`, `limit`, `q`, `branchId`, `status`, `from`, `to`, `includeItems`
 
-**Roles:** Create/status — OWNER, ADMIN, BRANCH_MANAGER, STAFF. VIEWER read-only.
+**Roles:** Create/edit/status — OWNER, ADMIN, BRANCH_MANAGER, STAFF. VIEWER read-only.
+
+**Edit rules:** `DELIVERED` and `CANCELLED` orders cannot be edited (`400`). Branch and `orderedAt` are not changed on update; items are replaced (delete + recreate) and `totalAmount` is recalculated.
 
 **Order status enum:** `PENDING`, `CONFIRMED`, `IN_PRODUCTION`, `READY`, `DELIVERED`, `CANCELLED`
 

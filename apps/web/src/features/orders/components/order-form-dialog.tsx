@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { DateTimeLocalInput } from '@/components/common/datetime-local-input';
@@ -23,13 +24,15 @@ import { BranchFormSelect } from '@/components/common/branch-form-select';
 import type { Branch } from '@/features/branches/types/branch.types';
 import type { Product } from '@/features/products/types/product.types';
 import { getApiErrorMessage } from '@/lib/utils/api-error-message';
-import { formatCurrency } from '@/lib/utils/display';
+import { formatCurrency, formatDateTime } from '@/lib/utils/display';
 import { OrderItemsFieldArray } from './order-items-field-array';
 import {
   defaultOrderFormValues,
+  getFormValuesFromOrder,
   orderFormSchema,
   type OrderFormValues,
 } from '../schemas/order.schemas';
+import type { OrderDetail } from '../types/order.types';
 import { calculateOrderItemsTotal } from '../types/order.types';
 
 type OrderFormDialogProps = {
@@ -37,7 +40,10 @@ type OrderFormDialogProps = {
   onOpenChange: (open: boolean) => void;
   branches: Branch[];
   products: Product[];
-  onSubmit: (values: OrderFormValues) => Promise<void>;
+  mode?: 'create' | 'edit';
+  order?: OrderDetail | null;
+  isLoading?: boolean;
+  onSubmit: (values: OrderFormValues, mode: 'create' | 'edit') => Promise<void>;
 };
 
 export function OrderFormDialog({
@@ -45,13 +51,22 @@ export function OrderFormDialog({
   onOpenChange,
   branches,
   products,
+  mode = 'create',
+  order,
+  isLoading = false,
   onSubmit,
 }: OrderFormDialogProps) {
+  const isEdit = mode === 'edit';
   const [error, setError] = useState<string | null>(null);
+
+  const formValues = useMemo(
+    () => (isEdit && order ? getFormValuesFromOrder(order) : defaultOrderFormValues),
+    [isEdit, order],
+  );
 
   const form = useForm<OrderFormValues>({
     resolver: zodResolver(orderFormSchema),
-    defaultValues: defaultOrderFormValues,
+    values: open ? formValues : defaultOrderFormValues,
   });
 
   const watchedItems = useWatch({ control: form.control, name: 'items' });
@@ -64,12 +79,11 @@ export function OrderFormDialog({
     };
   }, [watchedItems]);
 
+  const editBranch = isEdit && order ? order.branch : null;
+
   const handleOpenChange = (nextOpen: boolean) => {
-    if (nextOpen) {
-      form.reset(defaultOrderFormValues);
-    } else {
+    if (!nextOpen) {
       setError(null);
-      form.reset(defaultOrderFormValues);
     }
     onOpenChange(nextOpen);
   };
@@ -77,10 +91,15 @@ export function OrderFormDialog({
   const handleSubmit = async (values: OrderFormValues) => {
     setError(null);
     try {
-      await onSubmit(values);
+      await onSubmit(values, isEdit ? 'edit' : 'create');
       handleOpenChange(false);
     } catch (err) {
-      setError(getApiErrorMessage(err, 'Sipariş oluşturulamadı.'));
+      setError(
+        getApiErrorMessage(
+          err,
+          isEdit ? 'Sipariş güncellenemedi.' : 'Sipariş oluşturulamadı.',
+        ),
+      );
     }
   };
 
@@ -88,9 +107,17 @@ export function OrderFormDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <FormDialogContent className="sm:max-w-3xl">
         <DialogHeader>
-          <DialogTitle>Yeni Sipariş</DialogTitle>
+          <DialogTitle>{isEdit ? 'Siparişi Düzenle' : 'Yeni Sipariş'}</DialogTitle>
         </DialogHeader>
 
+        {isEdit && isLoading ? (
+          <div className="space-y-3">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-24 w-full" />
+          </div>
+        ) : null}
+
+        {!isLoading || !isEdit ? (
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
             {error ? (
@@ -100,24 +127,33 @@ export function OrderFormDialog({
             ) : null}
 
             <div className="grid gap-4 md:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="branchId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Şube</FormLabel>
-                    <FormControl>
-                      <BranchFormSelect
-                        value={field.value}
-                        branches={branches}
-                        onChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormDescription>Sipariş bu şube altında takip edilir.</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {isEdit && editBranch ? (
+                <div className="rounded-lg border p-3 text-sm">
+                  <p className="text-muted-foreground">Şube</p>
+                  <p className="font-medium">
+                    {editBranch.name} ({editBranch.code})
+                  </p>
+                </div>
+              ) : (
+                <FormField
+                  control={form.control}
+                  name="branchId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Şube</FormLabel>
+                      <FormControl>
+                        <BranchFormSelect
+                          value={field.value}
+                          branches={branches}
+                          onChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormDescription>Sipariş bu şube altında takip edilir.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
               <FormField
                 control={form.control}
@@ -161,19 +197,26 @@ export function OrderFormDialog({
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="orderedAt"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Sipariş tarihi</FormLabel>
-                    <FormControl>
-                      <DateTimeLocalInput {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {isEdit && order ? (
+                <div className="rounded-lg border p-3 text-sm">
+                  <p className="text-muted-foreground">Sipariş tarihi</p>
+                  <p className="font-medium">{formatDateTime(order.orderedAt)}</p>
+                </div>
+              ) : (
+                <FormField
+                  control={form.control}
+                  name="orderedAt"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Sipariş tarihi</FormLabel>
+                      <FormControl>
+                        <DateTimeLocalInput {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
               <FormField
                 control={form.control}
@@ -226,11 +269,18 @@ export function OrderFormDialog({
                 Vazgeç
               </Button>
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? 'Oluşturuluyor...' : 'Sipariş oluştur'}
+                {form.formState.isSubmitting
+                  ? isEdit
+                    ? 'Güncelleniyor...'
+                    : 'Oluşturuluyor...'
+                  : isEdit
+                    ? 'Siparişi Güncelle'
+                    : 'Sipariş oluştur'}
               </Button>
             </DialogFooter>
           </form>
         </Form>
+        ) : null}
       </FormDialogContent>
     </Dialog>
   );
