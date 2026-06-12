@@ -1,6 +1,6 @@
 # API Overview
 
-Quick REST reference for KitchenLedger. Not a full Swagger spec — intended for portfolio review and codebase navigation.
+Quick REST reference for KitchenLedger. Not a full Swagger spec — intended for codebase navigation and API review.
 
 **Base URL (local):** `http://localhost:3001`
 

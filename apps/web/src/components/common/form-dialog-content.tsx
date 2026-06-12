@@ -12,11 +12,6 @@ function isDateTimeInput(element: Element | null | undefined): boolean {
   );
 }
 
-/**
- * Dialog content for forms with native date/time inputs.
- * Scroll lives on an inner wrapper so overflow + transform on the dialog
- * shell does not block the browser date picker.
- */
 export function FormDialogContent({
   className,
   children,

@@ -1,17 +1,7 @@
 # KitchenLedger — Final QA Kontrol Listesi
 
-Portfolyo, demo ve GitHub sunumu öncesi manuel kontrol listesi.  
+Manuel kontrol listesi — kurulum, rol bazlı erişim, operasyonel akışlar ve Türkçe UI doğrulaması.  
 İlgili dokümanlar: [DEMO.md](DEMO.md) · [DEPLOYMENT.md](DEPLOYMENT.md) · [README](../README.md)
-
-**Son tarayıcı/API QA (Adım 30):** 2026-06 — Owner/Viewer/Manager/Staff akışları; tüm dashboard route’ları HTTP 200; branch scope ve permission kontrolleri API ile doğrulandı.
-
-**Reports QA (Adım 31):** `/reports` — 4 tab, filtreler, özet kartlar, CSV export (max 1000 kayıt), branch scope korunur; VIEWER export yapabilir.
-
-**Team management QA (Adım 36):** `/team` — OWNER/ADMIN kullanıcı oluşturma, rol/şube atama, pasife alma; MANAGER/STAFF/VIEWER menü ve API erişimi yok.
-
-**Audit logs QA (Adım 37):** `/audit-logs` — OWNER-only; mutation sonrası kayıt; hassas alan yok; ADMIN erişemez.
-
-**Final hardening (Adım 40):** Docs tutarlılığı, RHF `useWatch` temizliği, query invalidation ve bilinen sınırlar güncellendi; yeni feature yok.
 
 ---
 

@@ -12,7 +12,7 @@ function openNativePicker(input: HTMLInputElement) {
   try {
     input.showPicker();
   } catch {
-    // showPicker requires a direct user gesture in some browsers
+    return;
   }
 }
 

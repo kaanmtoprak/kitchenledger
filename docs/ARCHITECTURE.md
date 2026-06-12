@@ -1,6 +1,6 @@
 # Architecture Notes
 
-Technical overview of KitchenLedger for portfolio review and engineering interviews.
+Technical overview of KitchenLedger — module boundaries, multi-tenant model and costing design.
 
 ## Monorepo Structure
 

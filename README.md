@@ -154,15 +154,15 @@ See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for env variables, build/start comm
 
 ## Documentation
 
-| Doc                                              | Description                         |
-| ------------------------------------------------ | ----------------------------------- |
-| [docs/DEMO.md](docs/DEMO.md)                     | Demo Guide — users, flows, roles    |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)     | Architecture Notes                  |
-| [docs/API_OVERVIEW.md](docs/API_OVERVIEW.md)     | API Overview                        |
-| [docs/QA_CHECKLIST.md](docs/QA_CHECKLIST.md)     | QA Checklist (Turkish)              |
-| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)         | Deployment Guide                    |
-| [docs/SCREENSHOTS.md](docs/SCREENSHOTS.md)       | Screenshot Guide (Turkish)          |
-| [docs/PROJECT_STORY.md](docs/PROJECT_STORY.md)   | Project Story — product narrative   |
+| Doc                                            | Description                       |
+| ---------------------------------------------- | --------------------------------- |
+| [docs/DEMO.md](docs/DEMO.md)                   | Demo Guide — users, flows, roles  |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)   | Architecture Notes                |
+| [docs/API_OVERVIEW.md](docs/API_OVERVIEW.md)   | API Overview                      |
+| [docs/QA_CHECKLIST.md](docs/QA_CHECKLIST.md)   | QA Checklist (Turkish)            |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)       | Deployment Guide                  |
+| [docs/SCREENSHOTS.md](docs/SCREENSHOTS.md)     | Screenshot Guide (Turkish)        |
+| [docs/PROJECT_STORY.md](docs/PROJECT_STORY.md) | Project Story — product narrative |
 
 ## Known MVP Limitations
 

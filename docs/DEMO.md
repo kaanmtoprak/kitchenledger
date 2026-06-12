@@ -120,7 +120,7 @@ Branch filters and create forms show only branches the user can access:
 
 Backend guards remain the source of truth; unauthorized branch mutations still return 403.
 
-## Reports Demo Flow (Adım 31)
+## Reports Demo Flow
 
 1. Login as `owner@kitchenledger.app`
 2. Open **Raporlar** from the sidebar (Genel)
@@ -130,7 +130,7 @@ Backend guards remain the source of truth; unauthorized branch mutations still r
 6. Login as `viewer@kitchenledger.app` — reports show Main Kitchen scope only; CSV export allowed for visible data
 7. Login as `manager@kitchenledger.app` — branch filter shows Kadikoy only
 
-## Browser QA (Adım 30)
+## Browser QA
 
 Full walkthrough validated via local dev (`localhost:3000` + `localhost:3001`):
 

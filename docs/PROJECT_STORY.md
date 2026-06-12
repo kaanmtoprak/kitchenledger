@@ -52,7 +52,7 @@ Filter operational data (purchases, productions, stock movements, orders) on a s
 - Turkish localized interface for end users
 - Turborepo monorepo: Next.js web + NestJS API
 
-## Portfolio Summary
+## Summary
 
 Built a multi-tenant SaaS platform for small food-production businesses to manage ingredient inventory, supplier-based purchase costs, recipe costing, customer orders and FIFO production consumption. The system supports branch-level stock tracking, role-based access control, production cost snapshots and dashboard analytics.
 
@@ -60,9 +60,9 @@ Built a multi-tenant SaaS platform for small food-production businesses to manag
 
 **Stack:** Next.js · NestJS · PostgreSQL · Prisma · JWT · Turborepo
 
-## Portfolio Presentation
+## Local Demo
 
-This project is intentionally presented as a local full-stack case study. It includes demo seed data, documentation, screenshots and deployment notes, but it is not currently hosted as a public live demo. Reviewers can run the stack locally (`pnpm db:seed` + `pnpm dev`) or browse the repository docs and screenshots on GitHub.
+The application is not currently deployed as a public live demo. It includes seed data, documentation, screenshots and deployment notes. Run locally with `pnpm db:seed` and `pnpm dev`, or review the repository docs and screenshots on GitHub.
 
 ## Future Improvements
 

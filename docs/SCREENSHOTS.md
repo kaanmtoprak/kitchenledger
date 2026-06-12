@@ -96,15 +96,15 @@ Görsel dosyaları `assets/screenshots/` altına kaydettikten sonra `README.md` 
 
 Beklenen dosya adları:
 
-| Dosya | Ekran |
-| ----- | ----- |
-| `01-dashboard.png` | Dashboard |
-| `02-inventory.png` | Inventory |
-| `03-purchases.png` | Purchases |
-| `04-recipes-cost.png` | Recipe costing |
-| `05-productions.png` | Productions |
-| `06-orders.png` | Orders |
-| `07-reports.png` | Reports |
+| Dosya                     | Ekran            |
+| ------------------------- | ---------------- |
+| `01-dashboard.png`        | Dashboard        |
+| `02-inventory.png`        | Inventory        |
+| `03-purchases.png`        | Purchases        |
+| `04-recipes-cost.png`     | Recipe costing   |
+| `05-productions.png`      | Productions      |
+| `06-orders.png`           | Orders           |
+| `07-reports.png`          | Reports          |
 | `08-stock-adjustment.png` | Stock adjustment |
-| `09-team-management.png` | Team management |
-| `10-audit-logs.png` | Audit logs |
+| `09-team-management.png`  | Team management  |
+| `10-audit-logs.png`       | Audit logs       |

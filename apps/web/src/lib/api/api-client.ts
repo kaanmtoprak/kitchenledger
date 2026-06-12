@@ -58,9 +58,7 @@ async function parseErrorResponse(response: Response): Promise<ApiError> {
     };
     message = extractErrorMessage(data);
     details = data;
-  } catch {
-    // ignore JSON parse errors
-  }
+  } catch {}
 
   return new ApiError(response.status, message, details);
 }

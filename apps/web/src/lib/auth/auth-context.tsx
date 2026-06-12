@@ -121,7 +121,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await authApi.logout();
     } catch {
-      // ignore logout API errors
     } finally {
       clearAuthState();
       router.replace('/login');
